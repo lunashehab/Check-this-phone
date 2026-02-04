@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Display Diagnostics | CheckThisPhone</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --surface-dark: #1e293b;
+            --accent: #3b82f6; /* Blue for Display */
+            --accent-dim: rgba(59, 130, 246, 0.2);
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+            --success: #10b981;
+            --danger: #ef4444;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            overscroll-behavior: none; /* Prevent pull-to-refresh interfering with touch */
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+        }
+
+        /* HEADER */
+        .header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .back-btn {
+            background: none;
+            border: none;
+            color: var(--text-dim);
+            font-size: 24px;
+            cursor: pointer;
+            padding: 0;
+            margin-right: 15px;
+        }
+        .page-title { font-size: 20px; font-weight: 700; margin: 0; }
+
+        /* HERO: TOUCH CANVAS */
+        .touch-area-wrapper {
+            position: relative;
+            width: 100%;
+            height: 300px;
+            background: #000;
+            border: 2px solid #334155;
+            border-radius: 12px;
+            overflow: hidden;
+            touch-action: none; /* Critical for touch testing */
+            margin-bottom: 20px;
+        }
+        
+        #touch-canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .overlay-stats {
+            position: absolute;
+            top: 10px; left: 10px;
+            background: rgba(0,0,0,0.6);
+            padding: 8px 12px;
+            border-radius: 8px;
+            pointer-events: none;
+        }
+        .stat-item { font-size: 12px; font-family: monospace; color: var(--accent); display: block; }
+
+        /* REFRESH RATE BADGE */
+        .hz-badge {
+            position: absolute;
+            top: 10px; right: 10px;
+            background: var(--accent);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        /* CONTROLS GRID */
+        .controls-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .control-btn {
+            background: var(--surface-dark);
+            border: 1px solid #334155;
+            color: var(--text-main);
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            transition: 0.2s;
+        }
+        .control-btn:active { transform: scale(0.96); background: #334155; }
+        .control-icon { font-size: 24px; }
+
+        /* CHECKLIST SECTION */
+        .checklist {
+            background: var(--surface-dark);
+            padding: 20px;
+            border-radius: 12px;
+        }
+        .check-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #334155;
+            font-size: 13px;
+        }
+        .check-item:last-child { border-bottom: none; }
+        .check-label { color: var(--text-dim); }
+        
+        select.manual-input {
+            background: var(--bg-dark);
+            border: 1px solid #475569;
+            color: white;
+            border-radius: 4px;
+            padding: 4px;
+            font-size: 12px;
+        }
+
+        /* FULLSCREEN OVERLAY FOR DEAD PIXELS */
+        #fs-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: red;
+            z-index: 9999;
+            display: none;
+            cursor: pointer;
+        }
+        
+        .helper-text {
+            position: absolute;
+            bottom: 50px; width: 100%;
+            text-align: center;
+            color: rgba(255,255,255,0.5);
+            font-size: 12px;
+            pointer-events: none;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <button class="back-btn" onclick="window.location.href='index.html'">←</button>
+        <h1 class="page-title">Display & Touch</h1>
+    </div>
+
+    <div class="touch-area-wrapper">
+        <canvas id="touch-canvas"></canvas>
+        <div class="overlay-stats">
+            <span class="stat-item" id="touch-count">Fingers: 0</span>
+            <span class="stat-item" id="xy-coords">X: 0 Y: 0</span>
+        </div>
+        <div class="hz-badge" id="hz-display">60Hz</div>
+    </div>
+
+    <div class="controls-grid">
+        <button class="control-btn" onclick="startDeadPixelTest()">
+            <span class="control-icon">🎨</span>
+            <span>Dead Pixel Test</span>
+        </button>
+        
+        <button class="control-btn" onclick="startGhostTouchTest()" id="btn-ghost">
+            <span class="control-icon">👻</span>
+            <span>Ghost Touch Check</span>
+        </button>
+
+        <button class="control-btn" onclick="clearCanvas()">
+            <span class="control-icon">🧹</span>
+            <span>Clear Canvas</span>
+        </button>
+        
+        <button class="control-btn" onclick="alert('Instructions:\n\n1. Check edges for light bleed.\n2. Look for yellow tint (glue).\n3. Check if black looks grey (LCD vs OLED).')">
+            <span class="control-icon">👁️</span>
+            <span>Visual Inspect</span>
+        </button>
+    </div>
+
+    <div class="checklist">
+        <div style="font-size: 12px; text-transform:uppercase; color: var(--accent); margin-bottom: 10px; font-weight:700;">Manual Verification</div>
+        
+        <div class="check-item">
+            <span class="check-label">Oleophobic Coating</span>
+            <select class="manual-input">
+                <option>Good (Drops slide)</option>
+                <option>Worn / Smudgy</option>
+            </select>
+        </div>
+        
+        <div class="check-item">
+            <span class="check-label">Screen Authenticity</span>
+            <select class="manual-input">
+                <option>Looks Original</option>
+                <option>High Copy (Dim)</option>
+                <option>Aftermarket (Thick Bezel)</option>
+            </select>
+        </div>
+
+        <div class="check-item">
+            <span class="check-label">Burn-in / Shadows</span>
+            <select class="manual-input">
+                <option>None</option>
+                <option>Minor Status Bar</option>
+                <option>Heavy Burn-in</option>
+            </select>
+        </div>
+    </div>
+</div>
+
+<div id="fs-overlay" onclick="cycleColor()">
+    <div class="helper-text">Tap to cycle colors • Keep tapping to exit</div>
+</div>
+
+<script>
+    // --- 1. TOUCH CANVAS SETUP ---
+    const canvas = document.getElementById('touch-canvas');
+    const ctx = canvas.getContext('2d');
+    const dpr = window.devicePixelRatio || 1;
+    
+    // Fix Canvas Resolution for Retina/High DPI
+    function resizeCanvas() {
+        const rect = canvas.parentElement.getBoundingClientRect();
+        canvas.width = rect.width * dpr;
+        canvas.height = rect.height * dpr;
+        ctx.scale(dpr, dpr);
+        ctx.lineWidth = 4;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+    }
+    
+    // Initial size
+    setTimeout(resizeCanvas, 100);
+    window.addEventListener('resize', resizeCanvas);
+
+    // Track pointers
+    let activeTouches = new Map();
+
+    canvas.addEventListener('pointerdown', handlePointer);
+    canvas.addEventListener('pointermove', handlePointer);
+    canvas.addEventListener('pointerup', handlePointerEnd);
+    canvas.addEventListener('pointercancel', handlePointerEnd);
+    canvas.addEventListener('pointerout', handlePointerEnd);
+
+    function handlePointer(e) {
+        e.preventDefault(); // Stop scrolling
+        
+        // Ghost Touch Check Logic
+        if(ghostTestRunning) {
+            failGhostTest();
+            return;
+        }
+
+        const rect = canvas.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        // Draw line
+        if (e.type === 'pointermove' && activeTouches.has(e.pointerId)) {
+            const prev = activeTouches.get(e.pointerId);
+            ctx.strokeStyle = getColorForId(e.pointerId);
+            ctx.beginPath();
+            ctx.moveTo(prev.x, prev.y);
+            ctx.lineTo(x, y);
+            ctx.stroke();
+        }
+
+        // Update map
+        activeTouches.set(e.pointerId, { x, y });
+        updateStats(x, y);
+    }
+
+    function handlePointerEnd(e) {
+        activeTouches.delete(e.pointerId);
+        updateStats(0, 0);
+    }
+
+    function updateStats(lastX, lastY) {
+        document.getElementById('touch-count').innerText = `Fingers: ${activeTouches.size}`;
+        if(activeTouches.size > 0) {
+            document.getElementById('xy-coords').innerText = `X: ${Math.round(lastX)} Y: ${Math.round(lastY)}`;
+        }
+    }
+
+    // Helper: Assign different colors to different fingers
+    function getColorForId(id) {
+        const colors = ['#3b82f6', '#10b981', '#ef4444', '#f59e0b', '#8b5cf6'];
+        return colors[id % colors.length];
+    }
+
+    function clearCanvas() {
+        ctx.clearRect(0, 0, canvas.width / dpr, canvas.height / dpr);
+    }
+
+
+    // --- 2. REFRESH RATE COUNTER ---
+    let frameCount = 0;
+    let lastTime = performance.now();
+
+    function countFPS(now) {
+        frameCount++;
+        if (now - lastTime >= 1000) {
+            const fps = Math.round(frameCount * 1000 / (now - lastTime));
+            document.getElementById('hz-display').innerText = `${fps}Hz`;
+            frameCount = 0;
+            lastTime = now;
+        }
+        requestAnimationFrame(countFPS);
+    }
+    requestAnimationFrame(countFPS);
+
+
+    // --- 3. DEAD PIXEL TEST ---
+    const colors = ['#FF0000', '#00FF00', '#0000FF', '#FFFFFF', '#000000'];
+    let colorIndex = 0;
+    const overlay = document.getElementById('fs-overlay');
+
+    function startDeadPixelTest() {
+        // Request fullscreen for better effect if supported
+        if (document.documentElement.requestFullscreen) {
+            document.documentElement.requestFullscreen().catch(e => {});
+        }
+        colorIndex = 0;
+        overlay.style.backgroundColor = colors[0];
+        overlay.style.display = 'block';
+    }
+
+    function cycleColor() {
+        colorIndex++;
+        if (colorIndex >= colors.length) {
+            // Exit
+            overlay.style.display = 'none';
+            if (document.exitFullscreen) document.exitFullscreen().catch(e=>{});
+        } else {
+            overlay.style.backgroundColor = colors[colorIndex];
+        }
+    }
+
+
+    // --- 4. GHOST TOUCH TEST ---
+    let ghostTestRunning = false;
+    let ghostTimer;
+
+    function startGhostTouchTest() {
+        if(ghostTestRunning) return;
+        
+        const btn = document.getElementById('btn-ghost');
+        const countDisplay = document.getElementById('touch-count');
+        
+        ghostTestRunning = true;
+        btn.innerHTML = `<span class="control-icon">⏳</span><span>Don't Touch! (10s)</span>`;
+        btn.style.background = 'var(--surface-dark)';
+        
+        // Alert user
+        alert("GHOST TOUCH TEST:\n\nRemove your hands from the screen completely.\nWe will monitor for 10 seconds.");
+        clearCanvas();
+
+        // 10s Timer
+        ghostTimer = setTimeout(() => {
+            ghostTestRunning = false;
+            btn.innerHTML = `<span class="control-icon">✅</span><span>PASSED (No inputs)</span>`;
+            btn.style.borderColor = 'var(--success)';
+            btn.style.color = 'var(--success)';
+        }, 10000);
+    }
+
+    function failGhostTest() {
+        clearTimeout(ghostTimer);
+        ghostTestRunning = false;
+        
+        const btn = document.getElementById('btn-ghost');
+        btn.innerHTML = `<span class="control-icon">❌</span><span>FAILED (Input detected)</span>`;
+        btn.style.borderColor = 'var(--danger)';
+        btn.style.color = 'var(--danger)';
+        
+        // Vibration feedback if available
+        if(navigator.vibrate) navigator.vibrate(200);
+    }
+
+</script>
+
+</body>
+</html>
