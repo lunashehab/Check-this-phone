@@ -222,7 +222,7 @@
                         <div class="price-badge" style="font-size: 12px; background: rgba(0,0,0,0.2); padding: 4px 8px; border-radius: 4px;">LOCAL TEST</div>
                     </button>
 
-                    <button class="btn btn-primary" onclick="initiatePaidCheck()">
+                    <button class="btn btn-primary" onclick="switchView('checkout')">
                         <div style="display:flex; flex-direction: column; align-items: flex-start;">
                             <span style="font-size: 15px; font-weight: 800;">SELLER / BUYER</span>
                             <span style="font-size: 11px; opacity: 0.8;">Full IMEI Identity Report</span>
@@ -230,7 +230,7 @@
                         <div class="price-badge">$1.00</div>
                     </button>
 
-                    <button class="btn btn-gold" onclick="initiateSubscription()">
+                    <button class="btn btn-gold" onclick="switchView('checkout')">
                         <div style="display:flex; flex-direction: column; align-items: flex-start;">
                             <span style="font-size: 15px; font-weight: 800;">STORE / TECHNICIAN</span>
                             <span style="font-size: 11px; opacity: 0.9;">Unlimited Monthly Access</span>
@@ -241,48 +241,70 @@
 
                 <div class="search-container">
                     <input type="text" id="home-imei-input" class="search-input" placeholder="Enter IMEI to start Full Check..." maxlength="15">
-                    <button class="btn btn-primary" style="width: auto; padding: 10px 25px; border-radius: 18px;" onclick="initiatePaidCheck()">GO</button>
+                    <button class="btn btn-primary" style="width: auto; padding: 10px 25px; border-radius: 18px;" onclick="handleImeiSearch()">GO</button>
                 </div>
 
                 <div class="comparison-container">
-                    
                     <div class="comp-panel">
-                        <div class="comp-header">
-                            <span style="font-size: 20px;">⚡</span>
-                            <span class="comp-title">Hardware Scan</span>
-                        </div>
+                        <div class="comp-header">⚡ <span class="comp-title">Hardware Scan</span></div>
                         <div class="comp-list">
-                            <div class="comp-item"><span class="comp-icon">🔋</span><span><b>Battery Health</b>Cycles, wear level, and drain test.</span></div>
-                            <div class="comp-item"><span class="comp-icon">📱</span><span><b>Screen & Touch</b>Pixel check and multi-touch response.</span></div>
-                            <div class="comp-item"><span class="comp-icon">🧭</span><span><b>Sensor Array</b>Gyro, Accelerometer, and Bio-hardware.</span></div>
-                            <div class="comp-item"><span class="comp-icon">🔊</span><span><b>Audio System</b>Mic, Speaker, and water ejection.</span></div>
-                            <div class="comp-item"><span class="comp-icon">🛡️</span><span><b>Software Audit</b>Root detection and storage integrity.</span></div>
+                            <div class="comp-item"><span>🔋 <b>Battery Health</b></span></div>
+                            <div class="comp-item"><span>📱 <b>Screen & Touch</b></span></div>
+                            <div class="comp-item"><span>🧭 <b>Sensor Array</b></span></div>
                         </div>
                         <div style="font-size: 10px; color: var(--success); font-weight: 700; margin-top: 15px;">✓ FREE - NO IMEI REQUIRED</div>
                     </div>
-
                     <div class="comp-panel premium">
-                        <div class="comp-header">
-                            <span style="font-size: 20px;">⭐</span>
-                            <span class="comp-title" style="color: var(--accent);">Full IMEI Report</span>
-                        </div>
+                        <div class="comp-header">⭐ <span class="comp-title" style="color: var(--accent);">Full IMEI Report</span></div>
                         <div class="comp-list">
-                            <div class="comp-item"><span class="comp-icon">🚫</span><span><b>Blacklist & Theft</b>Lost/Stolen, Carrier Blacklist, & Fraud flags.</span></div>
-                            <div class="comp-item"><span class="comp-icon">📶</span><span><b>Carrier & Network</b>SIM-Lock status, Unlock eligibility, & 5G bands.</span></div>
-                            <div class="comp-item"><span class="comp-icon">🆔</span><span><b>Verification</b>Exact model, region, & manufacturing history.</span></div>
-                            <div class="comp-item"><span class="comp-icon">🔐</span><span><b>Activation Lock</b>iCloud status, Find My, and Security lock.</span></div>
-                            <div class="comp-item"><span class="comp-icon">📜</span><span><b>Warranty Status</b>Service coverage and purchase date verification.</span></div>
-                            <div class="comp-item"><span class="comp-icon">📈</span><span><b>Market Value</b>Estimated resale range & Risk trust rating.</span></div>
+                            <div class="comp-item"><span>🚫 <b>Blacklist & Theft</b></span></div>
+                            <div class="comp-item"><span>📶 <b>Carrier & Network</b></span></div>
+                            <div class="comp-item"><span>📈 <b>Market Value</b></span></div>
                         </div>
                         <div style="font-size: 10px; color: var(--accent); font-weight: 700; margin-top: 15px;">💎 PREMIUM - GLOBAL DATABASE SCAN</div>
                     </div>
-
                 </div>
 
                 <div style="margin-top: 30px; font-size: 11px; color: var(--text-dim); display: flex; justify-content: center; gap: 20px;">
                     <span>🔒 256-Bit Secure</span>
                     <span>📄 PDF Certified</span>
                     <span>✓ CTIA Standards</span>
+                </div>
+            </div>
+        </div>
+
+        <div id="view-checkout" class="view-section">
+            <div class="nav-header">
+                <button class="back-btn" onclick="switchView('home')">← Back to Home</button>
+                <div style="font-size: 11px; color: var(--accent); font-weight: 700;">SECURE CHECKOUT</div>
+            </div>
+
+            <div class="input-group" style="text-align: center;">
+                <h2 style="margin-bottom: 5px;">Unlock Your Full Report</h2>
+                <p style="color: var(--text-dim); font-size: 14px; margin-bottom: 30px;">Choose an option to proceed with your IMEI analysis.</p>
+
+                <div style="display: grid; grid-template-columns: 1fr; gap: 20px;">
+                    <div style="background: rgba(59, 130, 246, 0.05); border: 1px solid var(--accent); border-radius: 20px; padding: 25px; transition: 0.3s; cursor: pointer;" onclick="proceedToPayment(1.00)">
+                        <div style="font-weight: 800; font-size: 20px; margin-bottom: 10px;">Single Device Report</div>
+                        <div style="font-size: 32px; font-weight: 900; color: var(--accent);">$1.00 <small style="font-size: 12px; font-weight: 400; color: var(--text-dim);">/ report</small></div>
+                        <ul style="text-align: left; font-size: 13px; color: var(--text-dim); margin: 20px 0; padding-left: 20px;">
+                            <li>Complete Identity Verification</li>
+                            <li>Full Blacklist/Theft Check</li>
+                            <li>Carrier Lock & Network Status</li>
+                        </ul>
+                        <button class="btn btn-primary">Get 1-Time Report</button>
+                    </div>
+
+                    <div style="background: rgba(245, 158, 11, 0.05); border: 1px solid var(--warning); border-radius: 20px; padding: 25px; transition: 0.3s; cursor: pointer;" onclick="proceedToPayment(14.99)">
+                        <div style="font-weight: 800; font-size: 20px; margin-bottom: 10px;">Store / Technician Pro</div>
+                        <div style="font-size: 32px; font-weight: 900; color: var(--warning);">$14.99 <small style="font-size: 12px; font-weight: 400; color: var(--text-dim);">/ month</small></div>
+                        <ul style="text-align: left; font-size: 13px; color: var(--text-dim); margin: 20px 0; padding-left: 20px;">
+                            <li>Unlimited Global IMEI Reports</li>
+                            <li>Business Dashboard Access</li>
+                            <li>PDF White-Label Printing</li>
+                        </ul>
+                        <button class="btn btn-gold">Register as Technician</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -420,6 +442,7 @@
 
     <script>
         let deviceState = { model: null, display: true, battery: true, board: true, grade: "A", health: 100 };
+        let currentImei = "";
 
         function switchView(id) {
             document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
@@ -427,22 +450,31 @@
             window.scrollTo(0,0);
         }
 
-        function initiatePaidCheck() {
+        // Logic for Search Bar
+        function handleImeiSearch() {
             const val = document.getElementById('home-imei-input').value;
-            if(val.length < 5) { alert("Invalid IMEI"); return; }
-            if(confirm("Proceed with IMEI database check ($1.00)?")) {
-                document.getElementById('input-imei').value = val;
-                switchView('technician');
-                fetchDeviceDetails();
-            }
+            if(val.length < 5) { alert("Please enter a valid IMEI"); return; }
+            currentImei = val; // Store IMEI globally
+            switchView('checkout');
+        }
+
+        // Logic for Buttons on Home
+        function initiatePaidCheck() {
+            switchView('checkout');
         }
 
         function initiateSubscription() {
-            const val = document.getElementById('home-imei-input').value;
-            if(val.length < 5) { alert("Invalid IMEI"); return; }
-            document.getElementById('input-imei').value = val;
-            switchView('technician');
-            fetchDeviceDetails();
+            switchView('checkout');
+        }
+
+        // Action when an option is chosen on checkout page
+        function proceedToPayment(amount) {
+            if(confirm(`Proceed to payment of $${amount}?`)) {
+                // If paid, pass the IMEI to the technician view and start scan
+                document.getElementById('input-imei').value = currentImei;
+                switchView('technician');
+                fetchDeviceDetails();
+            }
         }
 
         async function fetchDeviceDetails() {
