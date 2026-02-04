@@ -53,19 +53,21 @@
         /* HEADER BRANDING (Centered) */
         .brand-header {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 40px; /* Increased margin for the huge logo */
             display: flex;
             justify-content: center;
             align-items: center;
         }
 
-        /* UPDATED LOGO SIZE: Much larger now */
+        /* UPDATED LOGO SIZE: MASSIVE (5X) */
         .brand-logo-img {
-            max-width: 110%;       /* Allowed to be slightly wider than container if needed */
-            height: auto;          /* Maintain aspect ratio */
-            max-height: 180px;     /* INCREASED from 120px to 180px */
+            width: 100%;             /* Force it to fill the width */
+            max-width: 900px;        /* Allow it to get huge */
+            height: auto;            /* Maintain aspect ratio */
             display: block;
-            filter: drop-shadow(0 0 20px rgba(59, 130, 246, 0.3)); /* Added glow to match size */
+            margin: 0 auto;
+            /* Stronger glow to match the massive size */
+            filter: drop-shadow(0 0 35px rgba(59, 130, 246, 0.5)); 
         }
 
         /* VIEW SECTIONS */
@@ -101,7 +103,8 @@
             .form-grid { grid-template-columns: 1fr; } /* 1 Column on Phone */
             .specs-grid { grid-template-columns: 1fr 1fr; } /* 2 Columns on Phone */
             .app-container { padding: 15px; margin-top: 0; }
-            .brand-logo-img { max-height: 100px; } /* Increased mobile size too */
+            /* Mobile logo size - still huge but fits screen */
+            .brand-logo-img { width: 100%; max-height: none; } 
             .toggle-row { flex-direction: column; align-items: flex-start; gap: 10px; }
             .btn-toggle-wrapper { width: 100%; justify-content: space-between; }
             .btn-toggle { flex: 1; text-align: center; }
@@ -406,7 +409,7 @@
                     const lastDigit = parseInt(imei.slice(-1)) || 0;
                     let result = {};
                     // Simulation Logic
-                    if ([1,2,3].includes(lastDigit)) result = { status: 'success', brand: "Samsung", model: "S24 Ultra", release_date: "2024", est_value: 1100, specs: { battery: "5000mAh", screen: "AMOLED", chipset: "SD 8 Gen3" } };
+                    if ([1,2,3].includes(lastDigit)) result = { status: 'success', brand: "Samsung", model: "S24 Ultra", release_date: "2024", est_value: 1100, specs: { battery: "5000 mAh", screen: "AMOLED", chipset: "SD 8 Gen3" } };
                     else if ([4,5,6].includes(lastDigit)) result = { status: 'success', brand: "Apple", model: "iPhone 15 PM", release_date: "2023", est_value: 1200, specs: { battery: "4441mAh", screen: "OLED", chipset: "A17 Pro" } };
                     else result = { status: 'success', brand: "Google", model: "Pixel 8 Pro", release_date: "2023", est_value: 800, specs: { battery: "5050mAh", screen: "LTPO", chipset: "Tensor G3" } };
                     resolve(result);
