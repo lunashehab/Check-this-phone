@@ -112,7 +112,7 @@
             border: 1px solid var(--border);
             box-shadow: 0 4px 20px rgba(0,0,0,0.2);
             margin-top: 20px;
-            margin-bottom: 30px;
+            margin-bottom: 40px;
         }
         
         .search-input {
@@ -127,7 +127,15 @@
             font-family: 'JetBrains Mono', monospace;
         }
 
-        /* DETAILED PANELS (Used in Checkout) */
+        /* COMPARISON PANELS (HOME & CHECKOUT) */
+        .comparison-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        /* Checkout Specific Grid */
         .panel-container {
             display: grid;
             grid-template-columns: 1fr;
@@ -145,8 +153,15 @@
             transition: transform 0.2s;
             position: relative;
         }
-        .comp-panel:hover { transform: translateY(-3px); border-color: var(--accent); }
+        
+        /* Home Page Premium Panel Style */
+        .comp-panel.home-premium {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(15, 23, 42, 0.5));
+            border-color: rgba(59, 130, 246, 0.3);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
 
+        /* Checkout Page Tier Styles */
         .comp-panel.tier-basic { /* $0.99 */
             background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(15, 23, 42, 0.4));
             border-color: rgba(59, 130, 246, 0.3);
@@ -160,12 +175,13 @@
             border-color: rgba(245, 158, 11, 0.4);
             box-shadow: 0 10px 40px rgba(245, 158, 11, 0.1);
         }
+        .comp-panel:hover { transform: translateY(-3px); }
 
         .comp-header {
             display: flex;
             align-items: center;
             gap: 15px;
-            margin-bottom: 25px;
+            margin-bottom: 30px;
             padding-bottom: 15px;
             border-bottom: 1px solid rgba(255,255,255,0.05);
         }
@@ -181,12 +197,12 @@
             gap: 15px;
             font-size: 13px;
             color: var(--text-dim);
-            margin-bottom: 15px;
-            line-height: 1.5;
+            margin-bottom: 20px;
+            line-height: 1.6;
         }
         
-        .comp-item b { color: var(--text-main); display: block; font-size: 14px; margin-bottom: 2px; font-weight: 700; }
-        .comp-icon { font-size: 20px; min-width: 24px; text-align: center; margin-top: 1px; }
+        .comp-item b { color: var(--text-main); display: block; font-size: 14px; margin-bottom: 4px; font-weight: 700; }
+        .comp-icon { font-size: 20px; min-width: 24px; text-align: center; margin-top: 2px; }
 
         .includes-badge {
             font-size: 11px; 
@@ -213,7 +229,8 @@
         .nav-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
         .back-btn { background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
         
-        @media (max-width: 800px) {
+        @media (max-width: 850px) {
+            .comparison-container { grid-template-columns: 1fr; }
             .bento-grid { grid-template-columns: 1fr 1fr; }
         }
 
@@ -249,7 +266,7 @@
                         <div class="price-badge" style="font-size: 12px; background: rgba(0,0,0,0.2); padding: 4px 8px; border-radius: 4px;">LOCAL TEST</div>
                     </button>
 
-                    <button class="btn btn-primary" onclick="proceedToPayment(0.99, 'Soft Blacklist Report')">
+                    <button class="btn btn-primary" onclick="proceedToPayment(0.99, 'Basic Blacklist Check')">
                         <div style="display:flex; flex-direction: column; align-items: flex-start;">
                             <span style="font-size: 15px; font-weight: 800;">SOFT IMEI REPORT</span>
                             <span style="font-size: 11px; opacity: 0.8;">Basic Blacklist Check</span>
@@ -277,6 +294,47 @@
                 <div class="search-container">
                     <input type="text" id="home-imei-input" class="search-input" placeholder="Enter IMEI to start..." maxlength="15">
                     <button class="btn btn-primary" style="width: auto; padding: 10px 25px; border-radius: 18px;" onclick="handleImeiSearch()">GO</button>
+                </div>
+
+                <div class="comparison-container">
+                    
+                    <div class="comp-panel">
+                        <div class="comp-header">
+                            <span style="font-size: 28px;">⚡</span>
+                            <div>
+                                <span class="comp-title">Hardware Scan</span>
+                                <div style="font-size: 11px; color: var(--text-dim); margin-top: 4px;">LOCAL DEVICE TESTING</div>
+                            </div>
+                        </div>
+                        <div class="comp-list">
+                            <div class="comp-item"><span class="comp-icon">🔋</span><div><b>Battery System & Power</b><span>Analysis of health %, total cycle count, voltage stability, real-time charging wattage, and drain stress test.</span></div></div>
+                            <div class="comp-item"><span class="comp-icon">📱</span><div><b>Display & Touch Tech</b><span>RGB dead pixel cycling, multi-touch point tracking, refresh rate (Hz) verification, and color accuracy check.</span></div></div>
+                            <div class="comp-item"><span class="comp-icon">🔊</span><div><b>Acoustic Hardware</b><span>Stereo speaker balance test, microphone frequency sensitivity, and water-ejection sound pulse generator.</span></div></div>
+                            <div class="comp-item"><span class="comp-icon">🧭</span><div><b>Sensor Matrix</b><span>Real-time calibration check for Gyroscope, Accelerometer, Proximity, Light sensor, and Compass.</span></div></div>
+                            <div class="comp-item"><span class="comp-icon">🛡️</span><div><b>OS Integrity</b><span>Local check for Root access, Jailbreak status, and Android security patch level.</span></div></div>
+                        </div>
+                        <div style="font-size: 11px; color: var(--success); font-weight: 700; margin-top: 20px; text-align: center; border-top: 1px solid var(--border); padding-top: 20px;">✓ INSTANT ACCESS - NO IMEI REQUIRED</div>
+                    </div>
+
+                    <div class="comp-panel home-premium">
+                        <div class="comp-header">
+                            <span style="font-size: 28px;">⭐</span>
+                            <div>
+                                <span class="comp-title" style="color: var(--accent);">Full IMEI Report</span>
+                                <div style="font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 4px;">GLOBAL DATABASE INTELLIGENCE</div>
+                            </div>
+                        </div>
+                        <div class="comp-list">
+                            <div class="comp-item"><span class="comp-icon">🚫</span><div><b>Blacklist, Theft & Fraud</b><span>Global GSMA database search for Lost/Stolen status, insurance claims, carrier blocks, and billing disputes.</span></div></div>
+                            <div class="comp-item"><span class="comp-icon">📶</span><div><b>Carrier & Network Lock</b><span>Check official SIM-Lock status (Unlocked/Locked), original carrier policy, next tether policy, and 5G bands.</span></div></div>
+                            <div class="comp-item"><span class="comp-icon">🆔</span><div><b>Deep Identity Verification</b><span>Confirm exact model number, storage capacity, original color, manufacturing date, and production facility.</span></div></div>
+                            <div class="comp-item"><span class="comp-icon">🔐</span><div><b>Security & Activation Locks</b><span>Verify iCloud Activation Lock (FMI), Google FRP Lock, Samsung Knox status, and MDM/Corporate locks.</span></div></div>
+                            <div class="comp-item"><span class="comp-icon">📜</span><div><b>Financial & Warranty History</b><span>Check active warranty coverage, purchase date, outstanding finance/bills, and refurbishment history.</span></div></div>
+                            <div class="comp-item"><span class="comp-icon">📈</span><div><b>Market Valuation & Trust</b><span>Estimated resale value range, market demand score, and automated "Buy/Don't Buy" recommendation.</span></div></div>
+                        </div>
+                        <div style="font-size: 11px; color: var(--accent); font-weight: 700; margin-top: 20px; text-align: center; border-top: 1px solid rgba(59, 130, 246, 0.3); padding-top: 20px;">💎 AVAILABLE IN 3 TIERS (FROM $0.99)</div>
+                    </div>
+
                 </div>
 
                 <div style="margin-top: 30px; font-size: 11px; color: var(--text-dim); display: flex; justify-content: center; gap: 20px;">
