@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="CertifyOS - Universal Android Diagnostic Standard">
-    <title>CERTIFY OS | Android Diagnostic Standard</title>
+    <meta name="description" content="CheckThisPhone.com - Universal Android Diagnostic Standard by Don Systems">
+    <title>CheckThisPhone.com | Android Diagnostic Standard</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     
@@ -39,7 +39,7 @@
             overflow-y: auto;
         }
 
-        /* CENTRAL CONTAINER (Replaces Sidebar Layout) */
+        /* CENTRAL CONTAINER */
         .app-container {
             width: 100%;
             max-width: 800px; /* Limits width on PC */
@@ -53,16 +53,18 @@
         /* HEADER BRANDING (Centered) */
         .brand-header {
             text-align: center;
-            margin-bottom: 40px;
-            font-size: 24px;
-            font-weight: 800;
-            letter-spacing: 1px;
+            margin-bottom: 30px;
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 10px;
         }
-        .brand-header span { color: var(--accent); }
+
+        /* Style for the primary logo in the header */
+        .brand-logo-img {
+            max-height: 90px; /* Adjust height as needed */
+            width: auto;
+            display: block;
+        }
 
         /* VIEW SECTIONS */
         .view-section { display: none; width: 100%; }
@@ -97,7 +99,7 @@
             .form-grid { grid-template-columns: 1fr; } /* 1 Column on Phone */
             .specs-grid { grid-template-columns: 1fr 1fr; } /* 2 Columns on Phone */
             .app-container { padding: 15px; margin-top: 0; }
-            h1 { font-size: 28px !important; }
+            .brand-logo-img { max-height: 70px; } /* Smaller logo on mobile */
             .toggle-row { flex-direction: column; align-items: flex-start; gap: 10px; }
             .btn-toggle-wrapper { width: 100%; justify-content: space-between; }
             .btn-toggle { flex: 1; text-align: center; }
@@ -166,9 +168,23 @@
         .back-btn { background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 5px; }
         .back-btn:hover { color: white; }
 
+        /* HOME PAGE LOGO STYLE */
+        .home-logo-img {
+            max-width: 100%;
+            height: auto;
+            margin-bottom: 30px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
         /* PRINT STYLES */
         .report-paper { background: white; color: #0f172a; width: 100%; padding: 40px; display: none; border-radius: 4px; }
         .report-header { display: flex; justify-content: space-between; border-bottom: 2px solid #0f172a; padding-bottom: 20px; margin-bottom: 30px; }
+        /* Update report header to use a text-based logo for better printing */
+        .report-brand-text { font-size: 24px; font-weight: 800; text-transform: uppercase; color: #0f172a; }
+        .report-brand-text span { color: #2563eb; }
+
         .report-grade-box { background: #f1f5f9; padding: 20px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
         .report-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
         .report-table th { text-align: left; border-bottom: 1px solid #e2e8f0; padding: 10px; color: #64748b; font-size: 12px; }
@@ -180,6 +196,7 @@
         @media print {
             body { background: white; display: block; }
             .app-container { max-width: 100%; padding: 0; margin: 0; }
+            .brand-header { display: none; } /* Hide main logo on print */
             .view-section { display: none; }
             #view-report { display: block; }
             .report-paper { display: block; box-shadow: none; padding: 0; }
@@ -192,13 +209,13 @@
     <div class="app-container">
         
         <div class="brand-header">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="color:var(--accent)"><rect x="5" y="2" width="14" height="20" rx="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
-            CERTIFY<span>OS</span>
+            <img src="images/logo-primary.png" alt="CheckThisPhone.com by Don Systems" class="brand-logo-img">
         </div>
 
         <div id="view-home" class="view-section active">
-            <div style="text-align: center; padding: 40px 0;">
-                <h1 style="font-size: 36px; margin-bottom: 15px; line-height: 1.2;">Universal <span style="color:var(--accent)">Android</span><br>Diagnostics</h1>
+            <div style="text-align: center; padding: 20px 0;">
+                <img src="images/logo-text-variant.png" alt="CheckThisPhone.com" class="home-logo-img">
+                
                 <p style="color: var(--text-dim); margin-bottom: 40px; font-size: 16px;">
                     Enter IMEI to instantly retrieve factory specs, check blacklist status, and generate a certified report.
                 </p>
@@ -311,7 +328,7 @@
         <div id="view-report" class="view-section" style="background: white; border-radius: 8px;">
             <div class="report-paper">
                 <div class="report-header">
-                    <div style="font-size: 24px; font-weight: 800; text-transform: uppercase;">CERTIFY<span style="color: #2563eb;">OS</span></div>
+                    <div class="report-brand-text">CheckThisPhone<span>.com</span></div>
                     <div style="text-align: right; font-size: 12px; color: #64748b;">
                         ID: <span id="report-id">...</span><br>
                         IMEI: <span id="report-imei">...</span>
