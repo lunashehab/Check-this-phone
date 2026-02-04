@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vibration Diagnostics | CheckThisPhone</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --surface-dark: #1e293b;
+            --accent: #d946ef; /* Fuchsia for Haptics */
+            --accent-glow: rgba(217, 70, 239, 0.4);
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+        }
+
+        /* HEADER */
+        .header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+        .back-btn {
+            background: none;
+            border: none;
+            color: var(--text-dim);
+            font-size: 24px;
+            cursor: pointer;
+            padding: 0;
+            margin-right: 15px;
+        }
+        .page-title { font-size: 20px; font-weight: 700; margin: 0; }
+
+        /* HERO ANIMATION */
+        .vibe-hero {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 50px;
+            height: 150px;
+            position: relative;
+        }
+
+        .phone-icon {
+            font-size: 80px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .ripple {
+            position: absolute;
+            width: 100px; height: 100px;
+            border-radius: 50%;
+            border: 2px solid var(--accent);
+            opacity: 0;
+            z-index: 1;
+        }
+
+        /* Animations */
+        @keyframes shake {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            10% { transform: translate(-1px, -2px) rotate(-1deg); }
+            20% { transform: translate(-3px, 0px) rotate(1deg); }
+            30% { transform: translate(3px, 2px) rotate(0deg); }
+            40% { transform: translate(1px, -1px) rotate(1deg); }
+            50% { transform: translate(-1px, 2px) rotate(-1deg); }
+            60% { transform: translate(-3px, 1px) rotate(0deg); }
+            70% { transform: translate(3px, 1px) rotate(-1deg); }
+            80% { transform: translate(-1px, -1px) rotate(1deg); }
+            90% { transform: translate(1px, 2px) rotate(0deg); }
+            100% { transform: translate(1px, -2px) rotate(-1deg); }
+        }
+
+        @keyframes ripple-effect {
+            0% { transform: scale(0.8); opacity: 1; }
+            100% { transform: scale(2.5); opacity: 0; }
+        }
+
+        .shaking { animation: shake 0.5s infinite; color: var(--accent); }
+        .rippling { animation: ripple-effect 1s infinite linear; }
+
+        /* CONTROLS GRID */
+        .grid-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .vibe-btn {
+            background: var(--surface-dark);
+            border: 1px solid #334155;
+            color: var(--text-main);
+            padding: 20px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.1s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .vibe-btn:active {
+            background: var(--accent);
+            transform: scale(0.96);
+            border-color: var(--accent);
+        }
+
+        .btn-stop {
+            width: 100%;
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 12px;
+            font-weight: 700;
+            margin-top: 20px;
+            cursor: pointer;
+        }
+
+        .info-text {
+            text-align: center;
+            font-size: 12px;
+            color: var(--text-dim);
+            margin-top: 30px;
+            line-height: 1.6;
+            background: rgba(255,255,255,0.05);
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <button class="back-btn" onclick="window.location.href='index.html'">←</button>
+        <h1 class="page-title">Vibration & Haptics</h1>
+    </div>
+
+    <div class="vibe-hero">
+        <div class="ripple" id="ripple-ring"></div>
+        <div class="phone-icon" id="icon-target">📳</div>
+    </div>
+
+    <div class="grid-buttons">
+        <button class="vibe-btn" onclick="triggerVibe([50])">
+            <span>Click</span>
+            <span style="font-weight:400; font-size:11px; color:#94a3b8;">Short Haptic</span>
+        </button>
+
+        <button class="vibe-btn" onclick="triggerVibe([400])">
+            <span>Buzz</span>
+            <span style="font-weight:400; font-size:11px; color:#94a3b8;">Medium 400ms</span>
+        </button>
+        
+        <button class="vibe-btn" onclick="triggerVibe([200, 100, 200])">
+            <span>Double Tap</span>
+            <span style="font-weight:400; font-size:11px; color:#94a3b8;">Pulse - Pulse</span>
+        </button>
+
+        <button class="vibe-btn" onclick="triggerVibe([1000])">
+            <span>Long Alert</span>
+            <span style="font-weight:400; font-size:11px; color:#94a3b8;">Hold 1s</span>
+        </button>
+        
+        <button class="vibe-btn" onclick="startPattern('sos')">
+            <span>S.O.S Pattern</span>
+            <span style="font-weight:400; font-size:11px; color:#94a3b8;">... --- ...</span>
+        </button>
+
+        <button class="vibe-btn" onclick="startPattern('heavy')">
+            <span>Heavy Load</span>
+            <span style="font-weight:400; font-size:11px; color:#94a3b8;">Motor Stress Test</span>
+        </button>
+    </div>
+
+    <button class="btn-stop" onclick="stopAll()">STOP ALL VIBRATION</button>
+
+    <div class="info-text">
+        Note: On iOS/iPadOS, vibration via the web is strictly blocked by Apple. 
+        This tool works on Android devices and some tablets.
+    </div>
+
+</div>
+
+<script>
+    let intervalId = null;
+
+    function triggerVibe(pattern) {
+        stopAll(); // Clear previous
+        
+        if (navigator.vibrate) {
+            navigator.vibrate(pattern);
+            animateUI(pattern);
+        } else {
+            alert("Vibration API not supported on this device.");
+        }
+    }
+
+    function startPattern(type) {
+        stopAll();
+
+        if (type === 'sos') {
+            // SOS: Short Short Short, Long Long Long, Short Short Short
+            const sosPattern = [
+                100, 100, 100, 100, 100, 100, // S
+                300, 100, 300, 100, 300, 100, // O
+                100, 100, 100, 100, 100       // S
+            ];
+            navigator.vibrate(sosPattern);
+            animateUI(sosPattern);
+        }
+        else if (type === 'heavy') {
+            // Rapid pulsing to stress the motor
+            intervalId = setInterval(() => {
+                navigator.vibrate(200);
+                toggleVisual(true);
+                setTimeout(() => toggleVisual(false), 150);
+            }, 250);
+        }
+    }
+
+    function stopAll() {
+        if (intervalId) clearInterval(intervalId);
+        navigator.vibrate(0); // Kill hardware motor
+        toggleVisual(false);
+    }
+
+    // --- VISUAL SYNC ---
+    function animateUI(pattern) {
+        // This is a simple visualizer that shakes the icon for the total duration
+        // Sum up duration
+        const totalTime = pattern.reduce((a, b) => a + b, 0);
+        
+        toggleVisual(true);
+        setTimeout(() => {
+            toggleVisual(false);
+        }, totalTime);
+    }
+
+    function toggleVisual(isActive) {
+        const icon = document.getElementById('icon-target');
+        const ripple = document.getElementById('ripple-ring');
+        
+        if (isActive) {
+            icon.classList.add('shaking');
+            ripple.classList.add('rippling');
+        } else {
+            icon.classList.remove('shaking');
+            ripple.classList.remove('rippling');
+        }
+    }
+
+</script>
+
+</body>
+</html>
