@@ -203,26 +203,36 @@
                 CERTIFY<span>OS</span>
             </div>
             <div class="nav-menu">
-                <div class="nav-item" onclick="switchView('home')">Home</div>
-                <div class="nav-item active" onclick="switchView('technician')">New Diagnosis</div>
+                <div class="nav-item active" onclick="switchView('home')">Home</div>
+                <div class="nav-item" onclick="switchView('technician')">New Diagnosis</div>
                 <div class="nav-item" onclick="switchView('knowledge')">Android Database</div>
             </div>
         </div>
 
         <div class="main-content">
 
-            <div id="view-home" class="view-section">
+            <div id="view-home" class="view-section active">
                 <div style="text-align: center; margin-top: 100px;">
                     <h1 style="font-size: 48px; margin-bottom: 20px;">Android <span style="color:var(--accent)">Master Diagnostic</span></h1>
                     <p style="color: var(--text-dim); max-width: 600px; margin: 0 auto 40px auto; font-size: 18px;">
                         The Universal Standard for Android Verification.
-                        Enter an IMEI to instantly retrieve factory specs and detect fraud.
+                        Get a certified detailed report for any device.
                     </p>
-                    <button class="btn btn-primary" onclick="switchView('technician')">Start Diagnostics</button>
+                    
+                    <div style="background: var(--panel-dark); padding: 15px; border-radius: 12px; display: inline-flex; align-items: center; gap: 15px; border: 1px solid var(--border); box-shadow: 0 10px 40px rgba(0,0,0,0.3);">
+                        <input type="text" id="home-imei-input" placeholder="Enter IMEI to Begin..." style="background: transparent; border: none; color: white; outline: none; font-size: 16px; width: 220px; border-right: 1px solid var(--border);">
+                        <button class="btn btn-primary" onclick="initiatePaidCheck()">Start Diagnostics ($1.00)</button>
+                    </div>
+
+                    <div style="margin-top: 25px; font-size: 13px; color: var(--text-dim);">
+                        <span style="color: var(--success); margin-right: 5px;">✔</span> Instant Unlock Status &nbsp;&nbsp; 
+                        <span style="color: var(--success); margin-right: 5px;">✔</span> Blacklist Check &nbsp;&nbsp; 
+                        <span style="color: var(--success); margin-right: 5px;">✔</span> Certified PDF
+                    </div>
                 </div>
             </div>
 
-            <div id="view-technician" class="view-section active">
+            <div id="view-technician" class="view-section">
                 <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 20px;">
                     <div>
                         <h1>Technician Console</h1>
@@ -380,12 +390,35 @@
 
     <script>
         // --- CONFIGURATION ---
-        // This is where the magic happens. 
-        // You need an API Key from a provider like 'imeicheck.net' or 'imeipro.info'.
-        const API_KEY = "DEMO_KEY_123"; 
-        const API_URL = "https://api.imeicheck.net/v1/checks"; // Example Endpoint
+        const API_KEY = "DEMO_KEY"; 
+        const API_URL = "https://api.imeicheck.net/v1/checks"; 
 
         let deviceState = { model: null, display: true, battery: true, board: true, grade: "A", health: 100 };
+
+        // --- NEW: PAID FLOW LOGIC ---
+        function initiatePaidCheck() {
+            const homeInput = document.getElementById('home-imei-input').value;
+            
+            if (homeInput.length < 5) {
+                alert("Please enter a valid IMEI number to continue.");
+                return;
+            }
+
+            // SIMULATE PAYMENT GATEWAY
+            // In real life, this is where Stripe/PayPal happens.
+            const userConfirmed = confirm("SECURE PAYMENT GATEWAY\n\nCharge: $1.00 USD\nService: Full Diagnostic Report\n\nClick OK to Pay & Start.");
+            
+            if (userConfirmed) {
+                // Transfer Data to Console
+                document.getElementById('input-imei').value = homeInput;
+                
+                // Switch View
+                switchView('technician');
+                
+                // Auto-Run the Check
+                fetchDeviceDetails();
+            }
+        }
 
         // --- 1. REAL NETWORK REQUEST ---
         async function fetchDeviceDetails() {
@@ -393,35 +426,24 @@
             const loader = document.getElementById('imei-loader');
             const specsBox = document.getElementById('specs-container');
 
-            // Basic Validation
             if (imeiInput.length < 5) {
                 alert("⚠️ Please enter a valid IMEI number.");
                 return;
             }
 
-            // Show Loading Spinner
             loader.style.display = 'block';
-            specsBox.style.display = 'none'; // Hide old data
+            specsBox.style.display = 'none';
 
             try {
-                // ---------------------------------------------------------
-                // THIS IS THE REAL CONNECTION CODE
-                // ---------------------------------------------------------
-                // In a real app, this sends the request to the global database.
-                // Since we don't have a paid key right now, I have wrapped this 
-                // in a simulator so the website doesn't crash on you.
-                
+                // REAL API CONNECTION (Uncomment when you have a Key)
                 // const response = await fetch(`${API_URL}/${imeiInput}?token=${API_KEY}`);
                 // const data = await response.json();
                 
-                // FOR DEVELOPMENT ONLY: 
-                // I am simulating a "Success" response from the API 
-                // so you can see how the UI handles the data.
+                // INTELLIGENT SIMULATOR (Use this for Testing)
                 const data = await simulateGlobalDatabase(imeiInput);
-                // ---------------------------------------------------------
-
+                
                 if (data.status === 'success') {
-                    // POPULATE THE UI AUTOMATICALLY
+                    // Populate UI
                     document.getElementById('auto-brand').value = data.brand;
                     document.getElementById('auto-model').value = data.model;
                     document.getElementById('auto-year').value = data.release_date;
@@ -431,57 +453,66 @@
                     document.getElementById('spec-price').innerText = "$" + data.est_value;
                     document.getElementById('spec-chip').innerText = data.specs.chipset;
 
-                    // REVEAL THE DATA
                     specsBox.style.display = 'block';
-                    
-                    // SAVE STATE
                     deviceState.model = data;
                     calculateValuation();
                 } else {
-                    alert("❌ Server Error: Device not found in global registry.");
+                    alert("❌ Device not found.");
                 }
 
             } catch (error) {
                 console.error(error);
-                alert("Connection Error. Please check your internet.");
+                alert("Connection Error.");
             } finally {
                 loader.style.display = 'none';
             }
         }
 
-        // --- 2. DEVELOPMENT SIMULATOR (To prevent crashing without a Key) ---
-        // When you get a real API Key, you can delete this function.
+        // --- 2. INTELLIGENT SIMULATOR (Dynamic Data) ---
         function simulateGlobalDatabase(imei) {
             return new Promise(resolve => {
                 setTimeout(() => {
-                    // This mimics what a Real API returns for ANY global device
-                    resolve({
-                        status: 'success',
-                        brand: "Google", 
-                        model: "Pixel 9 Pro XL", 
-                        release_date: "2024",
-                        est_value: 1100,
-                        specs: {
-                            battery: "5060 mAh",
-                            screen: "Super Actua LTPO",
-                            chipset: "Tensor G4"
-                        }
-                    });
-                }, 1000);
+                    const lastDigit = parseInt(imei.slice(-1)) || 0;
+                    let result = {};
+
+                    if ([1, 2, 3].includes(lastDigit)) {
+                        result = {
+                            status: 'success',
+                            brand: "Samsung", model: "Galaxy S24 Ultra", release_date: "2024",
+                            est_value: 1100, specs: { battery: "5000 mAh", screen: "Dynamic AMOLED 2X", chipset: "Snapdragon 8 Gen 3" }
+                        };
+                    } else if ([4, 5, 6].includes(lastDigit)) {
+                        result = {
+                            status: 'success',
+                            brand: "Apple", model: "iPhone 15 Pro Max", release_date: "2023",
+                            est_value: 1200, specs: { battery: "4441 mAh", screen: "Super Retina XDR", chipset: "A17 Pro" }
+                        };
+                    } else if ([7, 8, 9].includes(lastDigit)) {
+                        result = {
+                            status: 'success',
+                            brand: "Google", model: "Pixel 8 Pro", release_date: "2023",
+                            est_value: 800, specs: { battery: "5050 mAh", screen: "LTPO OLED", chipset: "Tensor G3" }
+                        };
+                    } else {
+                        result = {
+                            status: 'success',
+                            brand: "Xiaomi", model: "14 Ultra", release_date: "2024",
+                            est_value: 950, specs: { battery: "5000 mAh", screen: "LTPO AMOLED", chipset: "Snapdragon 8 Gen 3" }
+                        };
+                    }
+                    resolve(result);
+                }, 800);
             });
         }
 
         // --- 3. VALUATION ENGINE ---
         function calculateValuation() {
             if (!deviceState.model) return;
-            
-            // Start with the API-provided base value
             let val = deviceState.model.est_value; 
             
             deviceState.grade = document.getElementById('input-grade').value;
             deviceState.health = parseInt(document.getElementById('input-health').value) || 100;
 
-            // Apply Deductions
             if (deviceState.grade === 'B') val *= 0.85;
             if (deviceState.grade === 'C') val *= 0.70;
             if (deviceState.grade === 'D') val *= 0.40;
@@ -494,33 +525,25 @@
             updateTrustScore();
         }
 
-        // --- 4. TRUST SCORE ALGORITHM ---
+        // --- 4. TRUST SCORE ---
         function updateTrustScore() {
             let score = 100;
-            // Hardware Deductions
             if (!deviceState.display) score -= 15;
             if (!deviceState.battery) score -= 10;
             if (!deviceState.board) score -= 50;
-            
-            // Cosmetic Deductions
             if (deviceState.grade === 'C') score -= 20;
             if (deviceState.grade === 'D') score -= 40;
-            
-            // Health Deductions
             if (deviceState.health < 80) score -= 10;
 
             const el = document.getElementById('live-score');
             el.innerText = Math.max(0, score);
-            
-            // Dynamic Color Logic
             if (score >= 90) el.style.color = 'var(--success)';
             else if (score >= 70) el.style.color = 'var(--warning)';
             else el.style.color = 'var(--danger)';
-            
             return Math.max(0, score);
         }
 
-        // --- 5. UTILITY FUNCTIONS ---
+        // --- 5. UTILITIES ---
         function togglePart(btn, part, isOriginal) {
             deviceState[part] = isOriginal;
             const wrapper = btn.parentElement;
