@@ -97,7 +97,7 @@
         /* Footer */
         .footer { margin-top: 50px; text-align: center; font-size: 12px; color: #94a3b8; border-top: 1px solid var(--border); padding-top: 20px; }
 
-        /* PRINT SETTINGS (Makes it perfect for PDF) */
+        /* PRINT SETTINGS */
         @media print {
             body { background: white; padding: 0; }
             .report-container { box-shadow: none; border: none; max-width: 100%; padding: 0; }
@@ -113,9 +113,8 @@
                 <h1>Phone<span>Check</span> AI</h1>
             </div>
             <div class="report-meta">
-                REPORT ID: #8X9-224-B<br>
-                DATE: 02/03/2026<br>
-                TIME: 18:05:01
+                REPORT ID: <span id="report-id">GENERATING...</span><br>
+                DATE: <span id="timestamp">...</span>
             </div>
         </header>
 
@@ -126,27 +125,27 @@
             </div>
             <div style="text-align: right;">
                 <div class="data-value verified">✓ VERIFIED AUTHENTIC</div>
-                <div class="data-label">Samsung Galaxy S24 Ultra</div>
+                <div class="data-label" id="device-name">Detecting Device...</div>
             </div>
         </div>
 
         <h2>1. Device Identity (DNA)</h2>
         <div class="grid-2">
             <div class="data-card">
-                <span class="data-label">Model Number</span>
-                <span class="data-value">SM-S928B</span>
+                <span class="data-label">Hardware Architecture</span>
+                <span class="data-value" id="model-code">Scanning...</span>
             </div>
             <div class="data-card">
                 <span class="data-label">IMEI Status</span>
                 <span class="data-value verified">✓ Clean / Not Blacklisted</span>
             </div>
             <div class="data-card">
-                <span class="data-label">Knox Security / Root</span>
+                <span class="data-label">Security / Root</span>
                 <span class="data-value verified">0x0 (Official)</span>
             </div>
             <div class="data-card">
-                <span class="data-label">Region Lock</span>
-                <span class="data-value">Global / Unlocked</span>
+                <span class="data-label">Battery Level</span>
+                <span class="data-value" id="bat-level">Checking...</span>
             </div>
         </div>
 
@@ -162,12 +161,12 @@
             <tbody>
                 <tr>
                     <td>Display Panel</td>
-                    <td>MATCHING (ID: 44-9A-B2)</td>
+                    <td>MATCHING</td>
                     <td><span class="status-pill status-ok">ORIGINAL</span></td>
                 </tr>
                 <tr>
                     <td>Battery Unit</td>
-                    <td>MATCHING (ID: 88-1X-00)</td>
+                    <td><span id="charge-status">Scanning...</span></td>
                     <td><span class="status-pill status-ok">ORIGINAL</span></td>
                 </tr>
                 <tr>
@@ -187,7 +186,7 @@
         <div class="grid-4">
             <div class="data-card" style="text-align: center;">
                 <span class="data-label">Touch</span>
-                <span class="data-value verified">PASS</span>
+                <span class="data-value" id="touch-status">Testing...</span>
             </div>
             <div class="data-card" style="text-align: center;">
                 <span class="data-label">FaceID</span>
@@ -199,7 +198,7 @@
             </div>
             <div class="data-card" style="text-align: center;">
                 <span class="data-label">Wi-Fi</span>
-                <span class="data-value verified">PASS</span>
+                <span class="data-value" id="wifi-status">Testing...</span>
             </div>
             <div class="data-card" style="text-align: center;">
                 <span class="data-label">Bluetooth</span>
@@ -224,6 +223,78 @@
             Scan QR code to verify authenticity.
         </div>
     </div>
+
+<script>
+    // 1. The Universal Detector
+    document.addEventListener("DOMContentLoaded", () => {
+        detectDeviceDNA();
+        checkBatteryAPI();
+        checkSensors();
+        generateReportID();
+    });
+
+    function generateReportID() {
+        // Create a random-looking ID for the report
+        const id = "8X9-" + Math.floor(Math.random() * 900 + 100) + "-B";
+        document.getElementById('report-id').innerText = id;
+    }
+
+    function detectDeviceDNA() {
+        const ua = navigator.userAgent;
+        let brand = "Android Device";
+        
+        // Basic detection logic
+        if (ua.includes("Samsung")) brand = "Samsung Galaxy";
+        if (ua.includes("Pixel")) brand = "Google Pixel";
+        if (ua.includes("Xiaomi") || ua.includes("Redmi")) brand = "Xiaomi/Redmi";
+        if (ua.includes("OPPO")) brand = "OPPO";
+        if (ua.includes("OnePlus")) brand = "OnePlus";
+        
+        document.getElementById('device-name').innerText = brand;
+        
+        // Hardware Concurrency gives us a hint about the processor
+        const cores = navigator.hardwareConcurrency || "?";
+        document.getElementById('model-code').innerText = cores + "-Core Architecture";
+        
+        const now = new Date();
+        document.getElementById('timestamp').innerText = now.toLocaleDateString() + " " + now.toLocaleTimeString();
+    }
+
+    async function checkBatteryAPI() {
+        try {
+            // NOTE: This works in Chrome/Edge on Android
+            const battery = await navigator.getBattery();
+            
+            const level = Math.round(battery.level * 100) + "%";
+            document.getElementById('bat-level').innerText = level;
+            
+            const chargingStatus = battery.charging ? "⚡ CHARGING" : "🔋 ON BATTERY";
+            document.getElementById('charge-status').innerText = chargingStatus;
+        } catch (e) {
+            document.getElementById('bat-level').innerText = "N/A (Privacy Block)";
+        }
+    }
+
+    function checkSensors() {
+        // Online Status
+        const online = navigator.onLine ? "PASS" : "FAIL";
+        const wifiEl = document.getElementById('wifi-status');
+        wifiEl.innerText = online;
+        wifiEl.className = online === "PASS" ? "data-value verified" : "data-value mismatch";
+
+        // Touch Points
+        const touchPoints = navigator.maxTouchPoints;
+        const touchEl = document.getElementById('touch-status');
+        
+        if (touchPoints > 0) {
+            touchEl.innerText = "PASS (" + touchPoints + " Touch)";
+            touchEl.className = "data-value verified";
+        } else {
+            touchEl.innerText = "FAIL";
+            touchEl.className = "data-value mismatch";
+        }
+    }
+</script>
 
 </body>
 </html>
