@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connectivity Diagnostics | CheckThisPhone</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --surface-dark: #1e293b;
+            --accent: #0ea5e9; /* Sky Blue for Connectivity */
+            --accent-dim: rgba(14, 165, 233, 0.2);
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+        }
+
+        /* HEADER */
+        .header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        .back-btn {
+            background: none;
+            border: none;
+            color: var(--text-dim);
+            font-size: 24px;
+            cursor: pointer;
+            padding: 0;
+            margin-right: 15px;
+        }
+        .page-title { font-size: 20px; font-weight: 700; margin: 0; }
+
+        /* STATUS HERO */
+        .status-hero {
+            background: var(--surface-dark);
+            border: 1px solid #334155;
+            border-radius: 16px;
+            padding: 25px;
+            text-align: center;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+        }
+        .status-hero.online { border-color: var(--success); background: rgba(16, 185, 129, 0.05); }
+        .status-hero.offline { border-color: var(--danger); background: rgba(239, 68, 68, 0.05); }
+
+        .status-icon { font-size: 40px; margin-bottom: 10px; display: block; }
+        .status-text { font-size: 24px; font-weight: 800; display: block; margin-bottom: 5px; }
+        .status-sub { font-size: 12px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; }
+
+        /* DATA GRID */
+        .data-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        .data-card {
+            background: var(--surface-dark);
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid #334155;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .label { font-size: 11px; color: var(--text-dim); text-transform: uppercase; margin-bottom: 5px; }
+        .value { font-size: 18px; font-weight: 700; color: var(--accent); }
+        .unit { font-size: 12px; color: var(--text-dim); font-weight: 400; }
+
+        /* ACTION MODULES */
+        .module-card {
+            background: var(--surface-dark);
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        .module-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .module-title { font-weight: 600; font-size: 15px; display: flex; align-items: center; gap: 8px; }
+        
+        .btn-action {
+            width: 100%;
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .btn-action:hover { background: #0284c7; }
+        .btn-action:disabled { background: #334155; color: #64748b; cursor: not-allowed; }
+
+        /* GPS BOX */
+        .gps-coords {
+            font-family: monospace;
+            background: rgba(0,0,0,0.3);
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            font-size: 12px;
+            display: none;
+        }
+
+        /* MANUAL CHECKLIST */
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #334155;
+            font-size: 13px;
+        }
+        .checklist-item:last-child { border-bottom: none; }
+        .check-circle {
+            width: 18px; height: 18px;
+            border: 2px solid #475569;
+            border-radius: 50%;
+            margin-right: 12px;
+            cursor: pointer;
+        }
+        .check-circle.checked { background: var(--success); border-color: var(--success); }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <button class="back-btn" onclick="window.location.href='index.html'">←</button>
+        <h1 class="page-title">Connectivity</h1>
+    </div>
+
+    <div id="hero-status" class="status-hero online">
+        <span class="status-icon" id="hero-icon">📡</span>
+        <span class="status-text" id="hero-text">ONLINE</span>
+        <span class="status-sub" id="hero-sub">Connection Active</span>
+    </div>
+
+    <div class="data-grid">
+        <div class="data-card">
+            <span class="label">Type</span>
+            <span class="value" id="net-type">--</span>
+        </div>
+        <div class="data-card">
+            <span class="label">Downlink</span>
+            <span class="value" id="net-speed">-- <span class="unit">Mbps</span></span>
+        </div>
+        <div class="data-card">
+            <span class="label">Latency (RTT)</span>
+            <span class="value" id="net-rtt">-- <span class="unit">ms</span></span>
+        </div>
+        <div class="data-card">
+            <span class="label">Data Saver</span>
+            <span class="value" id="net-save">--</span>
+        </div>
+    </div>
+
+    <div class="module-card">
+        <div class="module-header">
+            <span class="module-title">📍 GPS Accuracy Test</span>
+        </div>
+        
+        <div class="gps-coords" id="gps-result">
+            Waiting for satellites...
+        </div>
+
+        <button class="btn-action" onclick="getGPS()" id="btn-gps">
+            ACQUIRE LOCATION
+        </button>
+        <p style="font-size: 11px; color: var(--text-dim); margin-top: 10px; text-align: center;">
+            Checks satellite fix and precision radius.
+        </p>
+    </div>
+
+    <div class="module-card">
+        <div class="module-header">
+            <span class="module-title">🦷 Bluetooth Scan</span>
+        </div>
+        <p style="font-size: 12px; color: var(--text-dim); margin-bottom: 15px;">
+            This test opens the native device picker to verify the Bluetooth radio is broadcasting and receiving.
+        </p>
+        <button class="btn-action" style="background: #3b82f6;" onclick="testBluetooth()">
+            SCAN FOR DEVICES
+        </button>
+    </div>
+
+    <div class="module-card">
+        <div class="module-header">
+            <span class="module-title">🛠️ Manual Toggles</span>
+        </div>
+        <div style="font-size: 12px; color: var(--text-dim); margin-bottom: 10px;">
+            Verify these actions manually:
+        </div>
+        
+        <div class="checklist-item" onclick="toggleCheck(this)">
+            <div class="check-circle"></div>
+            <span>Airplane Mode (On/Off) cuts signal</span>
+        </div>
+        <div class="checklist-item" onclick="toggleCheck(this)">
+            <div class="check-circle"></div>
+            <span>Wi-Fi / 5G Handover works</span>
+        </div>
+        <div class="checklist-item" onclick="toggleCheck(this)">
+            <div class="check-circle"></div>
+            <span>SIM Card Detected (Signal Bars visible)</span>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // --- 1. NETWORK MONITORING ---
+    function updateNetworkStatus() {
+        const hero = document.getElementById('hero-status');
+        const icon = document.getElementById('hero-icon');
+        const text = document.getElementById('hero-text');
+        const sub = document.getElementById('hero-sub');
+
+        if (navigator.onLine) {
+            hero.className = 'status-hero online';
+            icon.innerText = '📡';
+            text.innerText = 'ONLINE';
+            sub.innerText = 'Connected to Internet';
+        } else {
+            hero.className = 'status-hero offline';
+            icon.innerText = '✈️';
+            text.innerText = 'OFFLINE';
+            sub.innerText = 'No Internet Connection';
+        }
+
+        // Advanced Network Info (Chrome/Android)
+        const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+        if (connection) {
+            document.getElementById('net-type').innerText = connection.effectiveType ? connection.effectiveType.toUpperCase() : 'WIFI/LAN';
+            document.getElementById('net-speed').innerHTML = (connection.downlink || '?') + ' <span class="unit">Mbps</span>';
+            document.getElementById('net-rtt').innerHTML = (connection.rtt || '?') + ' <span class="unit">ms</span>';
+            document.getElementById('net-save').innerText = connection.saveData ? 'ON' : 'OFF';
+        } else {
+            document.getElementById('net-type').innerText = "Unknown";
+        }
+    }
+
+    // Listen for changes
+    window.addEventListener('online', updateNetworkStatus);
+    window.addEventListener('offline', updateNetworkStatus);
+    if (navigator.connection) {
+        navigator.connection.addEventListener('change', updateNetworkStatus);
+    }
+    
+    // Init
+    updateNetworkStatus();
+
+
+    // --- 2. GPS LOGIC ---
+    function getGPS() {
+        const out = document.getElementById('gps-result');
+        const btn = document.getElementById('btn-gps');
+        
+        if (!navigator.geolocation) {
+            out.style.display = 'block';
+            out.innerText = "Geolocation not supported by this browser.";
+            return;
+        }
+
+        btn.innerText = "LOCATING...";
+        btn.disabled = true;
+        out.style.display = 'block';
+        out.innerText = "Triangulating...";
+
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const lat = position.coords.latitude.toFixed(5);
+                const lon = position.coords.longitude.toFixed(5);
+                const acc = position.coords.accuracy.toFixed(1);
+                
+                out.innerHTML = `
+                    <span style="color:var(--success)">SUCCESS</span><br>
+                    LAT: ${lat}<br>
+                    LON: ${lon}<br>
+                    ACCURACY: <span style="color:var(--accent)">+/- ${acc} meters</span>
+                `;
+                btn.innerText = "RE-SCAN";
+                btn.disabled = false;
+            },
+            (error) => {
+                out.innerHTML = `<span style="color:var(--danger)">ERROR: ${error.message}</span>`;
+                btn.innerText = "RETRY";
+                btn.disabled = false;
+            },
+            { enableHighAccuracy: true, timeout: 10000 }
+        );
+    }
+
+
+    // --- 3. BLUETOOTH LOGIC ---
+    async function testBluetooth() {
+        if (!navigator.bluetooth) {
+            alert("Web Bluetooth API is not supported on this browser (Try Chrome on Android/PC).");
+            return;
+        }
+
+        try {
+            // We request ANY device just to prove the radio works and picker opens
+            // Note: In production, filters are usually required. acceptingAllDevices works for generic scan.
+            const device = await navigator.bluetooth.requestDevice({
+                acceptAllDevices: true
+            });
+            
+            alert(`SUCCESS: Bluetooth Radio Active.\nSelected: ${device.name || 'Unnamed Device'}`);
+            
+        } catch (error) {
+            if (error.name === 'NotFoundError') {
+                // User clicked cancel - this is actually a PASS because the picker DID open.
+                alert("Radio OK: Scan cancelled by user.");
+            } else {
+                alert("Bluetooth Error: " + error.message);
+            }
+        }
+    }
+
+
+    // --- 4. CHECKLIST UI ---
+    function toggleCheck(el) {
+        const circle = el.querySelector('.check-circle');
+        circle.classList.toggle('checked');
+    }
+
+</script>
+
+</body>
+</html>
