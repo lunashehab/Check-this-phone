@@ -187,16 +187,9 @@
         .nav-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
         .back-btn { background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
         
-        /* SPECS CARD (FOR SOFT CHECK) */
-        .specs-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 15px; }
-        .spec-card { background: rgba(255,255,255,0.05); border: 1px solid var(--border); padding: 12px; border-radius: 12px; text-align: center; }
-        .spec-label { font-size: 9px; text-transform: uppercase; color: var(--text-dim); margin-bottom: 4px; }
-        .spec-val { font-size: 12px; font-weight: 700; color: var(--accent); }
-
         @media (max-width: 800px) {
             .comparison-container { grid-template-columns: 1fr; }
             .bento-grid { grid-template-columns: 1fr 1fr; }
-            .specs-grid { grid-template-columns: 1fr 1fr; }
         }
 
         /* SCORES & REPORTS */
@@ -249,8 +242,8 @@
                 </div>
 
                 <div class="search-container">
-                    <input type="text" id="home-imei-input" class="search-input" placeholder="Enter IMEI for Free Soft Check..." maxlength="15">
-                    <button class="btn btn-primary" style="width: auto; padding: 10px 25px; border-radius: 18px;" onclick="handleFreeSoftCheck()">GO</button>
+                    <input type="text" id="home-imei-input" class="search-input" placeholder="Enter IMEI to start Full Check..." maxlength="15">
+                    <button class="btn btn-primary" style="width: auto; padding: 10px 25px; border-radius: 18px;" onclick="handleImeiSearch()">GO</button>
                 </div>
 
                 <div class="comparison-container">
@@ -365,38 +358,6 @@
                     <span>📄 PDF Certified</span>
                     <span>✓ CTIA Standards</span>
                 </div>
-            </div>
-        </div>
-
-        <div id="view-softcheck" class="view-section">
-            <div class="nav-header">
-                <button class="back-btn" onclick="switchView('home')">← Back to Home</button>
-                <div style="font-size: 11px; color: var(--success); font-weight: 700;">● IDENTITY CONFIRMED</div>
-            </div>
-            
-            <div class="input-group">
-                <div style="text-align: center; padding-bottom: 20px; border-bottom: 1px solid var(--border);">
-                    <div style="font-size: 12px; color: var(--text-dim); margin-bottom: 5px;">IMEI MATCH FOUND</div>
-                    <h2 id="soft-device-name" style="margin: 0; font-size: 24px;">--</h2>
-                </div>
-                
-                <div class="specs-grid">
-                    <div class="spec-card"><div class="spec-label">Brand</div><div class="spec-val" id="soft-brand">--</div></div>
-                    <div class="spec-card"><div class="spec-label">Year</div><div class="spec-val" id="soft-year">--</div></div>
-                    <div class="spec-card"><div class="spec-label">Battery</div><div class="spec-val" id="soft-battery">--</div></div>
-                    <div class="spec-card"><div class="spec-label">Screen</div><div class="spec-val" id="soft-screen">--</div></div>
-                </div>
-            </div>
-
-            <div class="input-group" style="border: 1px solid var(--accent); background: linear-gradient(180deg, rgba(59, 130, 246, 0.1) 0%, rgba(15, 23, 42, 0) 100%); text-align: center;">
-                <h3 style="margin-top: 0; color: var(--accent);">⚠️ Security Data Locked</h3>
-                <p style="color: var(--text-dim); font-size: 14px; margin-bottom: 20px;">
-                    This soft check only confirms the model identity (TAC).<br>
-                    To check if this device is <b>Stolen, Blacklisted, or iCloud Locked</b>, a secure database query is required.
-                </p>
-                <button class="btn btn-primary" onclick="switchView('checkout')">
-                    UNLOCK SECURITY REPORT ($1.00)
-                </button>
             </div>
         </div>
 
@@ -569,24 +530,15 @@
             window.scrollTo(0,0);
         }
 
-        // --- NEW LOGIC: SOFT CHECK ---
-        function handleFreeSoftCheck() {
+        // --- UPDATED SEARCH LOGIC: DIRECT TO CHECKOUT ---
+        function handleImeiSearch() {
             const imei = document.getElementById('home-imei-input').value;
             if(imei.length < 5) { alert("Please enter a valid IMEI"); return; }
-            
-            // Simulate Free Data Look-up
             currentImei = imei;
-            document.getElementById('soft-device-name').innerText = "Samsung Galaxy S24 Ultra";
-            document.getElementById('soft-brand').innerText = "Samsung";
-            document.getElementById('soft-year').innerText = "2024";
-            document.getElementById('soft-battery').innerText = "5000 mAh";
-            document.getElementById('soft-screen').innerText = "AMOLED 120Hz";
-            
-            switchView('softcheck');
+            switchView('checkout');
         }
 
         function initiatePaidCheck() {
-            // Goes straight to pricing if user clicks buttons instead of searching
             switchView('checkout');
         }
 
@@ -596,10 +548,8 @@
 
         function proceedToPayment(amount) {
             if(confirm(`Proceed to payment of $${amount}?`)) {
-                // If IMEI was entered in Soft Check, carry it over
-                if(currentImei) {
-                    document.getElementById('input-imei').value = currentImei;
-                }
+                // Pass the IMEI to the technician view and start scan
+                document.getElementById('input-imei').value = currentImei;
                 switchView('technician');
                 fetchDeviceDetails();
             }
