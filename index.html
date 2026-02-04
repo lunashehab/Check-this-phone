@@ -41,7 +41,7 @@
 
         .app-container {
             width: 100%;
-            max-width: 800px;
+            max-width: 900px;
             padding: 20px;
             margin-top: 20px;
             animation: fadeIn 0.6s cubic-bezier(0.22, 1, 0.36, 1);
@@ -70,15 +70,6 @@
 
         .view-section { display: none; width: 100%; }
         .view-section.active { display: block; }
-
-        .input-group {
-            background: var(--panel-dark);
-            border: 1px solid var(--border);
-            padding: 25px;
-            border-radius: 24px;
-            margin-bottom: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        }
 
         /* BENTO GRID - DIAGNOSTICS */
         .bento-grid {
@@ -136,37 +127,51 @@
             font-family: 'JetBrains Mono', monospace;
         }
 
-        /* INFO BENTO PANELS */
-        .info-panel-title {
-            text-align: left;
-            font-size: 18px;
-            font-weight: 800;
-            margin: 40px 0 15px 10px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .info-bento {
+        /* COMPARISON PANELS */
+        .comparison-container {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 15px;
             margin-bottom: 30px;
         }
 
-        .info-tile {
+        .comp-panel {
             background: rgba(255,255,255,0.03);
             border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 20px;
+            border-radius: 24px;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
         }
 
-        .info-tile.large { grid-column: span 2; background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), transparent); border-color: rgba(59, 130, 246, 0.2); }
-        .info-tile-icon { font-size: 24px; margin-bottom: 12px; display: block; }
-        .info-tile-h { font-size: 14px; font-weight: 700; color: var(--text-main); margin-bottom: 8px; }
-        .info-tile-p { font-size: 11px; color: var(--text-dim); line-height: 1.5; margin: 0; }
-        .info-tile-p span { display: block; margin-bottom: 4px; position: relative; padding-left: 12px; }
-        .info-tile-p span::before { content: '•'; position: absolute; left: 0; color: var(--accent); }
+        .comp-panel.premium {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(15, 23, 42, 0.5));
+            border-color: rgba(59, 130, 246, 0.3);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .comp-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .comp-title { font-size: 16px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
+        .comp-list { margin: 0; padding: 0; list-style: none; flex-grow: 1; }
+        
+        .comp-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 12px;
+            color: var(--text-dim);
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+        
+        .comp-item b { color: var(--text-main); display: block; font-size: 13px; margin-bottom: 2px; }
+        .comp-icon { font-size: 16px; min-width: 20px; text-align: center; }
 
         /* BUTTONS */
         .btn { padding: 16px 24px; border-radius: 16px; font-weight: 800; cursor: pointer; border: none; font-size: 15px; transition: 0.2s; width: 100%; display: flex; justify-content: center; align-items: center; gap: 10px; }
@@ -175,53 +180,22 @@
         .btn-gold { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4); }
         .price-badge { margin-left: auto; font-size: 18px; font-weight: 800; }
 
-        /* SYSTEM STYLE */
+        /* SYSTEM & NAV */
+        .input-group { background: var(--panel-dark); border: 1px solid var(--border); padding: 25px; border-radius: 24px; margin-bottom: 20px; }
         .nav-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
         .back-btn { background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
-        .score-display { position: absolute; top: 25px; right: 25px; text-align: right; }
-        .big-score { font-size: 42px; font-weight: 800; color: var(--success); line-height: 1; }
-        .score-sub { font-size: 10px; text-transform: uppercase; color: var(--text-dim); }
-
-        .form-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
-        .specs-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 15px; }
-        .spec-card { background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.2); padding: 12px; border-radius: 8px; text-align: center; }
-        .spec-label { font-size: 9px; text-transform: uppercase; color: var(--text-dim); margin-bottom: 4px; }
-        .spec-val { font-size: 12px; font-weight: 700; color: var(--accent); }
-
-        .toggle-row { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid var(--border); }
-        .btn-toggle-wrapper { background: var(--bg-dark); padding: 3px; border-radius: 6px; border: 1px solid var(--border); display: flex; }
-        .btn-toggle { padding: 8px 16px; font-size: 12px; cursor: pointer; border-radius: 4px; color: var(--text-dim); font-weight: 700; transition: 0.2s; }
-        .btn-toggle.active-good { background: var(--success); color: #0f172a; }
-        .btn-toggle.active-bad { background: var(--danger); color: white; }
-
-        .report-paper { background: white; color: #0f172a; width: 100%; padding: 40px; border-radius: 12px; }
-        .report-header { display: flex; justify-content: space-between; border-bottom: 2px solid #0f172a; padding-bottom: 20px; margin-bottom: 30px; }
-        .report-brand-text { font-size: 24px; font-weight: 800; text-transform: uppercase; color: #0f172a; }
-        .report-brand-text span { color: #2563eb; }
-        .report-grade-box { background: #f1f5f9; padding: 20px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
-        .report-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        .report-table th { text-align: left; border-bottom: 1px solid #e2e8f0; padding: 10px; color: #64748b; font-size: 12px; }
-        .report-table td { border-bottom: 1px solid #e2e8f0; padding: 12px 10px; font-weight: 600; }
-
-        .loader { border: 3px solid rgba(255,255,255,0.1); border-top: 3px solid white; border-radius: 50%; width: 18px; height: 18px; animation: spin 1s linear infinite; display: none; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
+        
         @media (max-width: 768px) {
-            .form-grid { grid-template-columns: 1fr; }
-            .specs-grid { grid-template-columns: 1fr 1fr; }
-            .info-bento { grid-template-columns: 1fr; }
-            .info-tile.large { grid-column: span 1; }
+            .comparison-container { grid-template-columns: 1fr; }
             .bento-grid { grid-template-columns: 1fr 1fr; }
         }
 
-        @media print {
-            body { background: white; display: block; }
-            .app-container { max-width: 100%; padding: 0; margin: 0; }
-            .brand-header, .no-print { display: none !important; } 
-            .view-section { display: none; }
-            #view-report { display: block; }
-            .report-paper { box-shadow: none; padding: 0; }
-        }
+        /* SCORES & REPORTS */
+        .score-display { position: absolute; top: 25px; right: 25px; text-align: right; }
+        .big-score { font-size: 42px; font-weight: 800; color: var(--success); line-height: 1; }
+        .report-paper { background: white; color: #0f172a; width: 100%; padding: 40px; border-radius: 12px; }
+        .loader { border: 3px solid rgba(255,255,255,0.1); border-top: 3px solid white; border-radius: 50%; width: 18px; height: 18px; animation: spin 1s linear infinite; display: none; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
@@ -234,24 +208,24 @@
 
         <div id="view-home" class="view-section active">
             <div style="text-align: center;">
-                <h1 style="font-size: 32px; font-weight: 800; margin-bottom: 10px; letter-spacing: -0.5px;">The Gold Standard for Phone Verification</h1>
+                <h1 style="font-size: 32px; font-weight: 800; margin-bottom: 10px; letter-spacing: -0.5px;">Universal Phone Verification Standard</h1>
                 <p style="color: var(--text-dim); margin-bottom: 40px; font-size: 16px; max-width: 500px; margin-left: auto; margin-right: auto;">
-                    Professional IMEI analysis and hardware diagnostics for buyers, sellers, and technicians.
+                    Professional hardware diagnostics and global IMEI analysis for buyers, sellers, and technicians.
                 </p>
 
                 <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 30px;">
                     <button class="btn btn-free" onclick="switchView('diagnostics')">
                         <div style="display:flex; flex-direction: column; align-items: flex-start;">
                             <span style="font-size: 15px; font-weight: 800;">FREE DIAGNOSTICS</span>
-                            <span style="font-size: 11px; opacity: 0.9;">Hardware & System Check</span>
+                            <span style="font-size: 11px; opacity: 0.9;">Hardware & System Scan</span>
                         </div>
-                        <div class="price-badge" style="font-size: 12px; background: rgba(0,0,0,0.2); padding: 4px 8px; border-radius: 4px;">NO IMEI NEEDED</div>
+                        <div class="price-badge" style="font-size: 12px; background: rgba(0,0,0,0.2); padding: 4px 8px; border-radius: 4px;">LOCAL TEST</div>
                     </button>
 
                     <button class="btn btn-primary" onclick="initiatePaidCheck()">
                         <div style="display:flex; flex-direction: column; align-items: flex-start;">
                             <span style="font-size: 15px; font-weight: 800;">SELLER / BUYER</span>
-                            <span style="font-size: 11px; opacity: 0.8;">Full One-Time Report</span>
+                            <span style="font-size: 11px; opacity: 0.8;">Full IMEI Identity Report</span>
                         </div>
                         <div class="price-badge">$1.00</div>
                     </button>
@@ -266,80 +240,43 @@
                 </div>
 
                 <div class="search-container">
-                    <input type="text" id="home-imei-input" class="search-input" placeholder="Enter IMEI Number..." maxlength="15">
+                    <input type="text" id="home-imei-input" class="search-input" placeholder="Enter IMEI to start Full Check..." maxlength="15">
                     <button class="btn btn-primary" style="width: auto; padding: 10px 25px; border-radius: 18px;" onclick="initiatePaidCheck()">GO</button>
                 </div>
 
-                <div class="info-panel-title">⭐ IMEI Full Check — What You Get</div>
-                
-                <div class="info-bento">
-                    <div class="info-tile">
-                        <span class="info-tile-icon">🚫</span>
-                        <div class="info-tile-h">Blacklist & Theft</div>
-                        <div class="info-tile-p">
-                            <span>Lost / Stolen status</span>
-                            <span>Carrier blacklist</span>
-                            <span>Fraud / Blocked flags</span>
+                <div class="comparison-container">
+                    
+                    <div class="comp-panel">
+                        <div class="comp-header">
+                            <span style="font-size: 20px;">⚡</span>
+                            <span class="comp-title">Hardware Scan</span>
                         </div>
-                    </div>
-                    <div class="info-tile">
-                        <span class="info-tile-icon">📶</span>
-                        <div class="info-tile-h">Carrier & Network</div>
-                        <div class="info-tile-p">
-                            <span>SIM-Lock status</span>
-                            <span>Unlock eligibility</span>
-                            <span>Supported bands (5G)</span>
+                        <div class="comp-list">
+                            <div class="comp-item"><span class="comp-icon">🔋</span><span><b>Battery Health</b>Cycles, wear level, and drain test.</span></div>
+                            <div class="comp-item"><span class="comp-icon">📱</span><span><b>Screen & Touch</b>Pixel check and multi-touch response.</span></div>
+                            <div class="comp-item"><span class="comp-icon">🧭</span><span><b>Sensor Array</b>Gyro, Accelerometer, and Bio-hardware.</span></div>
+                            <div class="comp-item"><span class="comp-icon">🔊</span><span><b>Audio System</b>Mic, Speaker, and water ejection.</span></div>
+                            <div class="comp-item"><span class="comp-icon">🛡️</span><span><b>Software Audit</b>Root detection and storage integrity.</span></div>
                         </div>
+                        <div style="font-size: 10px; color: var(--success); font-weight: 700; margin-top: 15px;">✓ FREE - NO IMEI REQUIRED</div>
                     </div>
-                    <div class="info-tile large">
-                        <div style="display: flex; gap: 20px;">
-                            <div style="flex: 1;">
-                                <span class="info-tile-icon">🆔</span>
-                                <div class="info-tile-h">Identity & Production</div>
-                                <div class="info-tile-p">
-                                    <span>Exact model, color, & storage</span>
-                                    <span>Manufacturing date & week</span>
-                                    <span>Factory location & region</span>
-                                </div>
-                            </div>
-                            <div style="flex: 1;">
-                                <span class="info-tile-icon">🛡️</span>
-                                <div class="info-tile-h">Authenticity</div>
-                                <div class="info-tile-p">
-                                    <span>IMEI tampering detection</span>
-                                    <span>Mismatched board alerts</span>
-                                    <span>Fake/Cloned IMEI check</span>
-                                </div>
-                            </div>
+
+                    <div class="comp-panel premium">
+                        <div class="comp-header">
+                            <span style="font-size: 20px;">⭐</span>
+                            <span class="comp-title" style="color: var(--accent);">Full IMEI Report</span>
                         </div>
-                    </div>
-                    <div class="info-tile">
-                        <span class="info-tile-icon">📜</span>
-                        <div class="info-tile-h">Warranty & Support</div>
-                        <div class="info-tile-p">
-                            <span>Active/Expired status</span>
-                            <span>AppleCare / Samsung Care</span>
-                            <span>Purchase & Activation dates</span>
+                        <div class="comp-list">
+                            <div class="comp-item"><span class="comp-icon">🚫</span><span><b>Blacklist & Theft</b>Lost/Stolen, Carrier Blacklist, & Fraud flags.</span></div>
+                            <div class="comp-item"><span class="comp-icon">📶</span><span><b>Carrier & Network</b>SIM-Lock status, Unlock eligibility, & 5G bands.</span></div>
+                            <div class="comp-item"><span class="comp-icon">🆔</span><span><b>Verification</b>Exact model, region, & manufacturing history.</span></div>
+                            <div class="comp-item"><span class="comp-icon">🔐</span><span><b>Activation Lock</b>iCloud status, Find My, and Security lock.</span></div>
+                            <div class="comp-item"><span class="comp-icon">📜</span><span><b>Warranty Status</b>Service coverage and purchase date verification.</span></div>
+                            <div class="comp-item"><span class="comp-icon">📈</span><span><b>Market Value</b>Estimated resale range & Risk trust rating.</span></div>
                         </div>
+                        <div style="font-size: 10px; color: var(--accent); font-weight: 700; margin-top: 15px;">💎 PREMIUM - GLOBAL DATABASE SCAN</div>
                     </div>
-                    <div class="info-tile">
-                        <span class="info-tile-icon">🔐</span>
-                        <div class="info-tile-h">Activation & iCloud</div>
-                        <div class="info-tile-p">
-                            <span>Find My iPhone status</span>
-                            <span>iCloud / Activation Lock</span>
-                            <span>Refurbished/Replacement ID</span>
-                        </div>
-                    </div>
-                    <div class="info-tile large" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), transparent); border-color: rgba(16, 185, 129, 0.2);">
-                        <div style="display: flex; align-items: center; gap: 20px;">
-                            <span class="info-tile-icon" style="font-size: 40px;">📈</span>
-                            <div style="text-align: left;">
-                                <div class="info-tile-h" style="color: var(--success);">Market Value & Trust Rating</div>
-                                <div class="info-tile-p">Estimated resale value range • Global risk score based on history • Pro Buy/Sell recommendation</div>
-                            </div>
-                        </div>
-                    </div>
+
                 </div>
 
                 <div style="margin-top: 30px; font-size: 11px; color: var(--text-dim); display: flex; justify-content: center; gap: 20px;">
@@ -428,18 +365,12 @@
                     </div>
                 </div>
             </div>
-            
-            <div style="text-align: center; margin-top: 20px;">
-                <button class="btn btn-primary" onclick="switchView('home')" style="max-width: 300px; margin: 0 auto;">Get Certified Report ($1)</button>
-            </div>
         </div>
 
         <div id="view-technician" class="view-section">
             <div class="nav-header">
                 <button class="back-btn" onclick="switchView('home')">← Cancel</button>
-                <div style="font-size: 12px; color: var(--success);">● AUDIT MODE</div>
             </div>
-
             <div class="input-group">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                     <h2 style="margin: 0; font-size: 16px;">1. Device Identity</h2>
@@ -447,82 +378,25 @@
                         SCAN <div class="loader" id="imei-loader"></div>
                     </button>
                 </div>
-                
                 <input type="text" id="input-imei" placeholder="IMEI Number" style="background: var(--bg-dark); border: 1px solid var(--border); color: white; padding: 14px; border-radius: 8px; width: 100%; font-family: monospace;">
-
                 <div id="specs-container" style="display: none; margin-top: 15px;">
-                    <div class="form-grid">
-                        <div class="field"><label>Model</label><input type="text" id="auto-model" readonly style="background: rgba(255,255,255,0.03); border: 1px solid transparent; color: var(--text-dim); padding: 10px; border-radius: 8px;"></div>
-                        <div class="field"><label>Brand</label><input type="text" id="auto-brand" readonly style="background: rgba(255,255,255,0.03); border: 1px solid transparent; color: var(--text-dim); padding: 10px; border-radius: 8px;"></div>
-                        <div class="field"><label>Year</label><input type="text" id="auto-year" readonly style="background: rgba(255,255,255,0.03); border: 1px solid transparent; color: var(--text-dim); padding: 10px; border-radius: 8px;"></div>
-                    </div>
-                    <div class="specs-grid">
-                        <div class="spec-card"><div class="spec-label">BATTERY</div><div class="spec-val" id="spec-battery">--</div></div>
-                        <div class="spec-card"><div class="spec-label">SCREEN</div><div class="spec-val" id="spec-screen">--</div></div>
-                        <div class="spec-card"><div class="spec-label">VALUE</div><div class="spec-val" id="spec-price">--</div></div>
-                        <div class="spec-card"><div class="spec-label">CHIP</div><div class="spec-val" id="spec-chip">--</div></div>
+                    <div class="form-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+                        <div><label style="font-size: 10px; color: var(--text-dim);">Model</label><input type="text" id="auto-model" readonly></div>
+                        <div><label style="font-size: 10px; color: var(--text-dim);">Brand</label><input type="text" id="auto-brand" readonly></div>
+                        <div><label style="font-size: 10px; color: var(--text-dim);">Year</label><input type="text" id="auto-year" readonly></div>
                     </div>
                 </div>
             </div>
-
             <div class="input-group" style="position: relative;">
                 <h2 style="margin: 0 0 20px 0; font-size: 16px;">2. Hardware Audit</h2>
                 <div class="score-display">
                     <div class="big-score" id="live-score">100</div>
                     <div class="score-sub">SCORE</div>
                 </div>
-
-                <div style="padding-right: 60px;"> 
-                    <div class="toggle-row">
-                        <span style="font-size: 14px; font-weight: 500;">Display</span>
-                        <div class="btn-toggle-wrapper">
-                            <div class="btn-toggle active-good" onclick="togglePart(this, 'display', true)">ORIG</div>
-                            <div class="btn-toggle" onclick="togglePart(this, 'display', false)">FAKE</div>
-                        </div>
-                    </div>
-                    <div class="toggle-row">
-                        <span style="font-size: 14px; font-weight: 500;">Battery</span>
-                        <div class="btn-toggle-wrapper">
-                            <div class="btn-toggle active-good" onclick="togglePart(this, 'battery', true)">ORIG</div>
-                            <div class="btn-toggle" onclick="togglePart(this, 'battery', false)">FAKE</div>
-                        </div>
-                    </div>
-                    <div class="toggle-row">
-                        <span style="font-size: 14px; font-weight: 500;">Board</span>
-                        <div class="btn-toggle-wrapper">
-                            <div class="btn-toggle active-good" onclick="togglePart(this, 'board', true)">ORIG</div>
-                            <div class="btn-toggle" onclick="togglePart(this, 'board', false)">FAKE</div>
-                        </div>
-                    </div>
-                </div>
+                <div class="toggle-row"><span>Display</span><div class="btn-toggle-wrapper"><div class="btn-toggle active-good" onclick="togglePart(this, 'display', true)">ORIG</div><div class="btn-toggle" onclick="togglePart(this, 'display', false)">FAKE</div></div></div>
+                <div class="toggle-row"><span>Battery</span><div class="btn-toggle-wrapper"><div class="btn-toggle active-good" onclick="togglePart(this, 'battery', true)">ORIG</div><div class="btn-toggle" onclick="togglePart(this, 'battery', false)">FAKE</div></div></div>
             </div>
-
-            <div class="input-group">
-                <h2 style="margin: 0 0 15px 0; font-size: 16px;">3. Final Valuation</h2>
-                <div class="form-grid">
-                    <div class="field">
-                        <label>Grade</label>
-                        <select id="input-grade" onchange="calculateValuation()" style="background: var(--bg-dark); border: 1px solid var(--border); color: white; padding: 14px; border-radius: 8px;">
-                            <option value="A">Grade A (Mint)</option>
-                            <option value="B">Grade B (Good)</option>
-                            <option value="C">Grade C (Fair)</option>
-                            <option value="D">Grade D (Bad)</option>
-                        </select>
-                    </div>
-                    <div class="field">
-                        <label>Health %</label>
-                        <input type="number" id="input-health" value="100" oninput="calculateValuation()" style="background: var(--bg-dark); border: 1px solid var(--border); color: white; padding: 14px; border-radius: 8px;">
-                    </div>
-                    <div class="field">
-                        <label>Est. Value</label>
-                        <div id="est-price" style="font-size: 18px; font-weight: 700; color: var(--accent); padding: 10px 0;">$0.00</div>
-                    </div>
-                </div>
-            </div>
-
-            <button class="btn btn-primary" style="margin-bottom: 50px;" onclick="generateReport()">
-                GENERATE CERTIFICATE
-            </button>
+            <button class="btn btn-primary" onclick="generateReport()">GENERATE CERTIFICATE</button>
         </div>
 
         <div id="view-report" class="view-section">
@@ -556,8 +430,7 @@
         function initiatePaidCheck() {
             const val = document.getElementById('home-imei-input').value;
             if(val.length < 5) { alert("Invalid IMEI"); return; }
-            const confirmed = confirm("Confirm Diagnostic Purchase ($1.00)?");
-            if(confirmed) {
+            if(confirm("Proceed with IMEI database check ($1.00)?")) {
                 document.getElementById('input-imei').value = val;
                 switchView('technician');
                 fetchDeviceDetails();
@@ -573,29 +446,18 @@
         }
 
         async function fetchDeviceDetails() {
-            const imeiInput = document.getElementById('input-imei').value;
+            const imei = document.getElementById('input-imei').value;
             const loader = document.getElementById('imei-loader');
-            const specsBox = document.getElementById('specs-container');
-
-            if (imeiInput.length < 5) { alert("Invalid IMEI."); return; }
-
             loader.style.display = 'inline-block';
-            specsBox.style.display = 'none';
-
+            
             setTimeout(() => {
                 const data = { status: 'success', brand: "Samsung", model: "S24 Ultra", release_date: "2024", est_value: 1100, specs: { battery: "5000mAh", screen: "AMOLED", chipset: "SD 8 Gen3" } };
                 document.getElementById('auto-brand').value = data.brand;
                 document.getElementById('auto-model').value = data.model;
                 document.getElementById('auto-year').value = data.release_date;
-                document.getElementById('spec-battery').innerText = data.specs.battery;
-                document.getElementById('spec-screen').innerText = data.specs.screen;
-                document.getElementById('spec-price').innerText = "$" + data.est_value;
-                document.getElementById('spec-chip').innerText = data.specs.chipset;
-                
-                specsBox.style.display = 'block';
+                document.getElementById('specs-container').style.display = 'block';
                 loader.style.display = 'none';
                 deviceState.model = data;
-                calculateValuation();
             }, 800);
         }
 
@@ -604,24 +466,6 @@
             const wrapper = btn.parentElement;
             wrapper.children[0].className = isOriginal ? 'btn-toggle active-good' : 'btn-toggle';
             wrapper.children[1].className = !isOriginal ? 'btn-toggle active-bad' : 'btn-toggle';
-            calculateValuation();
-        }
-
-        function calculateValuation() {
-            if (!deviceState.model) return;
-            let val = deviceState.model.est_value; 
-            deviceState.grade = document.getElementById('input-grade').value;
-            deviceState.health = parseInt(document.getElementById('input-health').value) || 100;
-
-            if (deviceState.grade === 'B') val *= 0.85;
-            if (deviceState.grade === 'C') val *= 0.70;
-            if (deviceState.grade === 'D') val *= 0.40;
-            
-            if (!deviceState.display) val -= 150;
-            if (!deviceState.battery) val -= 50;
-            if (deviceState.health < 85) val -= (val * 0.1);
-
-            document.getElementById('est-price').innerText = "$" + Math.max(0, val).toFixed(2);
             updateTrustScore();
         }
 
@@ -629,29 +473,15 @@
             let score = 100;
             if (!deviceState.display) score -= 15;
             if (!deviceState.battery) score -= 10;
-            if (!deviceState.board) score -= 50;
-            if (deviceState.grade === 'C') score -= 20;
-            if (deviceState.grade === 'D') score -= 40;
-
-            const el = document.getElementById('live-score');
-            el.innerText = Math.max(0, score);
-            el.style.color = score >= 90 ? 'var(--success)' : (score >= 70 ? 'var(--warning)' : 'var(--danger)');
-            return Math.max(0, score);
+            document.getElementById('live-score').innerText = score;
+            return score;
         }
 
         function generateReport() {
-            if(!deviceState.model) { alert("Scan IMEI first."); return; }
-            document.getElementById('report-id').innerText = "#" + Math.floor(Math.random()*1000000);
+            if(!deviceState.model) return;
             document.getElementById('report-imei').innerText = document.getElementById('input-imei').value;
             document.getElementById('report-score').innerText = updateTrustScore() + "/100";
             document.getElementById('report-device-name').innerText = deviceState.model.brand + " " + deviceState.model.model;
-            
-            const tbody = document.getElementById('report-tbody');
-            tbody.innerHTML = `
-                <tr><td>DISPLAY</td><td>${deviceState.display ? '<span class="pill orig">ORIGINAL</span>' : '<span class="pill fake">REPLACED</span>'}</td><td>${deviceState.model.specs.screen}</td></tr>
-                <tr><td>BATTERY</td><td>${deviceState.battery ? '<span class="pill orig">ORIGINAL</span>' : '<span class="pill fake">REPLACED</span>'}</td><td>${deviceState.model.specs.battery}</td></tr>
-                <tr><td>BOARD</td><td>${deviceState.board ? '<span class="pill orig">ORIGINAL</span>' : '<span class="pill fake">REPLACED</span>'}</td><td>${deviceState.model.specs.chipset}</td></tr>
-            `;
             switchView('report');
         }
     </script>
