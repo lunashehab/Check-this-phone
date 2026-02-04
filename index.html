@@ -68,11 +68,9 @@
             filter: drop-shadow(0 0 35px var(--accent-glow)); 
         }
 
-        /* VIEW SECTIONS */
         .view-section { display: none; width: 100%; }
         .view-section.active { display: block; }
 
-        /* INPUT GROUPS */
         .input-group {
             background: var(--panel-dark);
             border: 1px solid var(--border);
@@ -82,7 +80,7 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         }
 
-        /* BENTO GRID (For Diagnostics) */
+        /* BENTO GRID */
         .bento-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -137,43 +135,31 @@
             font-family: 'JetBrains Mono', monospace;
         }
 
-        /* FORMS & GRIDS */
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr); 
-            gap: 15px;
-        }
-        
-        .specs-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        .spec-card {
-            background: rgba(59, 130, 246, 0.1);
-            border: 1px solid rgba(59, 130, 246, 0.2);
-            padding: 12px;
-            border-radius: 8px;
-            text-align: center;
-        }
-        .spec-label { font-size: 9px; text-transform: uppercase; color: var(--text-dim); margin-bottom: 4px; }
-        .spec-val { font-size: 12px; font-weight: 700; color: var(--accent); }
-
         /* BUTTONS */
         .btn { padding: 16px 24px; border-radius: 16px; font-weight: 800; cursor: pointer; border: none; font-size: 15px; transition: 0.2s; width: 100%; display: flex; justify-content: center; align-items: center; gap: 10px; }
-        .btn-primary { background: var(--accent); color: white; box-shadow: 0 4px 15px var(--accent-glow); }
-        .btn-gold { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4); }
-        .btn-free { background: #1e293b; color: #ffffff; border: 1px solid var(--border); }
-        .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text-dim); }
-
-        /* MOBILE OPTIMIZATION */
-        @media (max-width: 768px) {
-            .form-grid { grid-template-columns: 1fr; }
-            .specs-grid { grid-template-columns: 1fr 1fr; }
-            .bento-grid { grid-template-columns: 1fr 1fr; }
+        
+        .btn-free { 
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%); 
+            color: #ffffff; 
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4); 
         }
+        .btn-free:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(16, 185, 129, 0.5); }
+
+        .btn-primary { background: var(--accent); color: white; box-shadow: 0 4px 15px var(--accent-glow); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px var(--accent-glow); }
+
+        .btn-gold { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4); }
+        .btn-gold:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(245, 158, 11, 0.5); }
+
+        .price-badge { margin-left: auto; font-size: 18px; font-weight: 800; }
+
+        /* GRIDS & FORMS */
+        .form-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
+        .specs-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 15px; }
+
+        .spec-card { background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.2); padding: 12px; border-radius: 8px; text-align: center; }
+        .spec-label { font-size: 9px; text-transform: uppercase; color: var(--text-dim); margin-bottom: 4px; }
+        .spec-val { font-size: 12px; font-weight: 700; color: var(--accent); }
 
         /* TOGGLES */
         .toggle-row { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid var(--border); }
@@ -191,7 +177,7 @@
         .nav-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
         .back-btn { background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
 
-        /* REPORT PAPER */
+        /* REPORT */
         .report-paper { background: white; color: #0f172a; width: 100%; padding: 40px; border-radius: 12px; }
         .report-header { display: flex; justify-content: space-between; border-bottom: 2px solid #0f172a; padding-bottom: 20px; margin-bottom: 30px; }
         .report-brand-text { font-size: 24px; font-weight: 800; text-transform: uppercase; color: #0f172a; }
@@ -200,12 +186,15 @@
         .report-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
         .report-table th { text-align: left; border-bottom: 1px solid #e2e8f0; padding: 10px; color: #64748b; font-size: 12px; }
         .report-table td { border-bottom: 1px solid #e2e8f0; padding: 12px 10px; font-weight: 600; }
-        .pill { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
-        .pill.orig { background: #dcfce7; color: #15803d; }
-        .pill.fake { background: #fee2e2; color: #b91c1c; }
 
         .loader { border: 3px solid rgba(255,255,255,0.1); border-top: 3px solid white; border-radius: 50%; width: 18px; height: 18px; animation: spin 1s linear infinite; display: none; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        @media (max-width: 768px) {
+            .form-grid { grid-template-columns: 1fr; }
+            .specs-grid { grid-template-columns: 1fr 1fr; }
+            .bento-grid { grid-template-columns: 1fr 1fr; }
+        }
 
         @media print {
             body { background: white; display: block; }
@@ -239,21 +228,27 @@
 
                 <div style="display: flex; flex-direction: column; gap: 12px;">
                     <button class="btn btn-free" onclick="switchView('diagnostics')">
-                        <span>⚡</span>
-                        <div style="text-align: left;">
-                            <div style="font-size: 14px; font-weight: 700;">Instant Diagnostics</div>
-                            <div style="font-size: 10px; color: var(--text-dim);">Run 13 Free Hardware Modules</div>
+                        <div style="display:flex; flex-direction: column; align-items: flex-start;">
+                            <span style="font-size: 15px; font-weight: 800;">FREE DIAGNOSTICS</span>
+                            <span style="font-size: 11px; opacity: 0.9;">Hardware & System Check</span>
                         </div>
-                        <span style="margin-left: auto; font-size: 10px; opacity: 0.5;">FREE</span>
+                        <div class="price-badge" style="font-size: 12px; background: rgba(0,0,0,0.2); padding: 4px 8px; border-radius: 4px;">NO IMEI NEEDED</div>
+                    </button>
+
+                    <button class="btn btn-primary" onclick="initiatePaidCheck()">
+                        <div style="display:flex; flex-direction: column; align-items: flex-start;">
+                            <span style="font-size: 15px; font-weight: 800;">SELLER / BUYER</span>
+                            <span style="font-size: 11px; opacity: 0.8;">Full One-Time Report</span>
+                        </div>
+                        <div class="price-badge">$1.00</div>
                     </button>
 
                     <button class="btn btn-gold" onclick="initiateSubscription()">
-                        <span>💎</span>
-                        <div style="text-align: left;">
-                            <div style="font-size: 14px; font-weight: 700;">Pro Technician Access</div>
-                            <div style="font-size: 10px; opacity: 0.9;">Unlimited Monthly Reports & Access</div>
+                        <div style="display:flex; flex-direction: column; align-items: flex-start;">
+                            <span style="font-size: 15px; font-weight: 800;">STORE / TECHNICIAN</span>
+                            <span style="font-size: 11px; opacity: 0.9;">Unlimited Monthly Access</span>
                         </div>
-                        <span style="margin-left: auto; font-size: 14px; font-weight: 900;">$14.99</span>
+                        <div class="price-badge">$14.99</div>
                     </button>
                 </div>
 
@@ -294,7 +289,7 @@
                     <div class="bento-card" onclick="window.location.href='tests/camera.html'">
                         <span class="card-icon">📷</span>
                         <div class="card-title">Camera</div>
-                        <div class="card-sub">Focus & Zoom</div>
+                        <div class="card-sub">Focus & Flash</div>
                     </div>
                     <div class="bento-card" onclick="window.location.href='tests/sensors.html'">
                         <span class="card-icon">🧭</span>
@@ -339,13 +334,9 @@
                     <div class="bento-card" onclick="window.location.href='tests/ux.html'" style="grid-column: span 2; min-height: 100px;">
                         <span class="card-icon">👆</span>
                         <div class="card-title">User Experience</div>
-                        <div class="card-sub">Animation Smoothness & Input Latency</div>
+                        <div class="card-sub">Smoothness & Latency</div>
                     </div>
                 </div>
-            </div>
-            
-            <div style="text-align: center; margin-top: 20px;">
-                <button class="btn btn-primary" onclick="switchView('home')" style="max-width: 300px; margin: 0 auto;">Get Certified Report ($1)</button>
             </div>
         </div>
 
