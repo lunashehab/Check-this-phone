@@ -41,7 +41,7 @@
 
         .app-container {
             width: 100%;
-            max-width: 900px;
+            max-width: 1000px; /* Widened slightly for the 2x2 grid */
             padding: 20px;
             margin-top: 20px;
             animation: fadeIn 0.6s cubic-bezier(0.22, 1, 0.36, 1);
@@ -112,7 +112,7 @@
             border: 1px solid var(--border);
             box-shadow: 0 4px 20px rgba(0,0,0,0.2);
             margin-top: 20px;
-            margin-bottom: 30px;
+            margin-bottom: 40px;
         }
         
         .search-input {
@@ -127,7 +127,7 @@
             font-family: 'JetBrains Mono', monospace;
         }
 
-        /* COMPARISON PANELS */
+        /* 4-TIER COMPARISON GRID */
         .comparison-container {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -139,46 +139,66 @@
             background: rgba(255,255,255,0.03);
             border: 1px solid var(--border);
             border-radius: 24px;
-            padding: 30px;
+            padding: 25px;
             display: flex;
             flex-direction: column;
+            transition: transform 0.2s;
         }
+        .comp-panel:hover { transform: translateY(-3px); }
 
-        .comp-panel.premium {
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(15, 23, 42, 0.5));
+        /* Tier Styles */
+        .comp-panel.tier-basic { /* $0.99 */
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(15, 23, 42, 0.4));
             border-color: rgba(59, 130, 246, 0.3);
-            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+        .comp-panel.tier-carrier { /* $4.99 */
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(15, 23, 42, 0.4));
+            border-color: rgba(99, 102, 241, 0.4);
+        }
+        .comp-panel.tier-premium { /* $9.99 */
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.08), rgba(15, 23, 42, 0.6));
+            border-color: rgba(245, 158, 11, 0.4);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        .comp-panel.tier-premium::before {
+            content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 4px;
+            background: linear-gradient(90deg, #f59e0b, #fbbf24);
         }
 
         .comp-header {
             display: flex;
             align-items: center;
-            gap: 15px;
-            margin-bottom: 30px;
+            gap: 12px;
+            margin-bottom: 25px;
             padding-bottom: 15px;
             border-bottom: 1px solid rgba(255,255,255,0.05);
         }
 
-        .comp-title { font-size: 20px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
+        .comp-title { font-size: 18px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
+        .comp-price-tag { margin-left: auto; font-family: 'JetBrains Mono'; font-weight: 700; opacity: 0.9; }
+        
         .comp-list { margin: 0; padding: 0; list-style: none; flex-grow: 1; }
         
         .comp-item {
             display: flex;
             align-items: flex-start;
-            gap: 15px;
-            font-size: 13px;
+            gap: 10px;
+            font-size: 12px;
             color: var(--text-dim);
-            margin-bottom: 20px;
-            line-height: 1.6;
+            margin-bottom: 15px;
+            line-height: 1.5;
         }
         
-        .comp-item b { color: var(--text-main); display: block; font-size: 14px; margin-bottom: 4px; font-weight: 700; }
-        .comp-icon { font-size: 20px; min-width: 24px; text-align: center; margin-top: 2px; }
+        .comp-item b { color: var(--text-main); display: block; font-size: 13px; margin-bottom: 2px; font-weight: 700; }
+        .comp-icon { font-size: 16px; min-width: 20px; text-align: center; margin-top: 1px; }
 
         /* BUTTONS */
         .btn { padding: 16px 24px; border-radius: 16px; font-weight: 800; cursor: pointer; border: none; font-size: 15px; transition: 0.2s; width: 100%; display: flex; justify-content: center; align-items: center; gap: 10px; }
         .btn-free { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4); }
         .btn-primary { background: var(--accent); color: white; box-shadow: 0 4px 15px var(--accent-glow); }
+        .btn-indigo { background: #6366f1; color: white; box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4); } /* For Tier 2 */
         .btn-gold { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4); }
         .price-badge { margin-left: auto; font-size: 18px; font-weight: 800; }
 
@@ -187,7 +207,7 @@
         .nav-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
         .back-btn { background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
         
-        @media (max-width: 800px) {
+        @media (max-width: 850px) {
             .comparison-container { grid-template-columns: 1fr; }
             .bento-grid { grid-template-columns: 1fr 1fr; }
         }
@@ -212,7 +232,7 @@
             <div style="text-align: center;">
                 <h1 style="font-size: 32px; font-weight: 800; margin-bottom: 10px; letter-spacing: -0.5px;">Universal Phone Verification Standard</h1>
                 <p style="color: var(--text-dim); margin-bottom: 40px; font-size: 16px; max-width: 500px; margin-left: auto; margin-right: auto;">
-                    Professional hardware diagnostics and global IMEI analysis.
+                    Professional hardware diagnostics and global IMEI analysis for buyers, sellers, and technicians.
                 </p>
 
                 <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 30px;">
@@ -227,15 +247,15 @@
                     <button class="btn btn-primary" onclick="proceedToPayment(0.99, 'Basic Blacklist Check')">
                         <div style="display:flex; flex-direction: column; align-items: flex-start;">
                             <span style="font-size: 15px; font-weight: 800;">SOFT IMEI REPORT</span>
-                            <span style="font-size: 11px; opacity: 0.8;">Basic Blacklist Check</span>
+                            <span style="font-size: 11px; opacity: 0.9;">Basic Blacklist Check</span>
                         </div>
                         <div class="price-badge">$0.99</div>
                     </button>
 
-                    <button class="btn btn-primary" onclick="proceedToPayment(4.99, 'Full Carrier & SimLock')">
+                    <button class="btn btn-indigo" onclick="proceedToPayment(4.99, 'Carrier & SimLock Check')">
                         <div style="display:flex; flex-direction: column; align-items: flex-start;">
                             <span style="font-size: 15px; font-weight: 800;">CARRIER & SIMLOCK</span>
-                            <span style="font-size: 11px; opacity: 0.8;">Network & Lock Status</span>
+                            <span style="font-size: 11px; opacity: 0.9;">Network & Unlock Status</span>
                         </div>
                         <div class="price-badge">$4.99</div>
                     </button>
@@ -250,7 +270,7 @@
                 </div>
 
                 <div class="search-container">
-                    <input type="text" id="home-imei-input" class="search-input" placeholder="Enter IMEI to start Full Check..." maxlength="15">
+                    <input type="text" id="home-imei-input" class="search-input" placeholder="Enter IMEI to start..." maxlength="15">
                     <button class="btn btn-primary" style="width: auto; padding: 10px 25px; border-radius: 18px;" onclick="handleImeiSearch()">GO</button>
                 </div>
 
@@ -258,39 +278,69 @@
                     
                     <div class="comp-panel">
                         <div class="comp-header">
-                            <span style="font-size: 28px;">⚡</span>
+                            <span style="font-size: 24px;">⚡</span>
                             <div>
                                 <span class="comp-title">Hardware Scan</span>
-                                <div style="font-size: 11px; color: var(--text-dim); margin-top: 4px;">LOCAL DEVICE TESTING</div>
+                                <div style="font-size: 10px; color: var(--text-dim);">FREE DIAGNOSTICS</div>
                             </div>
                         </div>
                         <div class="comp-list">
-                            <div class="comp-item"><span class="comp-icon">🔋</span><div><b>Battery System & Power</b><span>Analysis of health %, total cycle count, voltage stability, real-time charging wattage, and drain stress test.</span></div></div>
-                            <div class="comp-item"><span class="comp-icon">📱</span><div><b>Display & Touch Tech</b><span>RGB dead pixel cycling, multi-touch point tracking, refresh rate (Hz) verification, and color accuracy check.</span></div></div>
-                            <div class="comp-item"><span class="comp-icon">🔊</span><div><b>Acoustic Hardware</b><span>Stereo speaker balance test, microphone frequency sensitivity, and water-ejection sound pulse generator.</span></div></div>
-                            <div class="comp-item"><span class="comp-icon">🧭</span><div><b>Sensor Matrix</b><span>Real-time calibration check for Gyroscope, Accelerometer, Proximity, Light sensor, and Compass.</span></div></div>
-                            <div class="comp-item"><span class="comp-icon">🛡️</span><div><b>OS Integrity</b><span>Local check for Root access, Jailbreak status, and Android security patch level.</span></div></div>
+                            <div class="comp-item"><span class="comp-icon">🔋</span><div><b>Battery Health</b><span>Cycles, health %, and drain test.</span></div></div>
+                            <div class="comp-item"><span class="comp-icon">📱</span><div><b>Screen & Touch</b><span>Dead pixels & multi-touch.</span></div></div>
+                            <div class="comp-item"><span class="comp-icon">🔊</span><div><b>Audio System</b><span>Mic & Speaker analysis.</span></div></div>
+                            <div class="comp-item"><span class="comp-icon">🧭</span><div><b>Sensor Array</b><span>Gyro, Compass & Biometrics.</span></div></div>
                         </div>
-                        <div style="font-size: 11px; color: var(--success); font-weight: 700; margin-top: 20px; text-align: center; border-top: 1px solid var(--border); padding-top: 20px;">✓ INSTANT ACCESS - NO IMEI REQUIRED</div>
                     </div>
 
-                    <div class="comp-panel premium">
+                    <div class="comp-panel tier-basic">
                         <div class="comp-header">
-                            <span style="font-size: 28px;">⭐</span>
+                            <span style="font-size: 24px; color: var(--accent);">🛡️</span>
                             <div>
-                                <span class="comp-title" style="color: var(--accent);">Full IMEI Report</span>
-                                <div style="font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 4px;">GLOBAL DATABASE INTELLIGENCE</div>
+                                <span class="comp-title" style="color: var(--accent);">Soft Report</span>
+                                <div style="font-size: 10px; color: var(--text-dim);">BASIC SECURITY</div>
                             </div>
+                            <div class="comp-price-tag">$0.99</div>
                         </div>
                         <div class="comp-list">
-                            <div class="comp-item"><span class="comp-icon">🚫</span><div><b>Blacklist, Theft & Fraud</b><span>Global GSMA database search for Lost/Stolen status, insurance claims, carrier blocks, and billing disputes.</span></div></div>
-                            <div class="comp-item"><span class="comp-icon">📶</span><div><b>Carrier & Network Lock</b><span>Check official SIM-Lock status (Unlocked/Locked), original carrier policy, next tether policy, and 5G bands.</span></div></div>
-                            <div class="comp-item"><span class="comp-icon">🆔</span><div><b>Deep Identity Verification</b><span>Confirm exact model number, storage capacity, original color, manufacturing date, and production facility.</span></div></div>
-                            <div class="comp-item"><span class="comp-icon">🔐</span><div><b>Security & Activation Locks</b><span>Verify iCloud Activation Lock (FMI), Google FRP Lock, Samsung Knox status, and MDM/Corporate locks.</span></div></div>
-                            <div class="comp-item"><span class="comp-icon">📜</span><div><b>Financial & Warranty History</b><span>Check active warranty coverage, purchase date, outstanding finance/bills, and refurbishment history.</span></div></div>
-                            <div class="comp-item"><span class="comp-icon">📈</span><div><b>Market Valuation & Trust</b><span>Estimated resale value range, market demand score, and automated "Buy/Don't Buy" recommendation.</span></div></div>
+                            <div class="comp-item"><span class="comp-icon">🚫</span><div><b>Global Blacklist</b><span>Check GSMA for Lost/Stolen flags.</span></div></div>
+                            <div class="comp-item"><span class="comp-icon">🆔</span><div><b>Identity Check</b><span>Confirm Brand & Model number.</span></div></div>
+                            <div class="comp-item"><span class="comp-icon">✅</span><div><b>Clean Status</b><span>Verify if IMEI is clean or blocked.</span></div></div>
+                            <div class="comp-item"><span class="comp-icon">📅</span><div><b>Age Estimate</b><span>Production year verification.</span></div></div>
                         </div>
-                        <div style="font-size: 11px; color: var(--accent); font-weight: 700; margin-top: 20px; text-align: center; border-top: 1px solid rgba(59, 130, 246, 0.3); padding-top: 20px;">💎 PREMIUM - OFFICIAL DATABASE SCAN</div>
+                    </div>
+
+                    <div class="comp-panel tier-carrier">
+                        <div class="comp-header">
+                            <span style="font-size: 24px; color: #818cf8;">📶</span>
+                            <div>
+                                <span class="comp-title" style="color: #818cf8;">Carrier Lock</span>
+                                <div style="font-size: 10px; color: var(--text-dim);">NETWORK STATUS</div>
+                            </div>
+                            <div class="comp-price-tag">$4.99</div>
+                        </div>
+                        <div class="comp-list">
+                            <div class="comp-item"><span class="comp-icon">🔓</span><div><b>Sim-Lock Status</b><span>Locked or Unlocked verification.</span></div></div>
+                            <div class="comp-item"><span class="comp-icon">📡</span><div><b>Original Carrier</b><span>Identify original network provider.</span></div></div>
+                            <div class="comp-item"><span class="comp-icon">🔗</span><div><b>Tether Policy</b><span>Next tether activation policy.</span></div></div>
+                            <div class="comp-item"><span class="comp-icon">🌍</span><div><b>Country Code</b><span>Region & Sold-to country check.</span></div></div>
+                        </div>
+                    </div>
+
+                    <div class="comp-panel tier-premium">
+                        <div class="comp-header">
+                            <span style="font-size: 24px; color: #fbbf24;">👑</span>
+                            <div>
+                                <span class="comp-title" style="color: #fbbf24;">Premium GSX</span>
+                                <div style="font-size: 10px; color: rgba(255,255,255,0.6);">FULL HISTORY</div>
+                            </div>
+                            <div class="comp-price-tag" style="color: #fbbf24;">$9.99</div>
+                        </div>
+                        <div class="comp-list">
+                            <div class="comp-item"><span class="comp-icon">☁️</span><div><b>iCloud / FRP</b><span>Find My iPhone & Google Lock status.</span></div></div>
+                            <div class="comp-item"><span class="comp-icon">📅</span><div><b>Purchase Date</b><span>Original sales date & warranty end.</span></div></div>
+                            <div class="comp-item"><span class="comp-icon">🔧</span><div><b>Repair History</b><span>Refurbished & replacement flags.</span></div></div>
+                            <div class="comp-item"><span class="comp-icon">💰</span><div><b>Financial Check</b><span>Outstanding bills or finance blocks.</span></div></div>
+                        </div>
                     </div>
 
                 </div>
@@ -310,38 +360,38 @@
             </div>
 
             <div class="input-group" style="text-align: center;">
-                <h2 style="margin-bottom: 5px;">Unlock Your Full Report</h2>
-                <p style="color: var(--text-dim); font-size: 14px; margin-bottom: 30px;">Choose the detailed report you need.</p>
+                <h2 style="margin-bottom: 5px;">Confirm Your Service</h2>
+                <p style="color: var(--text-dim); font-size: 14px; margin-bottom: 30px;">Select the report depth required.</p>
 
                 <div style="display: grid; grid-template-columns: 1fr; gap: 15px;">
                     
-                    <div style="background: rgba(59, 130, 246, 0.05); border: 1px solid var(--border); border-radius: 20px; padding: 20px; text-align: left; cursor: pointer;" onclick="proceedToPayment(0.99, 'Basic Blacklist Check')">
-                        <div style="display:flex; justify-content: space-between; align-items: center;">
-                            <div>
-                                <div style="font-weight: 800; font-size: 16px;">Basic Blacklist</div>
-                                <div style="font-size: 12px; color: var(--text-dim);">Global Lost/Stolen Check</div>
+                    <div style="background: rgba(59, 130, 246, 0.05); border: 1px solid var(--accent); border-radius: 16px; padding: 20px; cursor: pointer;" onclick="proceedToPayment(0.99, 'Basic Blacklist Check')">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <div style="text-align:left;">
+                                <div style="font-weight:800; font-size:16px;">Soft Report</div>
+                                <div style="font-size:12px; color:var(--text-dim);">Blacklist & Identity</div>
                             </div>
-                            <div style="font-size: 20px; font-weight: 900; color: var(--accent);">$0.99</div>
+                            <div style="font-size:20px; font-weight:900; color:var(--accent);">$0.99</div>
                         </div>
                     </div>
 
-                    <div style="background: rgba(59, 130, 246, 0.05); border: 1px solid var(--border); border-radius: 20px; padding: 20px; text-align: left; cursor: pointer;" onclick="proceedToPayment(4.99, 'Full Carrier & SimLock')">
-                        <div style="display:flex; justify-content: space-between; align-items: center;">
-                            <div>
-                                <div style="font-weight: 800; font-size: 16px;">Carrier & SimLock</div>
-                                <div style="font-size: 12px; color: var(--text-dim);">Network Status & Unlocks</div>
+                    <div style="background: rgba(99, 102, 241, 0.05); border: 1px solid #6366f1; border-radius: 16px; padding: 20px; cursor: pointer;" onclick="proceedToPayment(4.99, 'Carrier & SimLock Check')">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <div style="text-align:left;">
+                                <div style="font-weight:800; font-size:16px;">Carrier Check</div>
+                                <div style="font-size:12px; color:var(--text-dim);">SimLock & Network</div>
                             </div>
-                            <div style="font-size: 20px; font-weight: 900; color: var(--accent);">$4.99</div>
+                            <div style="font-size:20px; font-weight:900; color:#6366f1;">$4.99</div>
                         </div>
                     </div>
 
-                    <div style="background: rgba(245, 158, 11, 0.05); border: 1px solid var(--warning); border-radius: 20px; padding: 20px; text-align: left; cursor: pointer;" onclick="proceedToPayment(9.99, 'Premium GSX Report')">
-                        <div style="display:flex; justify-content: space-between; align-items: center;">
-                            <div>
-                                <div style="font-weight: 800; font-size: 16px;">Premium GSX</div>
-                                <div style="font-size: 12px; color: var(--text-dim);">Full Device History & Finance</div>
+                    <div style="background: rgba(245, 158, 11, 0.05); border: 1px solid #f59e0b; border-radius: 16px; padding: 20px; cursor: pointer;" onclick="proceedToPayment(9.99, 'Premium GSX Report')">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <div style="text-align:left;">
+                                <div style="font-weight:800; font-size:16px;">Premium GSX</div>
+                                <div style="font-size:12px; color:var(--text-dim);">Full History & iCloud</div>
                             </div>
-                            <div style="font-size: 20px; font-weight: 900; color: var(--warning);">$9.99</div>
+                            <div style="font-size:20px; font-weight:900; color:#f59e0b;">$9.99</div>
                         </div>
                     </div>
 
@@ -357,8 +407,6 @@
 
             <div class="input-group">
                 <h2 style="margin: 0 0 5px 0; font-size: 20px; font-weight: 800;">Diagnostic Suite</h2>
-                <p style="color: var(--text-dim); font-size: 14px; margin-bottom: 25px;">Select a module to begin hardware integrity testing.</p>
-
                 <div class="bento-grid">
                     <div class="bento-card" onclick="window.location.href='tests/battery.html'"><span class="card-icon">🔋</span><div class="card-title">Battery</div></div>
                     <div class="bento-card" onclick="window.location.href='tests/display.html'"><span class="card-icon">📱</span><div class="card-title">Display</div></div>
