@@ -53,20 +53,19 @@
         /* HEADER BRANDING (Centered) */
         .brand-header {
             text-align: center;
-            margin-bottom: 40px; /* Increased margin for the huge logo */
+            margin-bottom: 40px; 
             display: flex;
             justify-content: center;
             align-items: center;
         }
 
-        /* UPDATED LOGO SIZE: MASSIVE (5X) */
+        /* MASSIVE LOGO SIZE (5X) */
         .brand-logo-img {
-            width: 100%;             /* Force it to fill the width */
-            max-width: 900px;        /* Allow it to get huge */
-            height: auto;            /* Maintain aspect ratio */
+            width: 100%;             
+            max-width: 900px;        
+            height: auto;            
             display: block;
             margin: 0 auto;
-            /* Stronger glow to match the massive size */
             filter: drop-shadow(0 0 35px rgba(59, 130, 246, 0.5)); 
         }
 
@@ -87,7 +86,7 @@
         /* RESPONSIVE GRID SYSTEM */
         .form-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr); /* 3 Columns on PC */
+            grid-template-columns: repeat(3, 1fr); 
             gap: 15px;
         }
         
@@ -100,10 +99,9 @@
 
         /* MOBILE OPTIMIZATION */
         @media (max-width: 768px) {
-            .form-grid { grid-template-columns: 1fr; } /* 1 Column on Phone */
-            .specs-grid { grid-template-columns: 1fr 1fr; } /* 2 Columns on Phone */
+            .form-grid { grid-template-columns: 1fr; }
+            .specs-grid { grid-template-columns: 1fr 1fr; }
             .app-container { padding: 15px; margin-top: 0; }
-            /* Mobile logo size - still huge but fits screen */
             .brand-logo-img { width: 100%; max-height: none; } 
             .toggle-row { flex-direction: column; align-items: flex-start; gap: 10px; }
             .btn-toggle-wrapper { width: 100%; justify-content: space-between; }
@@ -128,9 +126,19 @@
         input[readonly] { background: rgba(255,255,255,0.03); border-color: transparent; color: var(--text-dim); cursor: not-allowed; }
 
         /* BUTTONS */
-        .btn { padding: 14px 24px; border-radius: 8px; font-weight: 600; cursor: pointer; border: none; font-size: 14px; transition: 0.2s; width: 100%; display: flex; justify-content: center; align-items: center; gap: 10px; }
+        .btn { padding: 16px 24px; border-radius: 8px; font-weight: 700; cursor: pointer; border: none; font-size: 15px; transition: 0.2s; width: 100%; display: flex; justify-content: center; align-items: center; gap: 10px; }
+        
         .btn-primary { background: var(--accent); color: white; box-shadow: 0 4px 15px var(--accent-glow); }
-        .btn-primary:hover { transform: translateY(-2px); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px var(--accent-glow); }
+        
+        /* New Secondary Button Style for Subscription */
+        .btn-gold { 
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); 
+            color: white; 
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4); 
+        }
+        .btn-gold:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(245, 158, 11, 0.5); }
+
         .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text-dim); }
         .btn-icon { width: auto; padding: 10px; }
 
@@ -168,7 +176,7 @@
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* NAVIGATION HEADER (Simple Back Button) */
+        /* NAVIGATION HEADER */
         .nav-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .back-btn { background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 5px; }
         .back-btn:hover { color: white; }
@@ -176,10 +184,8 @@
         /* PRINT STYLES */
         .report-paper { background: white; color: #0f172a; width: 100%; padding: 40px; display: none; border-radius: 4px; }
         .report-header { display: flex; justify-content: space-between; border-bottom: 2px solid #0f172a; padding-bottom: 20px; margin-bottom: 30px; }
-        /* Update report header to use a text-based logo for better printing */
         .report-brand-text { font-size: 24px; font-weight: 800; text-transform: uppercase; color: #0f172a; }
         .report-brand-text span { color: #2563eb; }
-
         .report-grade-box { background: #f1f5f9; padding: 20px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
         .report-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
         .report-table th { text-align: left; border-bottom: 1px solid #e2e8f0; padding: 10px; color: #64748b; font-size: 12px; }
@@ -191,7 +197,7 @@
         @media print {
             body { background: white; display: block; }
             .app-container { max-width: 100%; padding: 0; margin: 0; }
-            .brand-header { display: none; } /* Hide main logo on print */
+            .brand-header { display: none; } 
             .view-section { display: none; }
             #view-report { display: block; }
             .report-paper { display: block; box-shadow: none; padding: 0; }
@@ -214,11 +220,31 @@
                     Enter IMEI to instantly retrieve factory specs, check blacklist status, and generate a certified report.
                 </p>
                 
-                <div class="input-group" style="padding: 10px; display: flex; flex-direction: column; gap: 15px;">
-                    <input type="text" id="home-imei-input" placeholder="Enter IMEI (e.g. 359...)" style="text-align: center; font-size: 18px; border: none; background: transparent; border-bottom: 1px solid var(--border); border-radius: 0;">
+                <div class="input-group" style="padding: 25px; display: flex; flex-direction: column; gap: 20px;">
+                    
+                    <div style="text-align: left;">
+                        <label style="margin-left: 5px; margin-bottom: 5px; display: block;">Device IMEI</label>
+                        <input type="text" id="home-imei-input" placeholder="e.g. 3591820..." style="text-align: center; font-size: 18px; padding: 16px; font-family: monospace;">
+                    </div>
+
+                    <div style="height: 1px; background: var(--border); margin: 5px 0;"></div>
+
                     <button class="btn btn-primary" onclick="initiatePaidCheck()">
-                        START DIAGNOSTICS ($1.00)
+                        <div style="display:flex; flex-direction: column; align-items: flex-start;">
+                            <span style="font-size: 15px; font-weight: 800;">SELLER / BUYER</span>
+                            <span style="font-size: 11px; opacity: 0.8; font-weight: 500;">Full One-Time Report</span>
+                        </div>
+                        <div style="margin-left: auto; font-size: 18px;">$1.00</div>
                     </button>
+
+                    <button class="btn btn-gold" onclick="initiateSubscription()">
+                        <div style="display:flex; flex-direction: column; align-items: flex-start;">
+                            <span style="font-size: 15px; font-weight: 800;">STORE / TECHNICIAN</span>
+                            <span style="font-size: 11px; opacity: 0.9; font-weight: 500;">Unlimited Monthly Access</span>
+                        </div>
+                        <div style="margin-left: auto; font-size: 18px;">$14.99</div>
+                    </button>
+
                 </div>
 
                 <div style="margin-top: 20px; font-size: 12px; color: var(--text-dim); display: flex; justify-content: center; gap: 20px;">
@@ -361,8 +387,22 @@
             const homeInput = document.getElementById('home-imei-input').value;
             if (homeInput.length < 5) { alert("Please enter a valid IMEI."); return; }
             
-            const confirmed = confirm("CONFIRM PAYMENT\n\nService: Android Diagnostic\nPrice: $1.00\n\nProceed?");
+            const confirmed = confirm("CONFIRM PURCHASE\n\nService: Single Diagnostic Report\nPrice: $1.00 USD\n\nClick OK to Pay & Start.");
             
+            if (confirmed) {
+                document.getElementById('input-imei').value = homeInput;
+                switchView('technician');
+                fetchDeviceDetails();
+            }
+        }
+
+        // NEW: Subscription Logic
+        function initiateSubscription() {
+            const homeInput = document.getElementById('home-imei-input').value;
+            if (homeInput.length < 5) { alert("Please enter a valid IMEI."); return; }
+
+            const confirmed = confirm("CONFIRM SUBSCRIPTION\n\nPlan: Unlimited Monthly Access\nPrice: $14.99 USD / Month\n\nClick OK to Subscribe & Start.");
+
             if (confirmed) {
                 document.getElementById('input-imei').value = homeInput;
                 switchView('technician');
@@ -409,7 +449,7 @@
                     const lastDigit = parseInt(imei.slice(-1)) || 0;
                     let result = {};
                     // Simulation Logic
-                    if ([1,2,3].includes(lastDigit)) result = { status: 'success', brand: "Samsung", model: "S24 Ultra", release_date: "2024", est_value: 1100, specs: { battery: "5000 mAh", screen: "AMOLED", chipset: "SD 8 Gen3" } };
+                    if ([1,2,3].includes(lastDigit)) result = { status: 'success', brand: "Samsung", model: "S24 Ultra", release_date: "2024", est_value: 1100, specs: { battery: "5000mAh", screen: "AMOLED", chipset: "SD 8 Gen3" } };
                     else if ([4,5,6].includes(lastDigit)) result = { status: 'success', brand: "Apple", model: "iPhone 15 PM", release_date: "2023", est_value: 1200, specs: { battery: "4441mAh", screen: "OLED", chipset: "A17 Pro" } };
                     else result = { status: 'success', brand: "Google", model: "Pixel 8 Pro", release_date: "2023", est_value: 800, specs: { battery: "5050mAh", screen: "LTPO", chipset: "Tensor G3" } };
                     resolve(result);
