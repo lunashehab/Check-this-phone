@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Battery Diagnostics | CheckThisPhone</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --surface-dark: #1e293b;
+            --accent: #10b981; /* Green for Battery */
+            --accent-dim: rgba(16, 185, 129, 0.2);
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+        }
+
+        /* HEADER */
+        .header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        .back-btn {
+            background: none;
+            border: none;
+            color: var(--text-dim);
+            font-size: 24px;
+            cursor: pointer;
+            padding: 0;
+            margin-right: 15px;
+        }
+        .page-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        /* BATTERY HERO SECTION */
+        .hero-section {
+            background: var(--surface-dark);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #334155;
+        }
+
+        .battery-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 8px solid var(--surface-dark);
+            border-top-color: var(--accent);
+            border-right-color: var(--accent);
+            margin: 0 auto 15px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            box-shadow: 0 0 30px var(--accent-dim);
+            position: relative;
+        }
+        
+        .percentage { font-size: 32px; font-weight: 800; }
+        .status-text { font-size: 12px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; }
+
+        .charging-indicator {
+            position: absolute;
+            top: 15px; right: 15px;
+            background: var(--accent);
+            color: #000;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 700;
+            display: none; /* Hidden by default */
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse { 0% { opacity: 0.8; } 50% { opacity: 1; } 100% { opacity: 0.8; } }
+
+        /* DATA GRID */
+        .data-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        .data-card {
+            background: var(--surface-dark);
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid #334155;
+        }
+        .label { font-size: 11px; color: var(--text-dim); text-transform: uppercase; display: block; margin-bottom: 5px; }
+        .value { font-size: 16px; font-weight: 600; }
+        .input-manual {
+            background: rgba(0,0,0,0.2);
+            border: 1px solid #475569;
+            color: white;
+            padding: 5px;
+            border-radius: 4px;
+            width: 80%;
+            font-family: monospace;
+        }
+
+        /* INTERACTIVE TESTS */
+        .test-section { margin-top: 30px; }
+        .section-title { font-size: 14px; color: var(--text-dim); text-transform: uppercase; margin-bottom: 15px; letter-spacing: 1px; }
+
+        .action-card {
+            background: var(--surface-dark);
+            border: 1px solid #334155;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .action-info h3 { margin: 0 0 5px 0; font-size: 16px; }
+        .action-info p { margin: 0; font-size: 12px; color: var(--text-dim); }
+        
+        .btn-test {
+            background: var(--accent);
+            color: #0f172a;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .btn-test:active { transform: scale(0.95); }
+        .btn-test.running { background: var(--warning); color: white; }
+
+        /* PORT TEST STABILITY BAR */
+        #port-bar-container {
+            height: 6px;
+            background: #334155;
+            border-radius: 3px;
+            margin-top: 15px;
+            overflow: hidden;
+            display: none;
+        }
+        #port-bar { height: 100%; width: 100%; background: var(--accent); transition: width 0.1s; }
+
+        /* CANVAS FOR DRAIN TEST */
+        #drain-canvas {
+            display: none;
+            width: 100%;
+            height: 100px;
+            border-radius: 8px;
+            margin-top: 15px;
+            background: black;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <button class="back-btn" onclick="window.location.href='index.html'">←</button>
+        <h1 class="page-title">Battery Health</h1>
+    </div>
+
+    <div class="hero-section">
+        <div id="charging-badge" class="charging-indicator">⚡ CHARGING</div>
+        
+        <div class="battery-circle" id="battery-circle">
+            <span class="percentage" id="batt-level">--%</span>
+            <span class="status-text" id="batt-state">Scan...</span>
+        </div>
+
+        <div style="font-size: 12px; color: var(--text-dim);">
+            Real-time API Data
+        </div>
+    </div>
+
+    <div class="data-grid">
+        <div class="data-card">
+            <span class="label">Cycle Count (Manual)</span>
+            <input type="number" class="input-manual" placeholder="Enter if known">
+        </div>
+        <div class="data-card">
+            <span class="label">Time to Full</span>
+            <span class="value" id="time-full">Calculating...</span>
+        </div>
+        <div class="data-card">
+            <span class="label">Voltage (Nominal)</span>
+            <span class="value">3.85V - 4.4V</span>
+        </div>
+        <div class="data-card">
+            <span class="label">Temp (Visual Check)</span>
+            <select class="input-manual">
+                <option>Normal / Cool</option>
+                <option>Warm</option>
+                <option>Hot to Touch</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <div class="section-title">Active Diagnostics</div>
+
+        <div class="action-card">
+            <div class="action-info">
+                <h3>Port Stability Test</h3>
+                <p>Plug in cable and wiggle gently.</p>
+                <div id="port-status" style="font-size: 11px; margin-top:5px; color: var(--text-dim);">Ready</div>
+                <div id="port-bar-container"><div id="port-bar"></div></div>
+            </div>
+            <button class="btn-test" id="btn-port" onclick="startPortTest()">START</button>
+        </div>
+
+        <div class="action-card" style="display: block;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div class="action-info">
+                    <h3>Load / Drain Test</h3>
+                    <p>Stress CPU/GPU to check voltage sag.</p>
+                </div>
+                <button class="btn-test" id="btn-drain" onclick="toggleDrainTest()">STRESS</button>
+            </div>
+            <canvas id="drain-canvas"></canvas>
+            <div id="drain-stats" style="font-size: 11px; margin-top: 5px; color: var(--warning); display:none;">Running Heavy Physics Simulation... Monitor Battery %</div>
+        </div>
+
+        <div class="action-card">
+            <div class="action-info">
+                <h3>Charging Speed</h3>
+                <p>Measure time to gain 1%.</p>
+                <div id="speed-result" style="font-size: 11px; color: var(--accent); margin-top:5px;"></div>
+            </div>
+            <button class="btn-test" onclick="startSpeedTest()">TRACK</button>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    let battery;
+    
+    // --- 1. INITIALIZE BATTERY API ---
+    async function initBattery() {
+        if ('getBattery' in navigator) {
+            battery = await navigator.getBattery();
+            updateBatteryUI();
+            
+            // Listen for changes
+            battery.addEventListener('levelchange', updateBatteryUI);
+            battery.addEventListener('chargingchange', onChargingChange);
+            battery.addEventListener('chargingtimechange', updateBatteryUI);
+            battery.addEventListener('dischargingtimechange', updateBatteryUI);
+        } else {
+            document.getElementById('batt-state').innerText = "API Not Supported";
+        }
+    }
+
+    function updateBatteryUI() {
+        if(!battery) return;
+        
+        // Update Level
+        const level = Math.round(battery.level * 100);
+        document.getElementById('batt-level').innerText = level + "%";
+        
+        // Update Circle Border (Visual fill)
+        const circle = document.getElementById('battery-circle');
+        if(level < 20) circle.style.borderColor = "var(--danger)";
+        else if(level < 50) circle.style.borderColor = "var(--warning)";
+        else circle.style.borderColor = "var(--accent)";
+
+        // Update Status
+        const badge = document.getElementById('charging-badge');
+        const stateText = document.getElementById('batt-state');
+        
+        if (battery.charging) {
+            badge.style.display = "block";
+            stateText.innerText = "CHARGING";
+            
+            // Time to full
+            const time = battery.chargingTime;
+            const timeEl = document.getElementById('time-full');
+            if (time === Infinity) timeEl.innerText = "Calculating...";
+            else if (time === 0) timeEl.innerText = "Fully Charged";
+            else {
+                const hrs = Math.floor(time / 3600);
+                const mins = Math.floor((time % 3600) / 60);
+                timeEl.innerText = `${hrs}h ${mins}m`;
+            }
+
+        } else {
+            badge.style.display = "none";
+            stateText.innerText = "DISCHARGING";
+            document.getElementById('time-full').innerText = "--";
+        }
+    }
+
+    // --- 2. PORT STABILITY TEST ---
+    let portTestActive = false;
+    let disconnects = 0;
+
+    function startPortTest() {
+        if(portTestActive) return;
+        if(!battery) { alert("Battery API missing."); return; }
+        
+        portTestActive = true;
+        disconnects = 0;
+        const btn = document.getElementById('btn-port');
+        const status = document.getElementById('port-status');
+        const barContainer = document.getElementById('port-bar-container');
+        const bar = document.getElementById('port-bar');
+        
+        btn.innerText = "TESTING...";
+        btn.classList.add('running');
+        status.innerText = "Wiggle the cable gently now (10s)";
+        status.style.color = "var(--text-main)";
+        barContainer.style.display = "block";
+        bar.style.backgroundColor = "var(--accent)";
+        
+        // Start 10s countdown
+        setTimeout(() => {
+            finishPortTest();
+        }, 10000);
+    }
+
+    function onChargingChange() {
+        updateBatteryUI();
+        // If test is running and charging state flips
+        if (portTestActive) {
+            disconnects++;
+            const bar = document.getElementById('port-bar');
+            bar.style.backgroundColor = "var(--danger)"; // Flash red
+            document.getElementById('port-status').innerText = "INSTABILITY DETECTED!";
+        }
+    }
+
+    function finishPortTest() {
+        portTestActive = false;
+        const btn = document.getElementById('btn-port');
+        const status = document.getElementById('port-status');
+        
+        btn.innerText = "START";
+        btn.classList.remove('running');
+        
+        if (disconnects > 0) {
+            status.innerHTML = `<span style="color:var(--danger)">FAILED: ${disconnects} Interruptions detected. Clean port.</span>`;
+        } else {
+            status.innerHTML = `<span style="color:var(--accent)">PASSED: Connection stable.</span>`;
+        }
+    }
+
+    // --- 3. DRAIN / STRESS TEST (Canvas Particles) ---
+    let drainInterval;
+    const canvas = document.getElementById('drain-canvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+
+    function toggleDrainTest() {
+        const btn = document.getElementById('btn-drain');
+        const stats = document.getElementById('drain-stats');
+        
+        if (drainInterval) {
+            // STOP
+            clearInterval(drainInterval);
+            drainInterval = null;
+            btn.innerText = "STRESS";
+            btn.classList.remove('running');
+            canvas.style.display = "none";
+            stats.style.display = "none";
+        } else {
+            // START
+            if(battery && battery.charging) {
+                alert("Please UNPLUG charger for drain test.");
+                return;
+            }
+            btn.innerText = "STOP";
+            btn.classList.add('running');
+            canvas.style.display = "block";
+            stats.style.display = "block";
+            initParticles();
+            drainInterval = setInterval(animateParticles, 16);
+        }
+    }
+
+    function initParticles() {
+        canvas.width = canvas.parentElement.offsetWidth;
+        canvas.height = 100;
+        particles = [];
+        for(let i=0; i<100; i++) {
+            particles.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                vx: (Math.random() - 0.5) * 10,
+                vy: (Math.random() - 0.5) * 10,
+                size: Math.random() * 5
+            });
+        }
+    }
+
+    function animateParticles() {
+        // Heavy math to stress CPU
+        ctx.fillStyle = 'rgba(0,0,0,0.1)';
+        ctx.fillRect(0,0,canvas.width, canvas.height);
+        
+        ctx.fillStyle = '#10b981';
+        for(let p of particles) {
+            p.x += p.vx;
+            p.y += p.vy;
+            
+            // Bounds
+            if(p.x < 0 || p.x > canvas.width) p.vx *= -1;
+            if(p.y < 0 || p.y > canvas.height) p.vy *= -1;
+            
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.size, 0, Math.PI*2);
+            ctx.fill();
+        }
+        // Force layout recalc to stress rendering
+        canvas.style.boxShadow = `0 0 ${Math.random()*10}px var(--accent)`;
+    }
+
+    // --- 4. SPEED TEST ---
+    let startLevel = 0;
+    let startTime = 0;
+    
+    function startSpeedTest() {
+        if(!battery || !battery.charging) {
+            alert("Please PLUG IN charger first.");
+            return;
+        }
+        startLevel = battery.level;
+        startTime = Date.now();
+        document.getElementById('speed-result').innerText = `Monitoring... Current: ${Math.round(startLevel*100)}%`;
+        
+        // This is a passive monitor. We check every time level changes.
+        // We attach a specific listener for this test one-time.
+        battery.addEventListener('levelchange', checkSpeed);
+    }
+
+    function checkSpeed() {
+        const current = battery.level;
+        if (current > startLevel) {
+            const duration = (Date.now() - startTime) / 1000; // seconds
+            const mins = (duration / 60).toFixed(1);
+            document.getElementById('speed-result').innerText = `RESULT: 1% gained in ${mins} minutes.`;
+            battery.removeEventListener('levelchange', checkSpeed);
+        }
+    }
+
+    // Initialize
+    initBattery();
+
+</script>
+
+</body>
+</html>
