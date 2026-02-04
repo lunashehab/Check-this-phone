@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sensor Diagnostics | CheckThisPhone</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --surface-dark: #1e293b;
+            --accent: #f43f5e; /* Rose/Red for Sensors */
+            --accent-dim: rgba(244, 63, 94, 0.2);
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+            --success: #10b981;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+        }
+
+        /* HEADER */
+        .header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        .back-btn {
+            background: none;
+            border: none;
+            color: var(--text-dim);
+            font-size: 24px;
+            cursor: pointer;
+            padding: 0;
+            margin-right: 15px;
+        }
+        .page-title { font-size: 20px; font-weight: 700; margin: 0; }
+
+        /* VISUALIZERS GRID */
+        .viz-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .sensor-card {
+            background: var(--surface-dark);
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            height: 180px;
+            justify-content: space-between;
+        }
+        
+        .card-title { font-size: 13px; color: var(--text-dim); font-weight: 600; text-transform: uppercase; margin-bottom: 10px; }
+
+        /* BUBBLE LEVEL (ACCELEROMETER) */
+        .level-container {
+            width: 100px; height: 100px;
+            border-radius: 50%;
+            background: #0f172a;
+            border: 2px solid #334155;
+            position: relative;
+            overflow: hidden;
+        }
+        .level-crosshair {
+            position: absolute; top: 50%; left: 0; width: 100%; height: 1px; background: #334155;
+        }
+        .level-crosshair.vert { transform: rotate(90deg); }
+        
+        .bubble {
+            width: 20px; height: 20px;
+            background: var(--accent);
+            border-radius: 50%;
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            transition: all 0.1s linear; /* Smooth movement */
+            box-shadow: 0 0 10px var(--accent);
+        }
+
+        /* COMPASS (GYRO) */
+        .compass-dial {
+            width: 90px; height: 90px;
+            border: 4px solid #334155;
+            border-radius: 50%;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .compass-needle {
+            width: 4px; height: 100%;
+            background: linear-gradient(to bottom, var(--accent) 50%, white 50%);
+            position: absolute;
+            transform: rotate(0deg);
+            transition: transform 0.2s cubic-bezier(0.1, 0.7, 1.0, 0.1);
+        }
+        .compass-label {
+            font-size: 18px; font-weight: 800; margin-top: 10px;
+        }
+
+        /* DATA TABLE */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--surface-dark);
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+        .data-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #334155;
+            font-size: 13px;
+        }
+        .data-table tr:last-child td { border-bottom: none; }
+        .data-label { color: var(--text-dim); }
+        .data-val { font-family: monospace; text-align: right; color: var(--accent); }
+
+        /* BIOMETRIC STATUS */
+        .bio-box {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--success);
+            color: var(--success);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        
+        .btn-request {
+            background: var(--accent);
+            color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: 700; cursor: pointer; margin-top: 20px; width: 100%;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <button class="back-btn" onclick="window.location.href='index.html'">←</button>
+        <h1 class="page-title">Sensor Tests</h1>
+    </div>
+
+    <div class="viz-grid">
+        <div class="sensor-card">
+            <div class="card-title">Tilt (Accel)</div>
+            <div class="level-container">
+                <div class="level-crosshair"></div>
+                <div class="level-crosshair vert"></div>
+                <div class="bubble" id="bubble"></div>
+            </div>
+            <div style="font-size: 11px; margin-top: 8px;">Place Flat</div>
+        </div>
+
+        <div class="sensor-card">
+            <div class="card-title">Compass</div>
+            <div class="compass-dial">
+                <div class="compass-needle" id="needle"></div>
+            </div>
+            <div class="compass-label" id="heading-text">0° N</div>
+        </div>
+    </div>
+
+    <h3 style="font-size: 14px; margin-bottom: 10px; color: var(--text-dim);">Live Sensor Data</h3>
+    <table class="data-table">
+        <tr>
+            <td class="data-label">Gyro Alpha (Z)</td>
+            <td class="data-val" id="val-alpha">0</td>
+        </tr>
+        <tr>
+            <td class="data-label">Gyro Beta (X)</td>
+            <td class="data-val" id="val-beta">0</td>
+        </tr>
+        <tr>
+            <td class="data-label">Gyro Gamma (Y)</td>
+            <td class="data-val" id="val-gamma">0</td>
+        </tr>
+        <tr>
+            <td class="data-label">Accel X (G-Force)</td>
+            <td class="data-val" id="val-ax">0</td>
+        </tr>
+        <tr>
+            <td class="data-label">Accel Y (G-Force)</td>
+            <td class="data-val" id="val-ay">0</td>
+        </tr>
+    </table>
+
+    <div id="bio-container">
+        <div style="font-size: 11px; color: var(--text-dim); margin-bottom: 5px;">BIOMETRIC HARDWARE</div>
+        <div class="bio-box" id="bio-status">Checking API...</div>
+    </div>
+    
+    <button class="btn-request" onclick="requestPermissions()">
+        Start Sensor Stream
+    </button>
+    <p style="font-size: 11px; text-align: center; color: var(--text-dim); margin-top: 10px;">
+        iOS 13+ requires permission to access motion sensors.
+    </p>
+
+</div>
+
+<script>
+    // --- 1. SENSOR LOGIC ---
+    function requestPermissions() {
+        // iOS 13+ specific permission request
+        if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
+            DeviceMotionEvent.requestPermission()
+                .then(response => {
+                    if (response === 'granted') {
+                        startSensors();
+                    } else {
+                        alert("Permission denied.");
+                    }
+                })
+                .catch(console.error);
+        } else {
+            // Non-iOS or older devices usually just work
+            startSensors();
+        }
+    }
+
+    function startSensors() {
+        // Accelerometer & Gyro
+        window.addEventListener('deviceorientation', handleOrientation);
+        window.addEventListener('devicemotion', handleMotion);
+        
+        document.querySelector('.btn-request').style.display = 'none';
+    }
+
+    function handleOrientation(event) {
+        // Alpha: 0-360 (Compass) | Beta: -180 to 180 (Front/Back Tilt) | Gamma: -90 to 90 (Left/Right Tilt)
+        const alpha = event.alpha ? Math.round(event.alpha) : 0;
+        const beta = event.beta ? Math.round(event.beta) : 0;
+        const gamma = event.gamma ? Math.round(event.gamma) : 0;
+
+        // Update Text Data
+        document.getElementById('val-alpha').innerText = alpha;
+        document.getElementById('val-beta').innerText = beta;
+        document.getElementById('val-gamma').innerText = gamma;
+
+        // Update Compass Visual
+        // Rotate needle negative alpha to point North relative to phone
+        const needle = document.getElementById('needle');
+        needle.style.transform = `rotate(${-alpha}deg)`;
+        
+        // Update Heading Text
+        let dir = 'N';
+        if(alpha > 45 && alpha < 135) dir = 'E';
+        if(alpha >= 135 && alpha < 225) dir = 'S';
+        if(alpha >= 225 && alpha < 315) dir = 'W';
+        document.getElementById('heading-text').innerText = `${alpha}° ${dir}`;
+
+        // Update Bubble Level Visual
+        // Map beta/gamma to pixels (clamped to keep inside circle)
+        // Bubble moves OPPOSITE to tilt to simulate air bubble
+        const bubble = document.getElementById('bubble');
+        
+        let x = gamma * 2; // Sensitivity
+        let y = beta * 2;
+
+        // Clamp to circle radius (~40px)
+        const maxDist = 40;
+        if (x > maxDist) x = maxDist;
+        if (x < -maxDist) x = -maxDist;
+        if (y > maxDist) y = maxDist;
+        if (y < -maxDist) y = -maxDist;
+
+        // Translate from center (-50%, -50%) plus offset
+        bubble.style.transform = `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`;
+    }
+
+    function handleMotion(event) {
+        const ax = event.accelerationIncludingGravity.x || 0;
+        const ay = event.accelerationIncludingGravity.y || 0;
+        
+        document.getElementById('val-ax').innerText = ax.toFixed(2);
+        document.getElementById('val-ay').innerText = ay.toFixed(2);
+    }
+
+    // --- 2. BIOMETRIC CHECK ---
+    async function checkBiometrics() {
+        const box = document.getElementById('bio-status');
+        
+        if (window.PublicKeyCredential) {
+            try {
+                // We check if the platform authenticator (TouchID/FaceID) is available
+                const available = await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
+                if (available) {
+                    box.innerText = "✓ Fingerprint / Face ID Hardware Detected";
+                } else {
+                    box.innerText = "Hardware Not Detected (or not set up)";
+                    box.style.borderColor = "var(--text-dim)";
+                    box.style.color = "var(--text-dim)";
+                    box.style.background = "transparent";
+                }
+            } catch (e) {
+                box.innerText = "Biometric API Error";
+            }
+        } else {
+            box.innerText = "Biometric API Not Supported by Browser";
+        }
+    }
+    
+    // Run Bio check on load
+    checkBiometrics();
+
+</script>
+
+</body>
+</html>
