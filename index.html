@@ -24,157 +24,150 @@
         }
 
         * { box-sizing: border-box; }
+        
         body {
             font-family: 'Inter', sans-serif;
             background-color: var(--bg-dark);
             color: var(--text-main);
             margin: 0;
             padding: 0;
-            height: 100vh;
+            min-height: 100vh;
             display: flex;
-            overflow: hidden;
-        }
-
-        /* SIDEBAR */
-        .sidebar {
-            width: 260px;
-            background: var(--panel-dark);
-            border-right: 1px solid var(--border);
-            display: flex;
-            flex-direction: column;
-            padding: 25px;
-            z-index: 10;
-        }
-
-        .brand {
-            font-size: 22px;
-            font-weight: 800;
-            color: var(--text-main);
-            margin-bottom: 50px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            letter-spacing: 1px;
-        }
-        .brand span { color: var(--accent); }
-
-        .nav-menu { display: flex; flex-direction: column; gap: 5px; }
-        .nav-item {
-            padding: 12px 15px;
-            border-radius: 8px;
-            color: var(--text-dim);
-            cursor: pointer;
-            transition: 0.2s;
-            font-size: 14px;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        .nav-item:hover { background: rgba(255,255,255,0.05); color: white; }
-        .nav-item.active { background: rgba(59, 130, 246, 0.15); color: var(--accent); border-left: 3px solid var(--accent); }
-
-        /* MAIN CONTENT */
-        .main-content {
-            flex: 1;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .view-section {
-            display: none;
-            height: 100%;
+            justify-content: center; /* Center Horizontally */
+            align-items: flex-start; /* Start from top */
+            overflow-x: hidden;
             overflow-y: auto;
-            padding: 40px;
-            animation: fadeIn 0.3s ease;
         }
-        .view-section.active { display: block; }
+
+        /* CENTRAL CONTAINER (Replaces Sidebar Layout) */
+        .app-container {
+            width: 100%;
+            max-width: 800px; /* Limits width on PC */
+            padding: 20px;
+            margin-top: 20px;
+            animation: fadeIn 0.5s ease;
+        }
+
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* COMPONENTS */
-        h1 { font-size: 32px; font-weight: 700; margin-bottom: 10px; }
-        h2 { font-size: 20px; font-weight: 600; margin-bottom: 20px; border-left: 4px solid var(--accent); padding-left: 15px; }
-        .subtitle { color: var(--text-dim); margin-bottom: 30px; font-size: 15px; }
+        /* HEADER BRANDING (Centered) */
+        .brand-header {
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+        .brand-header span { color: var(--accent); }
 
+        /* VIEW SECTIONS */
+        .view-section { display: none; width: 100%; }
+        .view-section.active { display: block; }
+
+        /* INPUT GROUPS */
         .input-group {
             background: var(--panel-dark);
             border: 1px solid var(--border);
-            padding: 30px;
-            border-radius: 12px;
-            margin-bottom: 25px;
+            padding: 25px;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         }
-        .form-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+
+        /* RESPONSIVE GRID SYSTEM */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); /* 3 Columns on PC */
+            gap: 15px;
+        }
+        
+        .specs-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        /* MOBILE OPTIMIZATION */
+        @media (max-width: 768px) {
+            .form-grid { grid-template-columns: 1fr; } /* 1 Column on Phone */
+            .specs-grid { grid-template-columns: 1fr 1fr; } /* 2 Columns on Phone */
+            .app-container { padding: 15px; margin-top: 0; }
+            h1 { font-size: 28px !important; }
+            .toggle-row { flex-direction: column; align-items: flex-start; gap: 10px; }
+            .btn-toggle-wrapper { width: 100%; justify-content: space-between; }
+            .btn-toggle { flex: 1; text-align: center; }
+        }
+
+        /* FORM ELEMENTS */
         .field { display: flex; flex-direction: column; gap: 8px; }
-        label { font-size: 12px; font-weight: 600; color: var(--text-dim); }
+        label { font-size: 12px; font-weight: 600; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px; }
         input, select, textarea {
             background: var(--bg-dark);
             border: 1px solid var(--border);
             color: white;
-            padding: 12px;
-            border-radius: 6px;
+            padding: 14px;
+            border-radius: 8px;
             font-family: inherit;
             outline: none;
+            font-size: 14px;
+            width: 100%;
         }
-        input:focus { border-color: var(--accent); }
-        /* Read-only inputs look different */
-        input[readonly] { background: rgba(255,255,255,0.05); border-color: transparent; color: var(--text-dim); cursor: not-allowed; }
+        input:focus { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-glow); }
+        input[readonly] { background: rgba(255,255,255,0.03); border-color: transparent; color: var(--text-dim); cursor: not-allowed; }
+
+        /* BUTTONS */
+        .btn { padding: 14px 24px; border-radius: 8px; font-weight: 600; cursor: pointer; border: none; font-size: 14px; transition: 0.2s; width: 100%; display: flex; justify-content: center; align-items: center; gap: 10px; }
+        .btn-primary { background: var(--accent); color: white; box-shadow: 0 4px 15px var(--accent-glow); }
+        .btn-primary:hover { transform: translateY(-2px); }
+        .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text-dim); }
+        .btn-icon { width: auto; padding: 10px; }
 
         /* TOGGLES */
         .toggle-row { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid var(--border); }
         .btn-toggle-wrapper { background: var(--bg-dark); padding: 3px; border-radius: 6px; border: 1px solid var(--border); display: flex; }
-        .btn-toggle { padding: 6px 15px; font-size: 12px; cursor: pointer; border-radius: 4px; color: var(--text-dim); font-weight: 700; }
+        .btn-toggle { padding: 8px 16px; font-size: 12px; cursor: pointer; border-radius: 4px; color: var(--text-dim); font-weight: 700; transition: 0.2s; }
         .btn-toggle.active-good { background: var(--success); color: #0f172a; }
         .btn-toggle.active-bad { background: var(--danger); color: white; }
 
-        .btn { padding: 12px 24px; border-radius: 6px; font-weight: 600; cursor: pointer; border: none; font-size: 14px; transition: 0.2s; }
-        .btn-primary { background: var(--accent); color: white; box-shadow: 0 4px 15px var(--accent-glow); }
-        .btn-primary:hover { transform: translateY(-2px); }
-        .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text-dim); }
-
+        /* SCORES & SPECS */
         .score-display { position: absolute; top: 25px; right: 25px; text-align: right; }
-        .big-score { font-size: 48px; font-weight: 800; color: var(--success); line-height: 1; }
-        .score-sub { font-size: 12px; text-transform: uppercase; color: var(--text-dim); }
+        .big-score { font-size: 42px; font-weight: 800; color: var(--success); line-height: 1; }
+        .score-sub { font-size: 10px; text-transform: uppercase; color: var(--text-dim); }
 
-        /* SPECS BOX (NEW DESIGN) */
-        .specs-wrapper {
-            background: rgba(15, 23, 42, 0.6);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 20px;
-            margin-top: 20px;
-            display: none; /* Hidden until loaded */
-            animation: fadeIn 0.5s ease;
-        }
-        .specs-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 15px;
-            margin-top: 10px;
-        }
         .spec-card {
             background: rgba(59, 130, 246, 0.1);
             border: 1px solid rgba(59, 130, 246, 0.2);
-            padding: 10px;
-            border-radius: 6px;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
         }
-        .spec-label { font-size: 10px; text-transform: uppercase; color: var(--text-dim); margin-bottom: 4px; }
-        .spec-val { font-size: 13px; font-weight: 700; color: var(--accent); }
+        .spec-label { font-size: 9px; text-transform: uppercase; color: var(--text-dim); margin-bottom: 4px; }
+        .spec-val { font-size: 12px; font-weight: 700; color: var(--accent); }
 
-        /* SPINNER */
+        /* LOADER */
         .loader {
             border: 3px solid rgba(255,255,255,0.1);
-            border-top: 3px solid var(--accent);
+            border-top: 3px solid white;
             border-radius: 50%;
-            width: 20px;
-            height: 20px;
+            width: 18px;
+            height: 18px;
             animation: spin 1s linear infinite;
             display: none;
-            margin-left: 10px;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
+        /* NAVIGATION HEADER (Simple Back Button) */
+        .nav-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .back-btn { background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 5px; }
+        .back-btn:hover { color: white; }
+
         /* PRINT STYLES */
-        .report-paper { background: white; color: #0f172a; max-width: 850px; margin: 0 auto; padding: 40px; display: none; }
+        .report-paper { background: white; color: #0f172a; width: 100%; padding: 40px; display: none; border-radius: 4px; }
         .report-header { display: flex; justify-content: space-between; border-bottom: 2px solid #0f172a; padding-bottom: 20px; margin-bottom: 30px; }
         .report-grade-box { background: #f1f5f9; padding: 20px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
         .report-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
@@ -185,11 +178,11 @@
         .pill.fake { background: #fee2e2; color: #b91c1c; }
 
         @media print {
-            body { background: white; height: auto; overflow: visible; }
-            .sidebar, .app-container { display: none; }
+            body { background: white; display: block; }
+            .app-container { max-width: 100%; padding: 0; margin: 0; }
             .view-section { display: none; }
-            #view-report { display: block; padding: 0; }
-            .report-paper { display: block; box-shadow: none; width: 100%; max-width: 100%; }
+            #view-report { display: block; }
+            .report-paper { display: block; box-shadow: none; padding: 0; }
             .no-print { display: none; }
         }
     </style>
@@ -197,257 +190,193 @@
 <body>
 
     <div class="app-container">
-        <div class="sidebar">
-            <div class="brand">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="color:var(--accent)"><rect x="5" y="2" width="14" height="20" rx="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
-                CERTIFY<span>OS</span>
-            </div>
-            <div class="nav-menu">
-                <div class="nav-item active" onclick="switchView('home')">Home</div>
-                <div class="nav-item" onclick="switchView('technician')">New Diagnosis</div>
-                <div class="nav-item" onclick="switchView('knowledge')">Android Database</div>
+        
+        <div class="brand-header">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="color:var(--accent)"><rect x="5" y="2" width="14" height="20" rx="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+            CERTIFY<span>OS</span>
+        </div>
+
+        <div id="view-home" class="view-section active">
+            <div style="text-align: center; padding: 40px 0;">
+                <h1 style="font-size: 36px; margin-bottom: 15px; line-height: 1.2;">Universal <span style="color:var(--accent)">Android</span><br>Diagnostics</h1>
+                <p style="color: var(--text-dim); margin-bottom: 40px; font-size: 16px;">
+                    Enter IMEI to instantly retrieve factory specs, check blacklist status, and generate a certified report.
+                </p>
+                
+                <div class="input-group" style="padding: 10px; display: flex; flex-direction: column; gap: 15px;">
+                    <input type="text" id="home-imei-input" placeholder="Enter IMEI (e.g. 359...)" style="text-align: center; font-size: 18px; border: none; background: transparent; border-bottom: 1px solid var(--border); border-radius: 0;">
+                    <button class="btn btn-primary" onclick="initiatePaidCheck()">
+                        START DIAGNOSTICS ($1.00)
+                    </button>
+                </div>
+
+                <div style="margin-top: 20px; font-size: 12px; color: var(--text-dim); display: flex; justify-content: center; gap: 20px;">
+                    <span>🔒 256-Bit Secure</span>
+                    <span>⚡ Instant Results</span>
+                    <span>📄 PDF Certified</span>
+                </div>
             </div>
         </div>
 
-        <div class="main-content">
-
-            <div id="view-home" class="view-section active">
-                <div style="text-align: center; margin-top: 100px;">
-                    <h1 style="font-size: 48px; margin-bottom: 20px;">Android <span style="color:var(--accent)">Master Diagnostic</span></h1>
-                    <p style="color: var(--text-dim); max-width: 600px; margin: 0 auto 40px auto; font-size: 18px;">
-                        The Universal Standard for Android Verification.
-                        Get a certified detailed report for any device.
-                    </p>
-                    
-                    <div style="background: var(--panel-dark); padding: 15px; border-radius: 12px; display: inline-flex; align-items: center; gap: 15px; border: 1px solid var(--border); box-shadow: 0 10px 40px rgba(0,0,0,0.3);">
-                        <input type="text" id="home-imei-input" placeholder="Enter IMEI to Begin..." style="background: transparent; border: none; color: white; outline: none; font-size: 16px; width: 220px; border-right: 1px solid var(--border);">
-                        <button class="btn btn-primary" onclick="initiatePaidCheck()">Start Diagnostics ($1.00)</button>
-                    </div>
-
-                    <div style="margin-top: 25px; font-size: 13px; color: var(--text-dim);">
-                        <span style="color: var(--success); margin-right: 5px;">✔</span> Instant Unlock Status &nbsp;&nbsp; 
-                        <span style="color: var(--success); margin-right: 5px;">✔</span> Blacklist Check &nbsp;&nbsp; 
-                        <span style="color: var(--success); margin-right: 5px;">✔</span> Certified PDF
-                    </div>
-                </div>
+        <div id="view-technician" class="view-section">
+            <div class="nav-header">
+                <button class="back-btn" onclick="switchView('home')">← Cancel</button>
+                <div style="font-size: 12px; color: var(--success);">● SECURE CONNECTION</div>
             </div>
 
-            <div id="view-technician" class="view-section">
-                <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 20px;">
-                    <div>
-                        <h1>Technician Console</h1>
-                        <p class="subtitle">Universal Android Diagnostics</p>
-                    </div>
+            <div class="input-group">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <h2 style="margin: 0; font-size: 16px;">1. Device Identity</h2>
+                    <button class="btn btn-primary btn-icon" style="width: auto; padding: 8px 15px; font-size: 12px;" onclick="fetchDeviceDetails()">
+                        SCAN <div class="loader" id="imei-loader"></div>
+                    </button>
                 </div>
+                
+                <input type="text" id="input-imei" placeholder="IMEI Number" style="margin-bottom: 15px; font-family: monospace;">
 
-                <div class="input-group">
-                    <h2>1. Device Identity (IMEI Scan)</h2>
-                    <div style="display: flex; gap: 15px; align-items: flex-end; margin-bottom: 20px;">
-                        <div style="flex: 1;">
-                            <label>Enter Device IMEI</label>
-                            <div style="display: flex; gap: 10px;">
-                                <input type="text" id="input-imei" placeholder="e.g. 3591820..." style="flex:1;">
-                                <button class="btn btn-primary" onclick="fetchDeviceDetails()" style="display: flex; align-items: center;">
-                                    CHECK IMEI <div class="loader" id="imei-loader"></div>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div id="specs-container" class="specs-wrapper">
-                        <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding-bottom:10px; margin-bottom:10px;">
-                            <span style="font-weight:700; color:white;">DEVICE IDENTIFIED</span>
-                            <span style="color:var(--success); font-size:12px;">✓ DATASHEET LOADED</span>
-                        </div>
-                        <div class="form-grid">
-                            <div class="field">
-                                <label>Detected Model</label>
-                                <input type="text" id="auto-model" readonly>
-                            </div>
-                            <div class="field">
-                                <label>Manufacturer</label>
-                                <input type="text" id="auto-brand" readonly>
-                            </div>
-                            <div class="field">
-                                <label>Release Year</label>
-                                <input type="text" id="auto-year" readonly>
-                            </div>
-                        </div>
-                        
-                        <div class="specs-grid">
-                            <div class="spec-card">
-                                <div class="spec-label">BATTERY</div>
-                                <div class="spec-val" id="spec-battery">--</div>
-                            </div>
-                            <div class="spec-card">
-                                <div class="spec-label">SCREEN TYPE</div>
-                                <div class="spec-val" id="spec-screen">--</div>
-                            </div>
-                            <div class="spec-card">
-                                <div class="spec-label">BASE PRICE</div>
-                                <div class="spec-val" id="spec-price">--</div>
-                            </div>
-                            <div class="spec-card">
-                                <div class="spec-label">CHIPSET</div>
-                                <div class="spec-val" id="spec-chip">--</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="input-group" style="position: relative;">
-                    <h2>2. Forensic Hardware Audit</h2>
-                    <div class="score-display">
-                        <div class="big-score" id="live-score">100</div>
-                        <div class="score-sub">TRUST SCORE</div>
-                    </div>
-
-                    <div style="max-width: 70%;">
-                        <div class="toggle-row">
-                            <span style="font-weight: 600;">Display Panel</span>
-                            <div class="btn-toggle-wrapper">
-                                <div class="btn-toggle active-good" onclick="togglePart(this, 'display', true)">ORIGINAL</div>
-                                <div class="btn-toggle" onclick="togglePart(this, 'display', false)">REPLACED</div>
-                            </div>
-                        </div>
-                        <div class="toggle-row">
-                            <span style="font-weight: 600;">Battery Unit</span>
-                            <div class="btn-toggle-wrapper">
-                                <div class="btn-toggle active-good" onclick="togglePart(this, 'battery', true)">ORIGINAL</div>
-                                <div class="btn-toggle" onclick="togglePart(this, 'battery', false)">REPLACED</div>
-                            </div>
-                        </div>
-                        <div class="toggle-row">
-                            <span style="font-weight: 600;">Motherboard</span>
-                            <div class="btn-toggle-wrapper">
-                                <div class="btn-toggle active-good" onclick="togglePart(this, 'board', true)">ORIGINAL</div>
-                                <div class="btn-toggle" onclick="togglePart(this, 'board', false)">REPLACED</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="input-group">
-                    <h2>3. Grading & Valuation</h2>
+                <div id="specs-container" style="display: none;">
                     <div class="form-grid">
-                        <div class="field">
-                            <label>Cosmetic Grade</label>
-                            <select id="input-grade" onchange="calculateValuation()">
-                                <option value="A">Grade A (Mint)</option>
-                                <option value="B">Grade B (Good)</option>
-                                <option value="C">Grade C (Fair)</option>
-                                <option value="D">Grade D (Damaged)</option>
-                            </select>
-                        </div>
-                        <div class="field">
-                            <label>Battery Health %</label>
-                            <input type="number" id="input-health" value="100" oninput="calculateValuation()">
-                        </div>
-                        <div class="field">
-                            <label>Estimated Market Value</label>
-                            <div id="est-price" style="font-size: 24px; font-weight: 700; color: var(--accent); margin-top: 5px;">$0.00</div>
-                        </div>
+                        <div class="field"><label>Model</label><input type="text" id="auto-model" readonly></div>
+                        <div class="field"><label>Brand</label><input type="text" id="auto-brand" readonly></div>
+                        <div class="field"><label>Year</label><input type="text" id="auto-year" readonly></div>
                     </div>
-                </div>
-
-                <div style="text-align: right; padding-bottom: 50px;">
-                    <button class="btn btn-primary" onclick="generateReport()">GENERATE CERTIFICATE</button>
-                </div>
-            </div>
-
-            <div id="view-report" class="view-section" style="background: white;">
-                <div class="report-paper">
-                    <div class="report-header">
-                        <div style="font-size: 24px; font-weight: 800; text-transform: uppercase;">CERTIFY<span style="color: #2563eb;">OS</span></div>
-                        <div style="text-align: right; font-size: 12px; color: #64748b;">
-                            REPORT ID: <span id="report-id">...</span><br>
-                            IMEI: <span id="report-imei">...</span>
-                        </div>
-                    </div>
-                    <div class="report-grade-box">
-                        <div>
-                            <div style="font-size: 12px; font-weight: 700; color: #64748b;">TRUST SCORE</div>
-                            <div style="font-size: 42px; font-weight: 800; color: #2563eb;" id="report-score">...</div>
-                        </div>
-                        <div style="text-align: right;">
-                            <div style="font-size: 18px; font-weight: 700;" id="report-device-name">...</div>
-                            <div style="font-size: 14px; color: #16a34a; font-weight: 600;">✓ VERIFIED ANDROID</div>
-                        </div>
-                    </div>
-                    <table class="report-table">
-                        <thead><tr><th>COMPONENT</th><th>STATUS</th><th>NOTES</th></tr></thead>
-                        <tbody id="report-tbody"></tbody>
-                    </table>
-                    <div class="no-print" style="margin-top: 40px; text-align: center;">
-                        <button class="btn btn-primary" onclick="window.print()">PRINT CERTIFICATE (PDF)</button>
-                        <button class="btn btn-outline" onclick="switchView('technician')">Back to Console</button>
+                    <div class="specs-grid">
+                        <div class="spec-card"><div class="spec-label">BATTERY</div><div class="spec-val" id="spec-battery">--</div></div>
+                        <div class="spec-card"><div class="spec-label">SCREEN</div><div class="spec-val" id="spec-screen">--</div></div>
+                        <div class="spec-card"><div class="spec-label">VALUE</div><div class="spec-val" id="spec-price">--</div></div>
+                        <div class="spec-card"><div class="spec-label">CHIP</div><div class="spec-val" id="spec-chip">--</div></div>
                     </div>
                 </div>
             </div>
 
+            <div class="input-group" style="position: relative;">
+                <h2 style="margin: 0 0 20px 0; font-size: 16px;">2. Hardware Audit</h2>
+                <div class="score-display">
+                    <div class="big-score" id="live-score">100</div>
+                    <div class="score-sub">SCORE</div>
+                </div>
+
+                <div style="padding-right: 60px;"> <div class="toggle-row">
+                        <span style="font-size: 14px; font-weight: 500;">Display</span>
+                        <div class="btn-toggle-wrapper">
+                            <div class="btn-toggle active-good" onclick="togglePart(this, 'display', true)">ORIG</div>
+                            <div class="btn-toggle" onclick="togglePart(this, 'display', false)">FAKE</div>
+                        </div>
+                    </div>
+                    <div class="toggle-row">
+                        <span style="font-size: 14px; font-weight: 500;">Battery</span>
+                        <div class="btn-toggle-wrapper">
+                            <div class="btn-toggle active-good" onclick="togglePart(this, 'battery', true)">ORIG</div>
+                            <div class="btn-toggle" onclick="togglePart(this, 'battery', false)">FAKE</div>
+                        </div>
+                    </div>
+                    <div class="toggle-row">
+                        <span style="font-size: 14px; font-weight: 500;">Board</span>
+                        <div class="btn-toggle-wrapper">
+                            <div class="btn-toggle active-good" onclick="togglePart(this, 'board', true)">ORIG</div>
+                            <div class="btn-toggle" onclick="togglePart(this, 'board', false)">FAKE</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <h2 style="margin: 0 0 15px 0; font-size: 16px;">3. Final Valuation</h2>
+                <div class="form-grid">
+                    <div class="field">
+                        <label>Grade</label>
+                        <select id="input-grade" onchange="calculateValuation()">
+                            <option value="A">Grade A (Mint)</option>
+                            <option value="B">Grade B (Good)</option>
+                            <option value="C">Grade C (Fair)</option>
+                            <option value="D">Grade D (Bad)</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label>Health %</label>
+                        <input type="number" id="input-health" value="100" oninput="calculateValuation()">
+                    </div>
+                    <div class="field">
+                        <label>Est. Value</label>
+                        <div id="est-price" style="font-size: 18px; font-weight: 700; color: var(--accent); padding: 10px 0;">$0.00</div>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn btn-primary" style="margin-bottom: 50px;" onclick="generateReport()">
+                GENERATE CERTIFICATE
+            </button>
         </div>
+
+        <div id="view-report" class="view-section" style="background: white; border-radius: 8px;">
+            <div class="report-paper">
+                <div class="report-header">
+                    <div style="font-size: 24px; font-weight: 800; text-transform: uppercase;">CERTIFY<span style="color: #2563eb;">OS</span></div>
+                    <div style="text-align: right; font-size: 12px; color: #64748b;">
+                        ID: <span id="report-id">...</span><br>
+                        IMEI: <span id="report-imei">...</span>
+                    </div>
+                </div>
+                <div class="report-grade-box">
+                    <div>
+                        <div style="font-size: 12px; font-weight: 700; color: #64748b;">TRUST SCORE</div>
+                        <div style="font-size: 42px; font-weight: 800; color: #2563eb;" id="report-score">...</div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="font-size: 16px; font-weight: 700;" id="report-device-name">...</div>
+                        <div style="font-size: 12px; color: #16a34a; font-weight: 600;">✓ VERIFIED</div>
+                    </div>
+                </div>
+                <table class="report-table">
+                    <thead><tr><th>PART</th><th>STATUS</th><th>DETAILS</th></tr></thead>
+                    <tbody id="report-tbody"></tbody>
+                </table>
+                <div class="no-print" style="margin-top: 30px; display: flex; flex-direction: column; gap: 10px;">
+                    <button class="btn btn-primary" onclick="window.print()">PRINT PDF</button>
+                    <button class="btn btn-outline" onclick="switchView('home')">NEW SCAN</button>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <script>
-        // --- CONFIGURATION ---
+        // CONFIG
         const API_KEY = "DEMO_KEY"; 
-        const API_URL = "https://api.imeicheck.net/v1/checks"; 
-
+        
         let deviceState = { model: null, display: true, battery: true, board: true, grade: "A", health: 100 };
 
-        // --- NEW: PAID FLOW LOGIC ---
         function initiatePaidCheck() {
             const homeInput = document.getElementById('home-imei-input').value;
+            if (homeInput.length < 5) { alert("Please enter a valid IMEI."); return; }
             
-            if (homeInput.length < 5) {
-                alert("Please enter a valid IMEI number to continue.");
-                return;
-            }
-
-            // SIMULATE PAYMENT GATEWAY
-            // In real life, this is where Stripe/PayPal happens.
-            const userConfirmed = confirm("SECURE PAYMENT GATEWAY\n\nCharge: $1.00 USD\nService: Full Diagnostic Report\n\nClick OK to Pay & Start.");
+            const confirmed = confirm("CONFIRM PAYMENT\n\nService: Android Diagnostic\nPrice: $1.00\n\nProceed?");
             
-            if (userConfirmed) {
-                // Transfer Data to Console
+            if (confirmed) {
                 document.getElementById('input-imei').value = homeInput;
-                
-                // Switch View
                 switchView('technician');
-                
-                // Auto-Run the Check
                 fetchDeviceDetails();
             }
         }
 
-        // --- 1. REAL NETWORK REQUEST ---
         async function fetchDeviceDetails() {
             const imeiInput = document.getElementById('input-imei').value;
             const loader = document.getElementById('imei-loader');
             const specsBox = document.getElementById('specs-container');
 
-            if (imeiInput.length < 5) {
-                alert("⚠️ Please enter a valid IMEI number.");
-                return;
-            }
+            if (imeiInput.length < 5) { alert("Invalid IMEI."); return; }
 
-            loader.style.display = 'block';
+            loader.style.display = 'inline-block';
             specsBox.style.display = 'none';
 
             try {
-                // REAL API CONNECTION (Uncomment when you have a Key)
-                // const response = await fetch(`${API_URL}/${imeiInput}?token=${API_KEY}`);
-                // const data = await response.json();
-                
-                // INTELLIGENT SIMULATOR (Use this for Testing)
+                // SIMULATOR
                 const data = await simulateGlobalDatabase(imeiInput);
                 
                 if (data.status === 'success') {
-                    // Populate UI
                     document.getElementById('auto-brand').value = data.brand;
                     document.getElementById('auto-model').value = data.model;
                     document.getElementById('auto-year').value = data.release_date;
-                    
                     document.getElementById('spec-battery').innerText = data.specs.battery;
                     document.getElementById('spec-screen').innerText = data.specs.screen;
                     document.getElementById('spec-price').innerText = "$" + data.est_value;
@@ -457,59 +386,29 @@
                     deviceState.model = data;
                     calculateValuation();
                 } else {
-                    alert("❌ Device not found.");
+                    alert("Device not found.");
                 }
-
-            } catch (error) {
-                console.error(error);
-                alert("Connection Error.");
-            } finally {
-                loader.style.display = 'none';
-            }
+            } catch (e) { alert("Error connecting."); }
+            finally { loader.style.display = 'none'; }
         }
 
-        // --- 2. INTELLIGENT SIMULATOR (Dynamic Data) ---
         function simulateGlobalDatabase(imei) {
             return new Promise(resolve => {
                 setTimeout(() => {
                     const lastDigit = parseInt(imei.slice(-1)) || 0;
                     let result = {};
-
-                    if ([1, 2, 3].includes(lastDigit)) {
-                        result = {
-                            status: 'success',
-                            brand: "Samsung", model: "Galaxy S24 Ultra", release_date: "2024",
-                            est_value: 1100, specs: { battery: "5000 mAh", screen: "Dynamic AMOLED 2X", chipset: "Snapdragon 8 Gen 3" }
-                        };
-                    } else if ([4, 5, 6].includes(lastDigit)) {
-                        result = {
-                            status: 'success',
-                            brand: "Apple", model: "iPhone 15 Pro Max", release_date: "2023",
-                            est_value: 1200, specs: { battery: "4441 mAh", screen: "Super Retina XDR", chipset: "A17 Pro" }
-                        };
-                    } else if ([7, 8, 9].includes(lastDigit)) {
-                        result = {
-                            status: 'success',
-                            brand: "Google", model: "Pixel 8 Pro", release_date: "2023",
-                            est_value: 800, specs: { battery: "5050 mAh", screen: "LTPO OLED", chipset: "Tensor G3" }
-                        };
-                    } else {
-                        result = {
-                            status: 'success',
-                            brand: "Xiaomi", model: "14 Ultra", release_date: "2024",
-                            est_value: 950, specs: { battery: "5000 mAh", screen: "LTPO AMOLED", chipset: "Snapdragon 8 Gen 3" }
-                        };
-                    }
+                    // Simulation Logic
+                    if ([1,2,3].includes(lastDigit)) result = { status: 'success', brand: "Samsung", model: "S24 Ultra", release_date: "2024", est_value: 1100, specs: { battery: "5000mAh", screen: "AMOLED", chipset: "SD 8 Gen3" } };
+                    else if ([4,5,6].includes(lastDigit)) result = { status: 'success', brand: "Apple", model: "iPhone 15 PM", release_date: "2023", est_value: 1200, specs: { battery: "4441mAh", screen: "OLED", chipset: "A17 Pro" } };
+                    else result = { status: 'success', brand: "Google", model: "Pixel 8 Pro", release_date: "2023", est_value: 800, specs: { battery: "5050mAh", screen: "LTPO", chipset: "Tensor G3" } };
                     resolve(result);
                 }, 800);
             });
         }
 
-        // --- 3. VALUATION ENGINE ---
         function calculateValuation() {
             if (!deviceState.model) return;
             let val = deviceState.model.est_value; 
-            
             deviceState.grade = document.getElementById('input-grade').value;
             deviceState.health = parseInt(document.getElementById('input-health').value) || 100;
 
@@ -525,7 +424,6 @@
             updateTrustScore();
         }
 
-        // --- 4. TRUST SCORE ---
         function updateTrustScore() {
             let score = 100;
             if (!deviceState.display) score -= 15;
@@ -537,13 +435,10 @@
 
             const el = document.getElementById('live-score');
             el.innerText = Math.max(0, score);
-            if (score >= 90) el.style.color = 'var(--success)';
-            else if (score >= 70) el.style.color = 'var(--warning)';
-            else el.style.color = 'var(--danger)';
+            el.style.color = score >= 90 ? 'var(--success)' : (score >= 70 ? 'var(--warning)' : 'var(--danger)');
             return Math.max(0, score);
         }
 
-        // --- 5. UTILITIES ---
         function togglePart(btn, part, isOriginal) {
             deviceState[part] = isOriginal;
             const wrapper = btn.parentElement;
@@ -558,8 +453,7 @@
         }
 
         function generateReport() {
-            if(!deviceState.model) { alert("Please Scan IMEI first."); return; }
-            
+            if(!deviceState.model) { alert("Scan IMEI first."); return; }
             document.getElementById('report-id').innerText = "#" + Math.floor(Math.random()*1000000);
             document.getElementById('report-imei').innerText = document.getElementById('input-imei').value;
             document.getElementById('report-score').innerText = updateTrustScore() + "/100";
@@ -567,11 +461,10 @@
             
             const tbody = document.getElementById('report-tbody');
             tbody.innerHTML = `
-                <tr><td>Display Panel</td><td>${deviceState.display ? '<span class="pill orig">ORIGINAL</span>' : '<span class="pill fake">REPLACED</span>'}</td><td>${deviceState.model.specs.screen}</td></tr>
-                <tr><td>Battery Health (${document.getElementById('input-health').value}%)</td><td>${deviceState.battery ? '<span class="pill orig">ORIGINAL</span>' : '<span class="pill fake">REPLACED</span>'}</td><td>${deviceState.model.specs.battery}</td></tr>
-                <tr><td>Logic Board ID</td><td>${deviceState.board ? '<span class="pill orig">ORIGINAL</span>' : '<span class="pill fake">REPLACED</span>'}</td><td>${deviceState.model.specs.chipset}</td></tr>
+                <tr><td>DISPLAY</td><td>${deviceState.display ? '<span class="pill orig">ORIGINAL</span>' : '<span class="pill fake">REPLACED</span>'}</td><td>${deviceState.model.specs.screen}</td></tr>
+                <tr><td>BATTERY</td><td>${deviceState.battery ? '<span class="pill orig">ORIGINAL</span>' : '<span class="pill fake">REPLACED</span>'}</td><td>${deviceState.model.specs.battery}</td></tr>
+                <tr><td>BOARD</td><td>${deviceState.board ? '<span class="pill orig">ORIGINAL</span>' : '<span class="pill fake">REPLACED</span>'}</td><td>${deviceState.model.specs.chipset}</td></tr>
             `;
-            
             switchView('report');
         }
     </script>
