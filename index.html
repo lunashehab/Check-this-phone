@@ -46,6 +46,7 @@
             padding: 20px;
             margin-top: 20px;
             animation: fadeIn 0.5s ease;
+            margin-bottom: 50px; /* Space for scrolling */
         }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -112,16 +113,22 @@
             cursor: pointer;
             text-align: center;
             transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 140px; /* consistent height */
         }
-        .test-card:hover { border-color: var(--accent); background: #3b4d66; }
+        .test-card:hover { border-color: var(--accent); background: #3b4d66; transform: translateY(-3px); }
         .test-icon { font-size: 32px; display: block; margin-bottom: 10px; }
-        .test-status { font-size: 11px; color: var(--text-dim); margin-top: 5px; }
+        .test-title { font-weight: 700; font-size: 15px; color: var(--text-main); margin-bottom: 5px; }
+        .test-status { font-size: 11px; color: var(--text-dim); line-height: 1.4; }
 
         /* MOBILE OPTIMIZATION */
         @media (max-width: 768px) {
             .form-grid { grid-template-columns: 1fr; }
             .specs-grid { grid-template-columns: 1fr 1fr; }
-            .test-grid { grid-template-columns: 1fr; }
+            .test-grid { grid-template-columns: 1fr 1fr; } /* Keep 2 cols on mobile for compact look */
             .app-container { padding: 15px; margin-top: 0; }
             .brand-logo-img { width: 100%; max-height: none; } 
             .toggle-row { flex-direction: column; align-items: flex-start; gap: 10px; }
@@ -163,7 +170,7 @@
         /* NEW FREE Button */
         .btn-free {
             background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            color: #ffffff; /* White text looks better on green */
+            color: #ffffff;
             box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
         }
         .btn-free:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(16, 185, 129, 0.5); }
@@ -271,7 +278,7 @@
                     <button class="btn btn-free" onclick="switchView('diagnostics')">
                         <div style="display:flex; flex-direction: column; align-items: flex-start;">
                             <span style="font-size: 15px; font-weight: 800;">FREE DIAGNOSTICS</span>
-                            <span style="font-size: 11px; opacity: 0.9; font-weight: 500;">Speaker, Screen, Vibration</span>
+                            <span style="font-size: 11px; opacity: 0.9; font-weight: 500;">Hardware & System Check</span>
                         </div>
                         <div style="margin-left: auto; font-size: 12px; background: rgba(0,0,0,0.2); padding: 4px 8px; border-radius: 4px;">NO IMEI NEEDED</div>
                     </button>
@@ -305,37 +312,93 @@
         <div id="view-diagnostics" class="view-section">
             <div class="nav-header">
                 <button class="back-btn" onclick="switchView('home')">← Back to Home</button>
-                <div style="font-size: 12px; color: var(--success);">● BROWSER HARDWARE API</div>
+                <div style="font-size: 12px; color: var(--success);">● SYSTEM READY</div>
             </div>
 
             <div class="input-group">
-                <h2 style="margin: 0 0 10px 0; font-size: 18px;">Hardware Tests</h2>
-                <p style="color: var(--text-dim); font-size: 14px; margin-bottom: 25px;">Tap an icon below to test specific device components.</p>
+                <h2 style="margin: 0 0 10px 0; font-size: 18px;">Full System Diagnostics</h2>
+                <p style="color: var(--text-dim); font-size: 14px; margin-bottom: 25px;">Select a module to launch specific test suites.</p>
 
                 <div class="test-grid">
-                    <div class="test-card" onclick="testAudio()">
-                        <span class="test-icon">🔊</span>
-                        <div style="font-weight: 700;">Speaker Test</div>
-                        <div id="audio-status" class="test-status">Click to run sweep</div>
+                    
+                    <div class="test-card" onclick="window.location.href='tests/battery.html'">
+                        <span class="test-icon">🔋</span>
+                        <div class="test-title">Battery Health</div>
+                        <div class="test-status">Health %, Charging, Drain</div>
                     </div>
 
-                    <div class="test-card" onclick="testVibration()">
-                        <span class="test-icon">📳</span>
-                        <div style="font-weight: 700;">Vibration</div>
-                        <div id="vib-status" class="test-status">Click to test motor</div>
-                    </div>
-
-                    <div class="test-card" onclick="startScreenTest()">
+                    <div class="test-card" onclick="window.location.href='tests/display.html'">
                         <span class="test-icon">📱</span>
-                        <div style="font-weight: 700;">Dead Pixels</div>
-                        <div class="test-status">Fullscreen Color Cycle</div>
+                        <div class="test-title">Display & Touch</div>
+                        <div class="test-status">Dead Pixels, Touch, Color</div>
                     </div>
 
-                    <div class="test-card" style="opacity: 0.5; cursor: default;">
-                        <span class="test-icon">📍</span>
-                        <div style="font-weight: 700;">GPS (Pro)</div>
-                        <div class="test-status">Login Required</div>
+                    <div class="test-card" onclick="window.location.href='tests/audio.html'">
+                        <span class="test-icon">🔊</span>
+                        <div class="test-title">Audio & Speakers</div>
+                        <div class="test-status">Mic, Speaker, Water Eject</div>
                     </div>
+
+                    <div class="test-card" onclick="window.location.href='tests/camera.html'">
+                        <span class="test-icon">📷</span>
+                        <div class="test-title">Camera System</div>
+                        <div class="test-status">Focus, Zoom, Flash, OIS</div>
+                    </div>
+
+                    <div class="test-card" onclick="window.location.href='tests/sensors.html'">
+                        <span class="test-icon">🧭</span>
+                        <div class="test-title">Sensors</div>
+                        <div class="test-status">Gyro, Face ID, Fingerprint</div>
+                    </div>
+
+                    <div class="test-card" onclick="window.location.href='tests/connectivity.html'">
+                        <span class="test-icon">📡</span>
+                        <div class="test-title">Connectivity</div>
+                        <div class="test-status">Wi-Fi, Bluetooth, GPS</div>
+                    </div>
+
+                    <div class="test-card" onclick="window.location.href='tests/vibration.html'">
+                        <span class="test-icon">📳</span>
+                        <div class="test-title">Vibration</div>
+                        <div class="test-status">Motor & Haptics</div>
+                    </div>
+
+                    <div class="test-card" onclick="window.location.href='tests/performance.html'">
+                        <span class="test-icon">🚀</span>
+                        <div class="test-title">Performance</div>
+                        <div class="test-status">CPU, GPU, RAM Stress</div>
+                    </div>
+
+                    <div class="test-card" onclick="window.location.href='tests/network.html'">
+                        <span class="test-icon">📶</span>
+                        <div class="test-title">Network & SIM</div>
+                        <div class="test-status">Signal, VoLTE, SIM Tray</div>
+                    </div>
+
+                    <div class="test-card" onclick="window.location.href='tests/software.html'">
+                        <span class="test-icon">🛡️</span>
+                        <div class="test-title">Software Integrity</div>
+                        <div class="test-status">Root, Malware, Bootloader</div>
+                    </div>
+
+                    <div class="test-card" onclick="window.location.href='tests/parts.html'">
+                        <span class="test-icon">🔧</span>
+                        <div class="test-title">Parts Authenticity</div>
+                        <div class="test-status">Original vs Fake Check</div>
+                    </div>
+
+                    <div class="test-card" onclick="window.location.href='tests/security.html'">
+                        <span class="test-icon">🔐</span>
+                        <div class="test-title">Security</div>
+                        <div class="test-status">Biometrics & Encryption</div>
+                    </div>
+
+                    <div class="test-card" onclick="window.location.href='tests/ux.html'">
+                        <span class="test-icon">👆</span>
+                        <div class="test-title">User Experience</div>
+                        <div class="test-status">Lag, Crashes, Animation</div>
+                    </div>
+
                 </div>
             </div>
             
@@ -485,74 +548,6 @@
             if(id === 'home') {
                 document.getElementById('screen-test-overlay').style.display = 'none';
             }
-        }
-
-        // --- FREE DIAGNOSTICS LOGIC ---
-        function testAudio() {
-            const status = document.getElementById('audio-status');
-            status.innerText = "Playing Tone...";
-            status.style.color = "var(--accent)";
-
-            const AudioContext = window.AudioContext || window.webkitAudioContext;
-            if (!AudioContext) { alert("Audio API not supported"); return; }
-            
-            const ctx = new AudioContext();
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-
-            osc.connect(gain);
-            gain.connect(ctx.destination);
-
-            osc.frequency.value = 200; 
-            osc.frequency.linearRampToValueAtTime(800, ctx.currentTime + 1);
-            
-            osc.start();
-            osc.stop(ctx.currentTime + 1); 
-
-            setTimeout(() => {
-                status.innerText = "Test Complete";
-                status.style.color = "var(--success)";
-            }, 1500);
-        }
-
-        function testVibration() {
-            const status = document.getElementById('vib-status');
-            if (!navigator.vibrate) {
-                status.innerText = "Not supported on device";
-                return;
-            }
-            status.innerText = "Vibrating...";
-            status.style.color = "var(--accent)";
-            
-            navigator.vibrate([200, 100, 200]);
-
-            setTimeout(() => {
-                status.innerText = "Test Complete";
-                status.style.color = "var(--success)";
-            }, 1000);
-        }
-
-        // Screen Test Variables
-        const colors = ['#ef4444', '#10b981', '#3b82f6', '#ffffff', '#000000'];
-        let colorIndex = 0;
-
-        function startScreenTest() {
-            const overlay = document.getElementById('screen-test-overlay');
-            overlay.style.display = 'block';
-            colorIndex = 0; // Reset
-            cycleColors();
-            setTimeout(() => alert("Tap screen to cycle colors. Keep tapping to exit."), 100);
-        }
-
-        function cycleColors() {
-            const overlay = document.getElementById('screen-test-overlay');
-            if (colorIndex >= colors.length) {
-                overlay.style.display = 'none';
-                colorIndex = 0;
-                return;
-            }
-            overlay.style.backgroundColor = colors[colorIndex];
-            colorIndex++;
         }
 
         // --- PAID LOGIC ---
