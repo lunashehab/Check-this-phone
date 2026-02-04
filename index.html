@@ -20,10 +20,10 @@
             --success: #10b981;
             --danger: #ef4444;
             --warning: #f59e0b;
-            --border: #334155;
+            --border: rgba(255,255,255,0.08);
         }
 
-        * { box-sizing: border-box; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         
         body {
             font-family: 'Inter', sans-serif;
@@ -44,12 +44,13 @@
             max-width: 800px;
             padding: 20px;
             margin-top: 20px;
-            animation: fadeIn 0.5s ease;
+            animation: fadeIn 0.6s cubic-bezier(0.22, 1, 0.36, 1);
             margin-bottom: 50px;
         }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
+        /* BRANDING */
         .brand-header {
             text-align: center;
             margin-bottom: 40px; 
@@ -60,25 +61,83 @@
 
         .brand-logo-img {
             width: 100%;             
-            max-width: 900px;        
+            max-width: 600px;        
             height: auto;            
             display: block;
             margin: 0 auto;
-            filter: drop-shadow(0 0 35px rgba(59, 130, 246, 0.5)); 
+            filter: drop-shadow(0 0 35px var(--accent-glow)); 
         }
 
+        /* VIEW SECTIONS */
         .view-section { display: none; width: 100%; }
         .view-section.active { display: block; }
 
+        /* INPUT GROUPS */
         .input-group {
             background: var(--panel-dark);
             border: 1px solid var(--border);
             padding: 25px;
-            border-radius: 16px;
+            border-radius: 24px;
             margin-bottom: 20px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         }
 
+        /* BENTO GRID (For Diagnostics) */
+        .bento-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        
+        .bento-card {
+            background: var(--surface-dark);
+            border: 1px solid var(--border);
+            padding: 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 140px;
+        }
+        .bento-card:hover { 
+            border-color: var(--accent); 
+            background: #243045; 
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+        .card-icon { font-size: 32px; display: block; margin-bottom: 10px; }
+        .card-title { font-weight: 700; font-size: 15px; color: var(--text-main); margin-bottom: 5px; }
+        .card-sub { font-size: 11px; color: var(--text-dim); line-height: 1.4; }
+
+        /* IMEI SEARCH BAR */
+        .search-container {
+            background: var(--panel-dark);
+            border-radius: 24px;
+            padding: 8px;
+            display: flex;
+            align-items: center;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+        }
+        
+        .search-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: white;
+            padding: 12px 20px;
+            font-size: 18px;
+            font-weight: 600;
+            outline: none;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* FORMS & GRIDS */
         .form-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr); 
@@ -92,80 +151,70 @@
             margin-top: 15px;
         }
 
-        .test-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-        
-        .test-card {
-            background: var(--surface-dark);
-            border: 1px solid var(--border);
-            padding: 20px;
-            border-radius: 12px;
-            cursor: pointer;
+        .spec-card {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            padding: 12px;
+            border-radius: 8px;
             text-align: center;
-            transition: all 0.2s;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            min-height: 140px;
         }
-        .test-card:hover { border-color: var(--accent); background: #3b4d66; transform: translateY(-3px); }
-        .test-icon { font-size: 32px; display: block; margin-bottom: 10px; }
-        .test-title { font-weight: 700; font-size: 15px; color: var(--text-main); margin-bottom: 5px; }
-        .test-status { font-size: 11px; color: var(--text-dim); line-height: 1.4; }
+        .spec-label { font-size: 9px; text-transform: uppercase; color: var(--text-dim); margin-bottom: 4px; }
+        .spec-val { font-size: 12px; font-weight: 700; color: var(--accent); }
 
+        /* BUTTONS */
+        .btn { padding: 16px 24px; border-radius: 16px; font-weight: 800; cursor: pointer; border: none; font-size: 15px; transition: 0.2s; width: 100%; display: flex; justify-content: center; align-items: center; gap: 10px; }
+        .btn-primary { background: var(--accent); color: white; box-shadow: 0 4px 15px var(--accent-glow); }
+        .btn-gold { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4); }
+        .btn-free { background: #1e293b; color: #ffffff; border: 1px solid var(--border); }
+        .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text-dim); }
+
+        /* MOBILE OPTIMIZATION */
         @media (max-width: 768px) {
             .form-grid { grid-template-columns: 1fr; }
             .specs-grid { grid-template-columns: 1fr 1fr; }
-            .test-grid { grid-template-columns: 1fr 1fr; }
-            .app-container { padding: 15px; margin-top: 0; }
-            .brand-logo-img { width: 100%; max-height: none; } 
-            .toggle-row { flex-direction: column; align-items: flex-start; gap: 10px; }
-            .btn-toggle-wrapper { width: 100%; justify-content: space-between; }
-            .btn-toggle { flex: 1; text-align: center; }
+            .bento-grid { grid-template-columns: 1fr 1fr; }
         }
 
-        .field { display: flex; flex-direction: column; gap: 8px; }
-        label { font-size: 12px; font-weight: 600; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px; }
-        input, select, textarea {
-            background: var(--bg-dark);
-            border: 1px solid var(--border);
-            color: white;
-            padding: 14px;
-            border-radius: 8px;
-            font-family: inherit;
-            outline: none;
-            font-size: 14px;
-            width: 100%;
-        }
-        input:focus { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-glow); }
-        input[readonly] { background: rgba(255,255,255,0.03); border-color: transparent; color: var(--text-dim); cursor: not-allowed; }
-
-        .btn { padding: 16px 24px; border-radius: 8px; font-weight: 700; cursor: pointer; border: none; font-size: 15px; transition: 0.2s; width: 100%; display: flex; justify-content: center; align-items: center; gap: 10px; }
-        .btn-primary { background: var(--accent); color: white; box-shadow: 0 4px 15px var(--accent-glow); }
-        .btn-gold { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4); }
-        .btn-free { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4); }
-
-        .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text-dim); }
-        .btn-icon { width: auto; padding: 10px; }
-
+        /* TOGGLES */
         .toggle-row { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid var(--border); }
         .btn-toggle-wrapper { background: var(--bg-dark); padding: 3px; border-radius: 6px; border: 1px solid var(--border); display: flex; }
         .btn-toggle { padding: 8px 16px; font-size: 12px; cursor: pointer; border-radius: 4px; color: var(--text-dim); font-weight: 700; transition: 0.2s; }
         .btn-toggle.active-good { background: var(--success); color: #0f172a; }
         .btn-toggle.active-bad { background: var(--danger); color: white; }
 
+        /* SCORES */
         .score-display { position: absolute; top: 25px; right: 25px; text-align: right; }
         .big-score { font-size: 42px; font-weight: 800; color: var(--success); line-height: 1; }
         .score-sub { font-size: 10px; text-transform: uppercase; color: var(--text-dim); }
 
-        .nav-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .back-btn { background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 5px; }
+        /* NAV HEADER */
+        .nav-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+        .back-btn { background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
 
-        .report-paper { background: white; color: #0f172a; width: 100%; padding: 40px; display: none; border-radius: 4px; }
+        /* REPORT PAPER */
+        .report-paper { background: white; color: #0f172a; width: 100%; padding: 40px; border-radius: 12px; }
+        .report-header { display: flex; justify-content: space-between; border-bottom: 2px solid #0f172a; padding-bottom: 20px; margin-bottom: 30px; }
+        .report-brand-text { font-size: 24px; font-weight: 800; text-transform: uppercase; color: #0f172a; }
+        .report-brand-text span { color: #2563eb; }
+        .report-grade-box { background: #f1f5f9; padding: 20px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .report-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        .report-table th { text-align: left; border-bottom: 1px solid #e2e8f0; padding: 10px; color: #64748b; font-size: 12px; }
+        .report-table td { border-bottom: 1px solid #e2e8f0; padding: 12px 10px; font-weight: 600; }
+        .pill { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+        .pill.orig { background: #dcfce7; color: #15803d; }
+        .pill.fake { background: #fee2e2; color: #b91c1c; }
+
+        .loader { border: 3px solid rgba(255,255,255,0.1); border-top: 3px solid white; border-radius: 50%; width: 18px; height: 18px; animation: spin 1s linear infinite; display: none; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        @media print {
+            body { background: white; display: block; }
+            .app-container { max-width: 100%; padding: 0; margin: 0; }
+            .brand-header, .no-print { display: none !important; } 
+            .view-section { display: none; }
+            #view-report { display: block; }
+            .report-paper { box-shadow: none; padding: 0; }
+        }
     </style>
 </head>
 <body>
@@ -177,44 +226,41 @@
         </div>
 
         <div id="view-home" class="view-section active">
-            <div style="text-align: center; padding: 0 0 20px 0;">
-                
-                <p style="color: var(--text-dim); margin-bottom: 40px; font-size: 16px;">
-                    Universal Diagnostic Standard. Retrieve factory specs, check blacklist status, or run instant hardware tests.
+            <div style="text-align: center;">
+                <h1 style="font-size: 32px; font-weight: 800; margin-bottom: 10px; letter-spacing: -0.5px;">The Gold Standard for Phone Verification</h1>
+                <p style="color: var(--text-dim); margin-bottom: 40px; font-size: 16px; max-width: 500px; margin-left: auto; margin-right: auto;">
+                    Universal hardware diagnostics and IMEI blacklist standards for buyers, sellers, and technicians.
                 </p>
                 
-                <div class="input-group" style="padding: 25px; display: flex; flex-direction: column; gap: 20px;">
-                    
-                    <div style="text-align: left;">
-                        <label style="margin-left: 5px; margin-bottom: 5px; display: block;">Device IMEI (Optional for Free Test)</label>
-                        <input type="text" id="home-imei-input" placeholder="e.g. 3591820..." style="text-align: center; font-size: 18px; padding: 16px; font-family: monospace;">
-                    </div>
+                <div class="search-container">
+                    <input type="text" id="home-imei-input" class="search-input" placeholder="Enter IMEI Number..." maxlength="15">
+                    <button class="btn btn-primary" style="width: auto; padding: 10px 25px; border-radius: 18px;" onclick="initiatePaidCheck()">GO</button>
+                </div>
 
-                    <div style="height: 1px; background: var(--border); margin: 5px 0;"></div>
-
+                <div style="display: flex; flex-direction: column; gap: 12px;">
                     <button class="btn btn-free" onclick="switchView('diagnostics')">
-                        <div style="display:flex; flex-direction: column; align-items: flex-start;">
-                            <span style="font-size: 15px; font-weight: 800;">FREE DIAGNOSTICS</span>
-                            <span style="font-size: 11px; opacity: 0.9; font-weight: 500;">Hardware & System Check</span>
+                        <span>⚡</span>
+                        <div style="text-align: left;">
+                            <div style="font-size: 14px; font-weight: 700;">Instant Diagnostics</div>
+                            <div style="font-size: 10px; color: var(--text-dim);">Run 13 Free Hardware Modules</div>
                         </div>
-                        <div style="margin-left: auto; font-size: 12px; background: rgba(0,0,0,0.2); padding: 4px 8px; border-radius: 4px;">NO IMEI NEEDED</div>
-                    </button>
-
-                    <button class="btn btn-primary" onclick="initiatePaidCheck()">
-                        <div style="display:flex; flex-direction: column; align-items: flex-start;">
-                            <span style="font-size: 15px; font-weight: 800;">SELLER / BUYER</span>
-                            <span style="font-size: 11px; opacity: 0.8; font-weight: 500;">Full One-Time Report</span>
-                        </div>
-                        <div style="margin-left: auto; font-size: 18px;">$1.00</div>
+                        <span style="margin-left: auto; font-size: 10px; opacity: 0.5;">FREE</span>
                     </button>
 
                     <button class="btn btn-gold" onclick="initiateSubscription()">
-                        <div style="display:flex; flex-direction: column; align-items: flex-start;">
-                            <span style="font-size: 15px; font-weight: 800;">STORE / TECHNICIAN</span>
-                            <span style="font-size: 11px; opacity: 0.9; font-weight: 500;">Unlimited Monthly Access</span>
+                        <span>💎</span>
+                        <div style="text-align: left;">
+                            <div style="font-size: 14px; font-weight: 700;">Pro Technician Access</div>
+                            <div style="font-size: 10px; opacity: 0.9;">Unlimited Monthly Reports & Access</div>
                         </div>
-                        <div style="margin-left: auto; font-size: 18px;">$14.99</div>
+                        <span style="margin-left: auto; font-size: 14px; font-weight: 900;">$14.99</span>
                     </button>
+                </div>
+
+                <div style="margin-top: 30px; font-size: 11px; color: var(--text-dim); display: flex; justify-content: center; gap: 20px;">
+                    <span>🔒 256-Bit Secure</span>
+                    <span>📄 PDF Certified</span>
+                    <span>✓ CTIA Standards</span>
                 </div>
             </div>
         </div>
@@ -222,87 +268,91 @@
         <div id="view-diagnostics" class="view-section">
             <div class="nav-header">
                 <button class="back-btn" onclick="switchView('home')">← Back to Home</button>
-                <div style="font-size: 12px; color: var(--success);">● SYSTEM READY</div>
+                <div style="font-size: 11px; color: var(--success); font-weight: 700;">● SYSTEM ONLINE</div>
             </div>
 
             <div class="input-group">
-                <h2 style="margin: 0 0 10px 0; font-size: 18px;">Full System Diagnostics</h2>
-                <p style="color: var(--text-dim); font-size: 14px; margin-bottom: 25px;">Select a module to launch specific test suites.</p>
+                <h2 style="margin: 0 0 5px 0; font-size: 20px; font-weight: 800;">Diagnostic Suite</h2>
+                <p style="color: var(--text-dim); font-size: 14px; margin-bottom: 25px;">Select a module to begin hardware integrity testing.</p>
 
-                <div class="test-grid">
-                    <div class="test-card" onclick="window.location.href='tests/battery.html'">
-                        <span class="test-icon">🔋</span>
-                        <div class="test-title">Battery Health</div>
-                        <div class="test-status">Cycles, Health, Drain</div>
+                <div class="bento-grid">
+                    <div class="bento-card" onclick="window.location.href='tests/battery.html'">
+                        <span class="card-icon">🔋</span>
+                        <div class="card-title">Battery</div>
+                        <div class="card-sub">Health & Drain</div>
                     </div>
-                    <div class="test-card" onclick="window.location.href='tests/display.html'">
-                        <span class="test-icon">📱</span>
-                        <div class="test-title">Display & Touch</div>
-                        <div class="test-status">Dead Pixels, Touch, Color</div>
+                    <div class="bento-card" onclick="window.location.href='tests/display.html'">
+                        <span class="card-icon">📱</span>
+                        <div class="card-title">Display</div>
+                        <div class="card-sub">Pixels & Touch</div>
                     </div>
-                    <div class="test-card" onclick="window.location.href='tests/audio.html'">
-                        <span class="test-icon">🔊</span>
-                        <div class="test-title">Audio & Speakers</div>
-                        <div class="test-status">Mic, Speaker, Water Eject</div>
+                    <div class="bento-card" onclick="window.location.href='tests/audio.html'">
+                        <span class="card-icon">🔊</span>
+                        <div class="card-title">Audio</div>
+                        <div class="card-sub">Mic & Stereo</div>
                     </div>
-                    <div class="test-card" onclick="window.location.href='tests/camera.html'">
-                        <span class="test-icon">📷</span>
-                        <div class="test-title">Camera System</div>
-                        <div class="test-status">Focus, Zoom, Flash, OIS</div>
+                    <div class="bento-card" onclick="window.location.href='tests/camera.html'">
+                        <span class="card-icon">📷</span>
+                        <div class="card-title">Camera</div>
+                        <div class="card-sub">Focus & Zoom</div>
                     </div>
-                    <div class="test-card" onclick="window.location.href='tests/sensors.html'">
-                        <span class="test-icon">🧭</span>
-                        <div class="test-title">Sensors</div>
-                        <div class="test-status">Gyro, Compass, Bio</div>
+                    <div class="bento-card" onclick="window.location.href='tests/sensors.html'">
+                        <span class="card-icon">🧭</span>
+                        <div class="card-title">Sensors</div>
+                        <div class="card-sub">Gyro & Bio</div>
                     </div>
-                    <div class="test-card" onclick="window.location.href='tests/connectivity.html'">
-                        <span class="test-icon">📡</span>
-                        <div class="test-title">Connectivity</div>
-                        <div class="test-status">Wi-Fi, BT, GPS fix</div>
+                    <div class="bento-card" onclick="window.location.href='tests/connectivity.html'">
+                        <span class="card-icon">📡</span>
+                        <div class="card-title">Wireless</div>
+                        <div class="card-sub">Wi-Fi & GPS</div>
                     </div>
-                    <div class="test-card" onclick="window.location.href='tests/vibration.html'">
-                        <span class="test-icon">📳</span>
-                        <div class="test-title">Vibration</div>
-                        <div class="test-status">Motor & Haptics</div>
+                    <div class="bento-card" onclick="window.location.href='tests/vibration.html'">
+                        <span class="card-icon">📳</span>
+                        <div class="card-title">Vibration</div>
+                        <div class="card-sub">Haptics Test</div>
                     </div>
-                    <div class="test-card" onclick="window.location.href='tests/performance.html'">
-                        <span class="test-icon">🚀</span>
-                        <div class="test-title">Performance</div>
-                        <div class="test-status">CPU, GPU, Stress</div>
+                    <div class="bento-card" onclick="window.location.href='tests/performance.html'">
+                        <span class="card-icon">🚀</span>
+                        <div class="card-title">Performance</div>
+                        <div class="card-sub">CPU Stress</div>
                     </div>
-                    <div class="test-card" onclick="window.location.href='tests/network.html'">
-                        <span class="test-icon">📶</span>
-                        <div class="test-title">Network & SIM</div>
-                        <div class="test-status">Signal, VoLTE, APN</div>
+                    <div class="bento-card" onclick="window.location.href='tests/network.html'">
+                        <span class="card-icon">📶</span>
+                        <div class="card-title">Network</div>
+                        <div class="card-sub">SIM & Signal</div>
                     </div>
-                    <div class="test-card" onclick="window.location.href='tests/software.html'">
-                        <span class="test-icon">🛡️</span>
-                        <div class="test-title">Software Audit</div>
-                        <div class="test-status">Root, Malware, Integrity</div>
+                    <div class="bento-card" onclick="window.location.href='tests/software.html'">
+                        <span class="card-icon">🛡️</span>
+                        <div class="card-title">Software</div>
+                        <div class="card-sub">Root Audit</div>
                     </div>
-                    <div class="test-card" onclick="window.location.href='tests/parts.html'">
-                        <span class="test-icon">🔧</span>
-                        <div class="test-title">Parts Authenticity</div>
-                        <div class="test-status">Original vs Aftermarket</div>
+                    <div class="bento-card" onclick="window.location.href='tests/parts.html'">
+                        <span class="card-icon">🔧</span>
+                        <div class="card-title">Parts</div>
+                        <div class="card-sub">Authenticity</div>
                     </div>
-                    <div class="test-card" onclick="window.location.href='tests/security.html'">
-                        <span class="test-icon">🔐</span>
-                        <div class="test-title">Security</div>
-                        <div class="test-status">Biometrics & Encryption</div>
+                    <div class="bento-card" onclick="window.location.href='tests/security.html'">
+                        <span class="card-icon">🔐</span>
+                        <div class="card-title">Security</div>
+                        <div class="card-sub">Encryption</div>
                     </div>
-                    <div class="test-card" onclick="window.location.href='tests/ux.html'">
-                        <span class="test-icon">👆</span>
-                        <div class="test-title">User Experience</div>
-                        <div class="test-status">Lag, FPS, Keyboard</div>
+                    <div class="bento-card" onclick="window.location.href='tests/ux.html'" style="grid-column: span 2; min-height: 100px;">
+                        <span class="card-icon">👆</span>
+                        <div class="card-title">User Experience</div>
+                        <div class="card-sub">Animation Smoothness & Input Latency</div>
                     </div>
                 </div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 20px;">
+                <button class="btn btn-primary" onclick="switchView('home')" style="max-width: 300px; margin: 0 auto;">Get Certified Report ($1)</button>
             </div>
         </div>
 
         <div id="view-technician" class="view-section">
             <div class="nav-header">
                 <button class="back-btn" onclick="switchView('home')">← Cancel</button>
-                <div style="font-size: 12px; color: var(--success);">● SECURE CONNECTION</div>
+                <div style="font-size: 12px; color: var(--success);">● AUDIT MODE</div>
             </div>
 
             <div class="input-group">
@@ -313,13 +363,13 @@
                     </button>
                 </div>
                 
-                <input type="text" id="input-imei" placeholder="IMEI Number" style="margin-bottom: 15px; font-family: monospace;">
+                <input type="text" id="input-imei" placeholder="IMEI Number" style="background: var(--bg-dark); border: 1px solid var(--border); color: white; padding: 14px; border-radius: 8px; width: 100%; font-family: monospace;">
 
-                <div id="specs-container" style="display: none;">
+                <div id="specs-container" style="display: none; margin-top: 15px;">
                     <div class="form-grid">
-                        <div class="field"><label>Model</label><input type="text" id="auto-model" readonly></div>
-                        <div class="field"><label>Brand</label><input type="text" id="auto-brand" readonly></div>
-                        <div class="field"><label>Year</label><input type="text" id="auto-year" readonly></div>
+                        <div class="field"><label>Model</label><input type="text" id="auto-model" readonly style="background: rgba(255,255,255,0.03); border: 1px solid transparent; color: var(--text-dim); padding: 10px; border-radius: 8px;"></div>
+                        <div class="field"><label>Brand</label><input type="text" id="auto-brand" readonly style="background: rgba(255,255,255,0.03); border: 1px solid transparent; color: var(--text-dim); padding: 10px; border-radius: 8px;"></div>
+                        <div class="field"><label>Year</label><input type="text" id="auto-year" readonly style="background: rgba(255,255,255,0.03); border: 1px solid transparent; color: var(--text-dim); padding: 10px; border-radius: 8px;"></div>
                     </div>
                     <div class="specs-grid">
                         <div class="spec-card"><div class="spec-label">BATTERY</div><div class="spec-val" id="spec-battery">--</div></div>
@@ -346,14 +396,14 @@
                         </div>
                     </div>
                     <div class="toggle-row">
-                        <span>Battery</span>
+                        <span style="font-size: 14px; font-weight: 500;">Battery</span>
                         <div class="btn-toggle-wrapper">
                             <div class="btn-toggle active-good" onclick="togglePart(this, 'battery', true)">ORIG</div>
                             <div class="btn-toggle" onclick="togglePart(this, 'battery', false)">FAKE</div>
                         </div>
                     </div>
                     <div class="toggle-row">
-                        <span>Board</span>
+                        <span style="font-size: 14px; font-weight: 500;">Board</span>
                         <div class="btn-toggle-wrapper">
                             <div class="btn-toggle active-good" onclick="togglePart(this, 'board', true)">ORIG</div>
                             <div class="btn-toggle" onclick="togglePart(this, 'board', false)">FAKE</div>
@@ -367,7 +417,7 @@
                 <div class="form-grid">
                     <div class="field">
                         <label>Grade</label>
-                        <select id="input-grade" onchange="calculateValuation()">
+                        <select id="input-grade" onchange="calculateValuation()" style="background: var(--bg-dark); border: 1px solid var(--border); color: white; padding: 14px; border-radius: 8px;">
                             <option value="A">Grade A (Mint)</option>
                             <option value="B">Grade B (Good)</option>
                             <option value="C">Grade C (Fair)</option>
@@ -376,7 +426,7 @@
                     </div>
                     <div class="field">
                         <label>Health %</label>
-                        <input type="number" id="input-health" value="100" oninput="calculateValuation()">
+                        <input type="number" id="input-health" value="100" oninput="calculateValuation()" style="background: var(--bg-dark); border: 1px solid var(--border); color: white; padding: 14px; border-radius: 8px;">
                     </div>
                     <div class="field">
                         <label>Est. Value</label>
@@ -394,12 +444,25 @@
             <div class="report-paper">
                 <div class="report-header">
                     <div class="report-brand-text">CheckThisPhone<span>.com</span></div>
-                    <div style="text-align: right; font-size: 12px; color: #64748b;">IMEI: <span id="report-imei"></span></div>
+                    <div style="text-align: right; font-size: 12px; color: #64748b;">
+                        ID: <span id="report-id">...</span><br>
+                        IMEI: <span id="report-imei">...</span>
+                    </div>
                 </div>
                 <div class="report-grade-box">
-                    <div style="font-size: 42px; font-weight: 800; color: #2563eb;" id="report-score"></div>
-                    <div style="text-align: right; font-weight: 700;" id="report-device-name"></div>
+                    <div>
+                        <div style="font-size: 12px; font-weight: 700; color: #64748b;">TRUST SCORE</div>
+                        <div style="font-size: 42px; font-weight: 800; color: #2563eb;" id="report-score">...</div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="font-size: 16px; font-weight: 700;" id="report-device-name">...</div>
+                        <div style="font-size: 12px; color: #16a34a; font-weight: 600;">✓ VERIFIED</div>
+                    </div>
                 </div>
+                <table class="report-table">
+                    <thead><tr><th>PART</th><th>STATUS</th><th>DETAILS</th></tr></thead>
+                    <tbody id="report-tbody"></tbody>
+                </table>
                 <div class="no-print" style="margin-top: 30px; display: flex; flex-direction: column; gap: 10px;">
                     <button class="btn btn-primary" onclick="window.print()">PRINT PDF</button>
                     <button class="btn btn-outline" onclick="switchView('home')">NEW SCAN</button>
@@ -415,38 +478,38 @@
         function switchView(id) {
             document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
             document.getElementById('view-' + id).classList.add('active');
+            window.scrollTo(0,0);
         }
 
         function initiatePaidCheck() {
-            const imei = document.getElementById('home-imei-input').value;
-            if (imei.length < 5) { alert("Please enter a valid IMEI."); return; }
-            const confirmed = confirm("CONFIRM PURCHASE\n\nService: Single Diagnostic Report\nPrice: $1.00 USD\n\nClick OK to Pay & Start.");
-            if (confirmed) {
-                document.getElementById('input-imei').value = imei;
+            const val = document.getElementById('home-imei-input').value;
+            if(val.length < 5) { alert("Invalid IMEI"); return; }
+            const confirmed = confirm("Confirm Diagnostic Purchase ($1.00)?");
+            if(confirmed) {
+                document.getElementById('input-imei').value = val;
                 switchView('technician');
                 fetchDeviceDetails();
             }
         }
 
         function initiateSubscription() {
-            const imei = document.getElementById('home-imei-input').value;
-            if (imei.length < 5) { alert("Please enter a valid IMEI."); return; }
-            const confirmed = confirm("CONFIRM SUBSCRIPTION\n\nPlan: Unlimited Monthly Access\nPrice: $14.99 USD / Month\n\nClick OK to Subscribe & Start.");
-            if (confirmed) {
-                document.getElementById('input-imei').value = imei;
-                switchView('technician');
-                fetchDeviceDetails();
-            }
+            const val = document.getElementById('home-imei-input').value;
+            if(val.length < 5) { alert("Invalid IMEI"); return; }
+            document.getElementById('input-imei').value = val;
+            switchView('technician');
+            fetchDeviceDetails();
         }
 
         async function fetchDeviceDetails() {
-            const imei = document.getElementById('input-imei').value;
+            const imeiInput = document.getElementById('input-imei').value;
             const loader = document.getElementById('imei-loader');
             const specsBox = document.getElementById('specs-container');
-            if (imei.length < 5) { alert("Invalid IMEI."); return; }
+
+            if (imeiInput.length < 5) { alert("Invalid IMEI."); return; }
+
             loader.style.display = 'inline-block';
             specsBox.style.display = 'none';
-            
+
             // SIMULATOR DATA
             setTimeout(() => {
                 const data = { status: 'success', brand: "Samsung", model: "S24 Ultra", release_date: "2024", est_value: 1100, specs: { battery: "5000mAh", screen: "AMOLED", chipset: "SD 8 Gen3" } };
@@ -478,12 +541,15 @@
             let val = deviceState.model.est_value; 
             deviceState.grade = document.getElementById('input-grade').value;
             deviceState.health = parseInt(document.getElementById('input-health').value) || 100;
+
             if (deviceState.grade === 'B') val *= 0.85;
             if (deviceState.grade === 'C') val *= 0.70;
             if (deviceState.grade === 'D') val *= 0.40;
+            
             if (!deviceState.display) val -= 150;
             if (!deviceState.battery) val -= 50;
             if (deviceState.health < 85) val -= (val * 0.1);
+
             document.getElementById('est-price').innerText = "$" + Math.max(0, val).toFixed(2);
             updateTrustScore();
         }
@@ -495,6 +561,7 @@
             if (!deviceState.board) score -= 50;
             if (deviceState.grade === 'C') score -= 20;
             if (deviceState.grade === 'D') score -= 40;
+
             const el = document.getElementById('live-score');
             el.innerText = Math.max(0, score);
             el.style.color = score >= 90 ? 'var(--success)' : (score >= 70 ? 'var(--warning)' : 'var(--danger)');
@@ -502,10 +569,18 @@
         }
 
         function generateReport() {
-            if(!deviceState.model) return;
+            if(!deviceState.model) { alert("Scan IMEI first."); return; }
+            document.getElementById('report-id').innerText = "#" + Math.floor(Math.random()*1000000);
             document.getElementById('report-imei').innerText = document.getElementById('input-imei').value;
             document.getElementById('report-score').innerText = updateTrustScore() + "/100";
             document.getElementById('report-device-name').innerText = deviceState.model.brand + " " + deviceState.model.model;
+            
+            const tbody = document.getElementById('report-tbody');
+            tbody.innerHTML = `
+                <tr><td>DISPLAY</td><td>${deviceState.display ? '<span class="pill orig">ORIGINAL</span>' : '<span class="pill fake">REPLACED</span>'}</td><td>${deviceState.model.specs.screen}</td></tr>
+                <tr><td>BATTERY</td><td>${deviceState.battery ? '<span class="pill orig">ORIGINAL</span>' : '<span class="pill fake">REPLACED</span>'}</td><td>${deviceState.model.specs.battery}</td></tr>
+                <tr><td>BOARD</td><td>${deviceState.board ? '<span class="pill orig">ORIGINAL</span>' : '<span class="pill fake">REPLACED</span>'}</td><td>${deviceState.model.specs.chipset}</td></tr>
+            `;
             switchView('report');
         }
     </script>
