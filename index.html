@@ -116,7 +116,10 @@
             outline: none;
         }
         input:focus { border-color: var(--accent); }
+        /* Read-only inputs look different */
+        input[readonly] { background: rgba(255,255,255,0.05); border-color: transparent; color: var(--text-dim); cursor: not-allowed; }
 
+        /* TOGGLES */
         .toggle-row { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid var(--border); }
         .btn-toggle-wrapper { background: var(--bg-dark); padding: 3px; border-radius: 6px; border: 1px solid var(--border); display: flex; }
         .btn-toggle { padding: 6px 15px; font-size: 12px; cursor: pointer; border-radius: 4px; color: var(--text-dim); font-weight: 700; }
@@ -132,20 +135,43 @@
         .big-score { font-size: 48px; font-weight: 800; color: var(--success); line-height: 1; }
         .score-sub { font-size: 12px; text-transform: uppercase; color: var(--text-dim); }
 
-        /* SPECS BOX (NEW) */
-        .specs-box {
-            background: rgba(59, 130, 246, 0.1);
-            border: 1px solid var(--accent);
+        /* SPECS BOX (NEW DESIGN) */
+        .specs-wrapper {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border);
             border-radius: 8px;
-            padding: 15px;
-            margin-top: 15px;
-            font-size: 13px;
-            color: var(--accent);
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            display: none; /* Hidden until loaded */
+            animation: fadeIn 0.5s ease;
         }
-        .spec-item span { font-weight: 700; color: white; display: block; }
+        .specs-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-top: 10px;
+        }
+        .spec-card {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            padding: 10px;
+            border-radius: 6px;
+        }
+        .spec-label { font-size: 10px; text-transform: uppercase; color: var(--text-dim); margin-bottom: 4px; }
+        .spec-val { font-size: 13px; font-weight: 700; color: var(--accent); }
+
+        /* SPINNER */
+        .loader {
+            border: 3px solid rgba(255,255,255,0.1);
+            border-top: 3px solid var(--accent);
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: none;
+            margin-left: 10px;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         /* PRINT STYLES */
         .report-paper { background: white; color: #0f172a; max-width: 850px; margin: 0 auto; padding: 40px; display: none; }
@@ -190,7 +216,7 @@
                     <h1 style="font-size: 48px; margin-bottom: 20px;">Android <span style="color:var(--accent)">Master Diagnostic</span></h1>
                     <p style="color: var(--text-dim); max-width: 600px; margin: 0 auto 40px auto; font-size: 18px;">
                         The Universal Standard for Android Verification.
-                        Support for 10,000+ devices including Samsung, Xiaomi, Pixel, and OnePlus.
+                        Enter an IMEI to instantly retrieve factory specs and detect fraud.
                     </p>
                     <button class="btn btn-primary" onclick="switchView('technician')">Start Diagnostics</button>
                 </div>
@@ -205,28 +231,60 @@
                 </div>
 
                 <div class="input-group">
-                    <h2>1. Device Identity</h2>
-                    <div class="form-grid">
-                        <div class="field">
-                            <label>Manufacturer & Model</label>
-                            <select id="input-model" onchange="loadDeviceSpecs()">
-                                <option value="">Select Device...</option>
-                                </select>
-                        </div>
-                        <div class="field">
-                            <label>IMEI / Serial</label>
-                            <input type="text" id="input-imei" placeholder="Scan IMEI...">
-                        </div>
-                        <div class="field">
-                            <label>Android Version</label>
-                            <input type="text" placeholder="e.g. Android 14">
+                    <h2>1. Device Identity (IMEI Scan)</h2>
+                    <div style="display: flex; gap: 15px; align-items: flex-end; margin-bottom: 20px;">
+                        <div style="flex: 1;">
+                            <label>Enter Device IMEI</label>
+                            <div style="display: flex; gap: 10px;">
+                                <input type="text" id="input-imei" placeholder="e.g. 3591820..." style="flex:1;">
+                                <button class="btn btn-primary" onclick="fetchDeviceDetails()" style="display: flex; align-items: center;">
+                                    CHECK IMEI <div class="loader" id="imei-loader"></div>
+                                </button>
+                            </div>
+                            <div style="font-size: 11px; color: var(--text-dim); margin-top: 5px;">
+                                Try Magic Codes for Demo: <b>99</b> (Samsung), <b>88</b> (Pixel), <b>77</b> (Xiaomi)
+                            </div>
                         </div>
                     </div>
-                    
-                    <div id="specs-container" class="specs-box" style="display: none;">
-                        <div class="spec-item">Battery: <span id="spec-battery">...</span></div>
-                        <div class="spec-item">Screen: <span id="spec-screen">...</span></div>
-                        <div class="spec-item">Release Year: <span id="spec-year">...</span></div>
+
+                    <div id="specs-container" class="specs-wrapper">
+                        <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding-bottom:10px; margin-bottom:10px;">
+                            <span style="font-weight:700; color:white;">DEVICE IDENTIFIED</span>
+                            <span style="color:var(--success); font-size:12px;">✓ DATASHEET LOADED</span>
+                        </div>
+                        <div class="form-grid">
+                            <div class="field">
+                                <label>Detected Model</label>
+                                <input type="text" id="auto-model" readonly>
+                            </div>
+                            <div class="field">
+                                <label>Manufacturer</label>
+                                <input type="text" id="auto-brand" readonly>
+                            </div>
+                            <div class="field">
+                                <label>Release Year</label>
+                                <input type="text" id="auto-year" readonly>
+                            </div>
+                        </div>
+                        
+                        <div class="specs-grid">
+                            <div class="spec-card">
+                                <div class="spec-label">BATTERY</div>
+                                <div class="spec-val" id="spec-battery">--</div>
+                            </div>
+                            <div class="spec-card">
+                                <div class="spec-label">SCREEN TYPE</div>
+                                <div class="spec-val" id="spec-screen">--</div>
+                            </div>
+                            <div class="spec-card">
+                                <div class="spec-label">BASE PRICE</div>
+                                <div class="spec-val" id="spec-price">--</div>
+                            </div>
+                            <div class="spec-card">
+                                <div class="spec-label">CHIPSET</div>
+                                <div class="spec-val" id="spec-chip">--</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -290,20 +348,13 @@
                 </div>
             </div>
 
-            <div id="view-knowledge" class="view-section">
-                <h1>Android Database</h1>
-                <p class="subtitle">Supported Device Architecture & Specifications.</p>
-                <div id="db-list" class="card-grid">
-                    </div>
-            </div>
-
             <div id="view-report" class="view-section" style="background: white;">
                 <div class="report-paper">
                     <div class="report-header">
                         <div style="font-size: 24px; font-weight: 800; text-transform: uppercase;">CERTIFY<span style="color: #2563eb;">OS</span></div>
                         <div style="text-align: right; font-size: 12px; color: #64748b;">
                             REPORT ID: <span id="report-id">...</span><br>
-                            DATE: <span id="report-date"></span>
+                            IMEI: <span id="report-imei">...</span>
                         </div>
                     </div>
                     <div class="report-grade-box">
@@ -331,84 +382,74 @@
     </div>
 
     <script>
-        // --- 1. THE UNIVERSAL ANDROID DATABASE ---
-        // This is where we store the truth.
-        const androidDB = [
-            { id: "s24u", brand: "Samsung", model: "Galaxy S24 Ultra", battery: "5000 mAh", screen: "Dynamic AMOLED 2X", year: 2024, base_price: 1100 },
-            { id: "s23u", brand: "Samsung", model: "Galaxy S23 Ultra", battery: "5000 mAh", screen: "Dynamic AMOLED 2X", year: 2023, base_price: 800 },
-            { id: "pix8p", brand: "Google", model: "Pixel 8 Pro", battery: "5050 mAh", screen: "LTPO OLED", year: 2023, base_price: 750 },
-            { id: "pix7", brand: "Google", model: "Pixel 7", battery: "4355 mAh", screen: "AMOLED 90Hz", year: 2022, base_price: 400 },
-            { id: "xiaomi14", brand: "Xiaomi", model: "Xiaomi 14", battery: "4610 mAh", screen: "LTPO OLED", year: 2024, base_price: 850 },
-            { id: "redmi_n13", brand: "Xiaomi", model: "Redmi Note 13", battery: "5000 mAh", screen: "AMOLED 120Hz", year: 2024, base_price: 250 },
-            { id: "oneplus12", brand: "OnePlus", model: "OnePlus 12", battery: "5400 mAh", screen: "LTPO AMOLED", year: 2024, base_price: 800 },
-            { id: "moto_edge", brand: "Motorola", model: "Edge 40 Pro", battery: "4600 mAh", screen: "P-OLED 165Hz", year: 2023, base_price: 600 }
-        ];
+        // --- 1. SIMULATED IMEI DATABASE ---
+        // In real life, this is fetched from an API like imeicheck.net
+        const imeiDB = {
+            "99": { brand: "Samsung", model: "Galaxy S24 Ultra", year: 2024, battery: "5000 mAh", screen: "Dynamic AMOLED 2X", chip: "Snapdragon 8 Gen 3", base_price: 1100 },
+            "88": { brand: "Google", model: "Pixel 8 Pro", year: 2023, battery: "5050 mAh", screen: "LTPO OLED", chip: "Tensor G3", base_price: 750 },
+            "77": { brand: "Xiaomi", model: "Redmi Note 13", year: 2024, battery: "5000 mAh", screen: "AMOLED 120Hz", chip: "Dimensity 6080", base_price: 250 }
+        };
 
         let deviceState = { model: null, display: true, battery: true, board: true, grade: "A", health: 100 };
 
-        // --- INIT ---
-        window.onload = function() {
-            populateDropdown();
-            populateDBView();
-        };
-
-        // --- 2. DYNAMIC DROPDOWN LOGIC ---
-        function populateDropdown() {
-            const select = document.getElementById('input-model');
-            androidDB.forEach(phone => {
-                const option = document.createElement("option");
-                option.value = phone.id;
-                option.text = `${phone.brand} ${phone.model}`;
-                select.appendChild(option);
-            });
-        }
-
-        // --- 3. LOAD SPECS FROM DATABASE ---
-        function loadDeviceSpecs() {
-            const id = document.getElementById('input-model').value;
-            const phone = androidDB.find(p => p.id === id);
+        // --- 2. IMEI FETCH LOGIC ---
+        function fetchDeviceDetails() {
+            const imeiInput = document.getElementById('input-imei').value;
+            const loader = document.getElementById('imei-loader');
             
-            const specBox = document.getElementById('specs-container');
+            // Show Loading
+            loader.style.display = 'block';
             
-            if (phone) {
-                // Update State
-                deviceState.model = phone;
-                // Update UI
-                document.getElementById('spec-battery').innerText = phone.battery;
-                document.getElementById('spec-screen').innerText = phone.screen;
-                document.getElementById('spec-year').innerText = phone.year;
-                specBox.style.display = "grid";
+            // SIMULATE API DELAY (1 second)
+            setTimeout(() => {
+                loader.style.display = 'none';
+                
+                // Simple logic: check first 2 digits of IMEI to simulate match
+                const prefix = imeiInput.substring(0, 2);
+                const data = imeiDB[prefix] || imeiDB["99"]; // Default to Samsung if unknown
+
+                // Populate Data
+                document.getElementById('auto-brand').value = data.brand;
+                document.getElementById('auto-model').value = data.model;
+                document.getElementById('auto-year').value = data.year;
+                
+                document.getElementById('spec-battery').innerText = data.battery;
+                document.getElementById('spec-screen').innerText = data.screen;
+                document.getElementById('spec-price').innerText = "$" + data.base_price;
+                document.getElementById('spec-chip').innerText = data.chip;
+
+                // Show the Specs Box
+                document.getElementById('specs-container').style.display = 'block';
+                
+                // Save to State
+                deviceState.model = data;
                 calculateValuation();
-            } else {
-                specBox.style.display = "none";
-            }
+
+            }, 800);
         }
 
-        // --- 4. VALUATION ENGINE ---
+        // --- 3. VALUATION ENGINE ---
         function calculateValuation() {
             if (!deviceState.model) return;
-
+            
             let val = deviceState.model.base_price;
             deviceState.grade = document.getElementById('input-grade').value;
-            deviceState.health = document.getElementById('input-health').value;
+            deviceState.health = parseInt(document.getElementById('input-health').value) || 100;
 
-            // Grade Logic
+            // Modifiers
             if (deviceState.grade === 'B') val *= 0.85;
             if (deviceState.grade === 'C') val *= 0.70;
             if (deviceState.grade === 'D') val *= 0.40;
-
-            // Health Logic
-            if (deviceState.health < 85) val -= (val * 0.10); // Lose 10% value if battery is bad
-
-            // Parts Logic
-            if (!deviceState.display) val -= 150; // Screen is expensive
+            
+            if (!deviceState.display) val -= 150;
             if (!deviceState.battery) val -= 50;
+            if (deviceState.health < 85) val -= (val * 0.1);
 
             document.getElementById('est-price').innerText = "$" + Math.max(0, val).toFixed(2);
             updateTrustScore();
         }
 
-        // --- 5. TRUST SCORE ---
+        // --- 4. TRUST SCORE ---
         function updateTrustScore() {
             let score = 100;
             if (!deviceState.display) score -= 15;
@@ -424,7 +465,7 @@
             return Math.max(0, score);
         }
 
-        // --- 6. UTILITIES ---
+        // --- 5. UTILITIES ---
         function togglePart(btn, part, isOriginal) {
             deviceState[part] = isOriginal;
             const wrapper = btn.parentElement;
@@ -438,31 +479,19 @@
             document.getElementById('view-' + id).classList.add('active');
         }
 
-        function populateDBView() {
-            const list = document.getElementById('db-list');
-            androidDB.forEach(phone => {
-                list.innerHTML += `
-                    <div class="input-group" style="padding: 20px;">
-                        <div style="font-weight: 700; color: white;">${phone.brand} ${phone.model}</div>
-                        <div style="color: var(--text-dim); font-size: 12px; margin-top: 5px;">Battery: ${phone.battery} | Screen: ${phone.screen}</div>
-                    </div>
-                `;
-            });
-        }
-
         function generateReport() {
-            if(!deviceState.model) { alert("Please select a device model first."); return; }
+            if(!deviceState.model) { alert("Please enter IMEI first."); return; }
             
             document.getElementById('report-id').innerText = "#" + Math.floor(Math.random()*100000);
-            document.getElementById('report-date').innerText = new Date().toLocaleDateString();
+            document.getElementById('report-imei').innerText = document.getElementById('input-imei').value || "N/A";
             document.getElementById('report-score').innerText = updateTrustScore() + "/100";
             document.getElementById('report-device-name').innerText = deviceState.model.brand + " " + deviceState.model.model;
             
             const tbody = document.getElementById('report-tbody');
             tbody.innerHTML = `
                 <tr><td>Display</td><td>${deviceState.display ? '<span class="pill orig">ORIGINAL</span>' : '<span class="pill fake">REPLACED</span>'}</td><td>${deviceState.model.screen}</td></tr>
-                <tr><td>Battery</td><td>${deviceState.battery ? '<span class="pill orig">ORIGINAL</span>' : '<span class="pill fake">REPLACED</span>'}</td><td>${deviceState.model.battery}</td></tr>
-                <tr><td>Logic Board</td><td>${deviceState.board ? '<span class="pill orig">ORIGINAL</span>' : '<span class="pill fake">REPLACED</span>'}</td><td>Android Verified</td></tr>
+                <tr><td>Battery (${document.getElementById('input-health').value}%)</td><td>${deviceState.battery ? '<span class="pill orig">ORIGINAL</span>' : '<span class="pill fake">REPLACED</span>'}</td><td>${deviceState.model.battery}</td></tr>
+                <tr><td>Logic Board</td><td>${deviceState.board ? '<span class="pill orig">ORIGINAL</span>' : '<span class="pill fake">REPLACED</span>'}</td><td>${deviceState.model.chip}</td></tr>
             `;
             
             switchView('report');
