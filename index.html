@@ -59,12 +59,13 @@
             align-items: center;
         }
 
-        /* UPDATED LOGO STYLE: Matches the previous "Home" size */
+        /* UPDATED LOGO SIZE: Much larger now */
         .brand-logo-img {
-            max-width: 100%;       /* Allow it to be full width like before */
+            max-width: 110%;       /* Allowed to be slightly wider than container if needed */
             height: auto;          /* Maintain aspect ratio */
-            max-height: 120px;     /* Cap height so it's not massive on PC */
+            max-height: 180px;     /* INCREASED from 120px to 180px */
             display: block;
+            filter: drop-shadow(0 0 20px rgba(59, 130, 246, 0.3)); /* Added glow to match size */
         }
 
         /* VIEW SECTIONS */
@@ -100,7 +101,7 @@
             .form-grid { grid-template-columns: 1fr; } /* 1 Column on Phone */
             .specs-grid { grid-template-columns: 1fr 1fr; } /* 2 Columns on Phone */
             .app-container { padding: 15px; margin-top: 0; }
-            .brand-logo-img { max-height: 80px; } /* Slightly smaller on mobile to fit screen */
+            .brand-logo-img { max-height: 100px; } /* Increased mobile size too */
             .toggle-row { flex-direction: column; align-items: flex-start; gap: 10px; }
             .btn-toggle-wrapper { width: 100%; justify-content: space-between; }
             .btn-toggle { flex: 1; text-align: center; }
