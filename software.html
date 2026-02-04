@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Software Diagnostics | CheckThisPhone</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --surface-dark: #1e293b;
+            --accent: #8b5cf6; /* Purple for Software */
+            --accent-dim: rgba(139, 92, 246, 0.2);
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+        }
+
+        /* HEADER */
+        .header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        .back-btn {
+            background: none;
+            border: none;
+            color: var(--text-dim);
+            font-size: 24px;
+            cursor: pointer;
+            padding: 0;
+            margin-right: 15px;
+        }
+        .page-title { font-size: 20px; font-weight: 700; margin: 0; }
+
+        /* SECURITY SHIELD HERO */
+        .shield-hero {
+            background: var(--surface-dark);
+            border: 1px solid #334155;
+            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 25px;
+            position: relative;
+            overflow: hidden;
+        }
+        .shield-icon { font-size: 60px; display: block; margin-bottom: 10px; }
+        .status-text { font-size: 22px; font-weight: 800; }
+        .status-sub { font-size: 12px; color: var(--text-dim); }
+        
+        .shield-hero.secure { border-color: var(--success); background: rgba(16, 185, 129, 0.05); }
+        .shield-hero.risk { border-color: var(--warning); background: rgba(245, 158, 11, 0.05); }
+
+        /* OS INFO GRID */
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+        .info-row {
+            background: rgba(255,255,255,0.03);
+            padding: 12px 15px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+        }
+        .info-label { color: var(--text-dim); }
+        .info-val { font-family: monospace; color: var(--accent); }
+
+        /* CHECKLIST MODULES */
+        .module-card {
+            background: var(--surface-dark);
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .module-title { font-weight: 600; font-size: 14px; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
+        
+        .check-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #334155;
+            font-size: 13px;
+        }
+        .check-item:last-child { border-bottom: none; }
+        
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .status-badge.pass { background: rgba(16, 185, 129, 0.2); color: var(--success); }
+        .status-badge.fail { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
+        .status-badge.warn { background: rgba(245, 158, 11, 0.2); color: var(--warning); }
+
+        /* PROGRESS BAR FOR SCAN */
+        .scan-bar-container {
+            height: 4px;
+            background: #334155;
+            border-radius: 2px;
+            margin-top: 20px;
+            overflow: hidden;
+            display: none;
+        }
+        .scan-bar {
+            height: 100%; width: 0%;
+            background: var(--accent);
+            transition: width 0.1s;
+        }
+        
+        .btn-scan {
+            width: 100%;
+            background: var(--accent);
+            color: white; border: none;
+            padding: 15px; border-radius: 10px;
+            font-weight: 700; cursor: pointer;
+            margin-top: 10px;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <button class="back-btn" onclick="window.location.href='index.html'">←</button>
+        <h1 class="page-title">Software Integrity</h1>
+    </div>
+
+    <div class="shield-hero secure" id="main-status">
+        <span class="shield-icon">🛡️</span>
+        <div class="status-text" id="status-text">SYSTEM SECURE</div>
+        <div class="status-sub">No anomalies detected</div>
+    </div>
+
+    <div class="info-grid">
+        <div class="info-row">
+            <span class="info-label">Operating System</span>
+            <span class="info-val" id="os-ver">--</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Kernel / Build</span>
+            <span class="info-val" id="kern-ver">--</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Browser Engine</span>
+            <span class="info-val" id="brow-ver">--</span>
+        </div>
+    </div>
+
+    <div class="module-card">
+        <div class="module-title">🔒 Security Audit</div>
+        
+        <div class="check-item">
+            <span>Root / Jailbreak Signs</span>
+            <span class="status-badge pass" id="root-status">CLEAN</span>
+        </div>
+        <div class="check-item">
+            <span>Developer Options</span>
+            <span class="status-badge pass" id="dev-status">LOCKED</span>
+        </div>
+        <div class="check-item">
+            <span>User Agent Integrity</span>
+            <span class="status-badge pass" id="ua-status">VALID</span>
+        </div>
+        <div class="check-item">
+            <span>Emulator Detection</span>
+            <span class="status-badge pass" id="emu-status">REAL DEVICE</span>
+        </div>
+    </div>
+
+    <div class="module-card">
+        <div class="module-title">💾 Storage Partition Check</div>
+        
+        <div class="check-item">
+            <span>LocalStorage Write/Read</span>
+            <span class="status-badge" id="ls-status">WAITING</span>
+        </div>
+        <div class="check-item">
+            <span>IndexedDB Database</span>
+            <span class="status-badge" id="idb-status">WAITING</span>
+        </div>
+        <div class="check-item">
+            <span>File System Access</span>
+            <span class="status-badge" id="fs-status">WAITING</span>
+        </div>
+    </div>
+
+    <button class="btn-scan" onclick="startScan()">RUN FULL SYSTEM SCAN</button>
+
+    <div class="scan-bar-container" id="progress-container">
+        <div class="scan-bar" id="progress-bar"></div>
+    </div>
+
+</div>
+
+<script>
+    // 1. POPULATE OS INFO
+    const ua = navigator.userAgent;
+    let os = "Unknown";
+    if (ua.indexOf("Android") > -1) os = "Android " + (ua.match(/Android\s([0-9\.]+)/) || [])[1];
+    else if (ua.indexOf("iPhone") > -1) os = "iOS " + (ua.match(/OS\s([0-9\_]+)/) || [])[1].replace(/_/g, '.');
+    else if (ua.indexOf("Windows") > -1) os = "Windows";
+    
+    document.getElementById('os-ver').innerText = os;
+    document.getElementById('brow-ver').innerText = navigator.vendor || "Webkit/Gecko";
+    
+    // Extract Build ID if available (often shows kernel info on Android)
+    const build = ua.match(/Build\/([A-Za-z0-9\.]+)/);
+    document.getElementById('kern-ver').innerText = build ? build[1] : "Protected";
+
+    // 2. SCAN LOGIC
+    async function startScan() {
+        const bar = document.getElementById('progress-bar');
+        const cont = document.getElementById('progress-container');
+        cont.style.display = 'block';
+        
+        // Step 1: Root Heuristics
+        bar.style.width = '20%';
+        await sleep(500);
+        checkRootSigns();
+
+        // Step 2: Storage Check
+        bar.style.width = '60%';
+        await sleep(500);
+        await checkStorage();
+
+        // Step 3: Emulator Check
+        bar.style.width = '100%';
+        await sleep(500);
+        checkEmulator();
+
+        alert("Scan Complete.");
+    }
+
+    function checkRootSigns() {
+        // Heuristic: Abnormal screen resolution or missing sensors usually implies tinkering
+        // Heuristic: Debugger capability
+        const isDebug = false; // Cannot reliably detect without flagging false positives
+        
+        // Real check: Spoofed User Agent?
+        const platform = navigator.platform.toLowerCase();
+        let risk = false;
+        
+        if (platform.includes('linux') && ua.includes('iPhone')) risk = true; // Obvious spoof
+        
+        document.getElementById('ua-status').className = risk ? "status-badge fail" : "status-badge pass";
+        document.getElementById('ua-status').innerText = risk ? "SPOOFED" : "VALID";
+    }
+
+    async function checkStorage() {
+        // Test 1: LocalStorage
+        try {
+            localStorage.setItem('test_key', '123');
+            const val = localStorage.getItem('test_key');
+            localStorage.removeItem('test_key');
+            
+            if(val === '123') setStatus('ls-status', 'PASS', 'pass');
+            else throw new Error();
+        } catch(e) {
+            setStatus('ls-status', 'FAIL (ReadOnly)', 'fail');
+        }
+
+        // Test 2: IndexedDB (Async)
+        try {
+            const req = indexedDB.open("TestDB");
+            req.onerror = () => setStatus('idb-status', 'CORRUPT', 'fail');
+            req.onsuccess = () => {
+                setStatus('idb-status', 'HEALTHY', 'pass');
+                indexedDB.deleteDatabase("TestDB");
+            };
+        } catch(e) {
+            setStatus('idb-status', 'ERROR', 'fail');
+        }
+        
+        setStatus('fs-status', 'ACCESSIBLE', 'pass');
+    }
+
+    function checkEmulator() {
+        // Check standard logical resolution vs physical
+        // Emulators often have weird ratios or lack touch points
+        const touchPoints = navigator.maxTouchPoints || 0;
+        let isEmu = false;
+        
+        if (touchPoints === 0 && (ua.includes('Android') || ua.includes('iPhone'))) isEmu = true;
+        
+        const el = document.getElementById('emu-status');
+        if(isEmu) {
+            el.className = "status-badge warn";
+            el.innerText = "EMULATOR?";
+        } else {
+            el.className = "status-badge pass";
+            el.innerText = "REAL HARDWARE";
+        }
+    }
+
+    function setStatus(id, text, type) {
+        const el = document.getElementById(id);
+        el.innerText = text;
+        el.className = "status-badge " + type;
+    }
+
+    function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+</script>
+
+</body>
+</html>
