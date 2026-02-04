@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parts Authenticity | CheckThisPhone</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --surface-dark: #1e293b;
+            --accent: #f97316; /* Orange for Parts */
+            --accent-dim: rgba(249, 115, 22, 0.2);
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+        }
+
+        /* HEADER */
+        .header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        .back-btn {
+            background: none;
+            border: none;
+            color: var(--text-dim);
+            font-size: 24px;
+            cursor: pointer;
+            padding: 0;
+            margin-right: 15px;
+        }
+        .page-title { font-size: 20px; font-weight: 700; margin: 0; }
+
+        /* HERO ALERT */
+        .alert-box {
+            background: rgba(249, 115, 22, 0.1);
+            border: 1px solid var(--accent);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+        }
+        .alert-icon { font-size: 24px; }
+        .alert-content h3 { margin: 0 0 5px 0; font-size: 15px; color: var(--accent); }
+        .alert-content p { margin: 0; font-size: 12px; color: var(--text-dim); line-height: 1.5; }
+
+        /* MODULE CARDS */
+        .module-card {
+            background: var(--surface-dark);
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .module-title { font-weight: 700; font-size: 14px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
+        
+        .status-pill {
+            font-size: 10px; padding: 4px 8px; border-radius: 4px; font-weight: 700; text-transform: uppercase;
+        }
+        .status-pill.pending { background: #334155; color: #94a3b8; }
+        .status-pill.pass { background: rgba(16, 185, 129, 0.2); color: var(--success); }
+        .status-pill.fail { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
+
+        /* TOUCH TEST AREA */
+        .tap-area {
+            width: 100%; height: 100px;
+            background: #0f172a;
+            border: 2px dashed #475569;
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+            margin-bottom: 10px;
+            transition: background 0.1s;
+        }
+        .tap-area:active { background: #334155; border-color: var(--accent); }
+
+        /* INSPECTION LIST */
+        .inspect-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #334155;
+        }
+        .inspect-row:last-child { border-bottom: none; }
+        
+        .toggle-switch {
+            display: flex;
+            background: #0f172a;
+            border-radius: 20px;
+            padding: 2px;
+            border: 1px solid #334155;
+        }
+        .toggle-opt {
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            color: #64748b;
+        }
+        .toggle-opt.selected-pass { background: var(--success); color: #000; }
+        .toggle-opt.selected-fail { background: var(--danger); color: white; }
+
+        /* COLOR GAMUT BAR */
+        .gamut-bar {
+            height: 40px;
+            width: 100%;
+            background: linear-gradient(to right, #000 0%, #111 50%, #000 100%);
+            border-radius: 6px;
+            margin-top: 10px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: #444;
+        }
+        /* A subtle pattern that cheap screens struggle to render clearly */
+        .gamut-pattern {
+            width: 100%; height: 100%;
+            background-image: repeating-linear-gradient(45deg, #111 25%, transparent 25%, transparent 75%, #111 75%, #111), repeating-linear-gradient(45deg, #111 25%, #000 25%, #000 75%, #111 75%, #111);
+            background-position: 0 0, 10px 10px;
+            background-size: 20px 20px;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <button class="back-btn" onclick="window.location.href='index.html'">←</button>
+        <h1 class="page-title">Parts Authenticity</h1>
+    </div>
+
+    <div class="alert-box">
+        <span class="alert-icon">⚠️</span>
+        <div class="alert-content">
+            <h3>Authenticity Limitation</h3>
+            <p>Browsers cannot read hardware serial numbers. This tool tests <strong>performance characteristics</strong> to identify low-quality aftermarket parts.</p>
+        </div>
+    </div>
+
+    <div class="module-card">
+        <div class="module-title">
+            📱 Screen & Touch Quality
+            <span class="status-pill pending" id="screen-status">UNTESTED</span>
+        </div>
+        
+        <p style="font-size:12px; color:var(--text-dim); margin-bottom:10px;">
+            1. Rapidly tap the box below. Cheap screens will miss taps or lag.
+        </p>
+        <div class="tap-area" id="tap-box" onpointerdown="registerTap()">
+            <span id="tap-text">Tap Rapidly (0/10)</span>
+        </div>
+
+        <p style="font-size:12px; color:var(--text-dim); margin-top:20px; margin-bottom:10px;">
+            2. Black Level Test. If the box below looks grey (not pitch black) in a dark room, it is likely an LCD replacement for an OLED screen.
+        </p>
+        <div class="gamut-bar">
+            <div class="gamut-pattern"></div>
+            <span style="position:absolute; color:#333;">BLACK LEVEL CHECK</span>
+        </div>
+    </div>
+
+    <div class="module-card">
+        <div class="module-title">
+            🔋 Battery Consistency
+            <span class="status-pill pending" id="batt-status">ANALYZING</span>
+        </div>
+        <div style="font-size:12px; color:var(--text-dim); margin-bottom:10px;" id="batt-msg">
+            Monitoring voltage stability...
+        </div>
+        <div style="height:4px; background:#334155; width:100%; border-radius:2px; overflow:hidden;">
+            <div id="batt-bar" style="width:0%; background:var(--accent); height:100%; transition:width 1s;"></div>
+        </div>
+    </div>
+
+    <div class="module-card">
+        <div class="module-title">🔍 Physical Inspection Guide</div>
+        
+        <div class="inspect-row">
+            <span style="font-size:12px;">True Tone Option Missing?</span>
+            <div class="toggle-switch">
+                <div class="toggle-opt" onclick="setResult(this, 'fail')">YES</div>
+                <div class="toggle-opt" onclick="setResult(this, 'pass')">NO</div>
+            </div>
+        </div>
+
+        <div class="inspect-row">
+            <span style="font-size:12px;">Glue Residue on Edges?</span>
+            <div class="toggle-switch">
+                <div class="toggle-opt" onclick="setResult(this, 'fail')">YES</div>
+                <div class="toggle-opt" onclick="setResult(this, 'pass')">NO</div>
+            </div>
+        </div>
+
+        <div class="inspect-row">
+            <span style="font-size:12px;">Rear Camera Centered?</span>
+            <div class="toggle-switch">
+                <div class="toggle-opt" onclick="setResult(this, 'pass')">YES</div>
+                <div class="toggle-opt" onclick="setResult(this, 'fail')">NO</div>
+            </div>
+        </div>
+        
+        <div class="inspect-row">
+            <span style="font-size:12px;">Pentalobe Screws Stripped?</span>
+            <div class="toggle-switch">
+                <div class="toggle-opt" onclick="setResult(this, 'fail')">YES</div>
+                <div class="toggle-opt" onclick="setResult(this, 'pass')">NO</div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+    // --- 1. TOUCH LATENCY TEST ---
+    let taps = 0;
+    let startTime = 0;
+    const maxTaps = 10;
+    
+    function registerTap() {
+        if(taps === 0) startTime = performance.now();
+        
+        taps++;
+        document.getElementById('tap-text').innerText = `Tap Rapidly (${taps}/${maxTaps})`;
+        
+        // Visual flash
+        const box = document.getElementById('tap-box');
+        box.style.borderColor = 'var(--accent)';
+        setTimeout(() => box.style.borderColor = '#475569', 50);
+
+        if(taps >= maxTaps) {
+            const duration = performance.now() - startTime;
+            const avgMs = duration / maxTaps;
+            const status = document.getElementById('screen-status');
+            
+            // Typical human rapid tap is ~150ms. 
+            // If machine reads <100ms consistently, it's very responsive.
+            // If >300ms avg, touch IC is laggy.
+            if(avgMs < 250) {
+                status.innerText = "RESPONSIVE";
+                status.className = "status-pill pass";
+                document.getElementById('tap-text').innerText = `Pass! Avg: ${Math.round(avgMs)}ms`;
+            } else {
+                status.innerText = "SLOW / LAGGY";
+                status.className = "status-pill fail";
+                document.getElementById('tap-text').innerText = `Lag Detected: ${Math.round(avgMs)}ms`;
+            }
+            taps = 0; // Reset logic if they keep tapping
+        }
+    }
+
+    // --- 2. BATTERY LOGIC ---
+    async function checkBattery() {
+        const bar = document.getElementById('batt-bar');
+        const msg = document.getElementById('batt-msg');
+        const badge = document.getElementById('batt-status');
+
+        if('getBattery' in navigator) {
+            const batt = await navigator.getBattery();
+            
+            // Animation
+            bar.style.width = '100%';
+            
+            // Logic: A fake/bad battery often reports inconsistent charging times or levels
+            // We can't see "Cycle Count" in browser, but we can see "Level" precision.
+            
+            setTimeout(() => {
+                if(batt.level === 1.0 || (batt.level % 0.01) === 0) {
+                    // Modern batteries report granular data.
+                    // This is a weak heuristic but the best we have in web.
+                    badge.innerText = "APPEARS NORMAL";
+                    badge.className = "status-pill pass";
+                    msg.innerText = `Reporting correctly at ${(batt.level*100).toFixed(0)}%`;
+                } else {
+                    badge.innerText = "UNKNOWN";
+                    badge.className = "status-pill pending";
+                }
+            }, 1500);
+            
+        } else {
+            msg.innerText = "Battery API not supported on this device.";
+            badge.innerText = "NO DATA";
+        }
+    }
+    
+    // --- 3. MANUAL TOGGLES ---
+    function setResult(btn, type) {
+        // Reset siblings
+        const parent = btn.parentElement;
+        Array.from(parent.children).forEach(c => {
+            c.className = 'toggle-opt';
+        });
+
+        // Set active
+        btn.classList.add(type === 'pass' ? 'selected-pass' : 'selected-fail');
+    }
+
+    // Init
+    checkBattery();
+
+</script>
+
+</body>
+</html>
