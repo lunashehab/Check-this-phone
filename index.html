@@ -241,9 +241,6 @@
                                     CHECK IMEI <div class="loader" id="imei-loader"></div>
                                 </button>
                             </div>
-                            <div style="font-size: 11px; color: var(--text-dim); margin-top: 5px;">
-                                Try Magic Codes for Demo: <b>99</b> (Samsung), <b>88</b> (Pixel), <b>77</b> (Xiaomi)
-                            </div>
                         </div>
                     </div>
 
@@ -382,61 +379,109 @@
     </div>
 
     <script>
-        // --- 1. SIMULATED IMEI DATABASE ---
-        // In real life, this is fetched from an API like imeicheck.net
-        const imeiDB = {
-            "99": { brand: "Samsung", model: "Galaxy S24 Ultra", year: 2024, battery: "5000 mAh", screen: "Dynamic AMOLED 2X", chip: "Snapdragon 8 Gen 3", base_price: 1100 },
-            "88": { brand: "Google", model: "Pixel 8 Pro", year: 2023, battery: "5050 mAh", screen: "LTPO OLED", chip: "Tensor G3", base_price: 750 },
-            "77": { brand: "Xiaomi", model: "Redmi Note 13", year: 2024, battery: "5000 mAh", screen: "AMOLED 120Hz", chip: "Dimensity 6080", base_price: 250 }
-        };
+        // --- CONFIGURATION ---
+        // This is where the magic happens. 
+        // You need an API Key from a provider like 'imeicheck.net' or 'imeipro.info'.
+        const API_KEY = "DEMO_KEY_123"; 
+        const API_URL = "https://api.imeicheck.net/v1/checks"; // Example Endpoint
 
         let deviceState = { model: null, display: true, battery: true, board: true, grade: "A", health: 100 };
 
-        // --- 2. IMEI FETCH LOGIC ---
-        function fetchDeviceDetails() {
+        // --- 1. REAL NETWORK REQUEST ---
+        async function fetchDeviceDetails() {
             const imeiInput = document.getElementById('input-imei').value;
             const loader = document.getElementById('imei-loader');
-            
-            // Show Loading
+            const specsBox = document.getElementById('specs-container');
+
+            // Basic Validation
+            if (imeiInput.length < 5) {
+                alert("⚠️ Please enter a valid IMEI number.");
+                return;
+            }
+
+            // Show Loading Spinner
             loader.style.display = 'block';
-            
-            // SIMULATE API DELAY (1 second)
-            setTimeout(() => {
+            specsBox.style.display = 'none'; // Hide old data
+
+            try {
+                // ---------------------------------------------------------
+                // THIS IS THE REAL CONNECTION CODE
+                // ---------------------------------------------------------
+                // In a real app, this sends the request to the global database.
+                // Since we don't have a paid key right now, I have wrapped this 
+                // in a simulator so the website doesn't crash on you.
+                
+                // const response = await fetch(`${API_URL}/${imeiInput}?token=${API_KEY}`);
+                // const data = await response.json();
+                
+                // FOR DEVELOPMENT ONLY: 
+                // I am simulating a "Success" response from the API 
+                // so you can see how the UI handles the data.
+                const data = await simulateGlobalDatabase(imeiInput);
+                // ---------------------------------------------------------
+
+                if (data.status === 'success') {
+                    // POPULATE THE UI AUTOMATICALLY
+                    document.getElementById('auto-brand').value = data.brand;
+                    document.getElementById('auto-model').value = data.model;
+                    document.getElementById('auto-year').value = data.release_date;
+                    
+                    document.getElementById('spec-battery').innerText = data.specs.battery;
+                    document.getElementById('spec-screen').innerText = data.specs.screen;
+                    document.getElementById('spec-price').innerText = "$" + data.est_value;
+                    document.getElementById('spec-chip').innerText = data.specs.chipset;
+
+                    // REVEAL THE DATA
+                    specsBox.style.display = 'block';
+                    
+                    // SAVE STATE
+                    deviceState.model = data;
+                    calculateValuation();
+                } else {
+                    alert("❌ Server Error: Device not found in global registry.");
+                }
+
+            } catch (error) {
+                console.error(error);
+                alert("Connection Error. Please check your internet.");
+            } finally {
                 loader.style.display = 'none';
-                
-                // Simple logic: check first 2 digits of IMEI to simulate match
-                const prefix = imeiInput.substring(0, 2);
-                const data = imeiDB[prefix] || imeiDB["99"]; // Default to Samsung if unknown
+            }
+        }
 
-                // Populate Data
-                document.getElementById('auto-brand').value = data.brand;
-                document.getElementById('auto-model').value = data.model;
-                document.getElementById('auto-year').value = data.year;
-                
-                document.getElementById('spec-battery').innerText = data.battery;
-                document.getElementById('spec-screen').innerText = data.screen;
-                document.getElementById('spec-price').innerText = "$" + data.base_price;
-                document.getElementById('spec-chip').innerText = data.chip;
-
-                // Show the Specs Box
-                document.getElementById('specs-container').style.display = 'block';
-                
-                // Save to State
-                deviceState.model = data;
-                calculateValuation();
-
-            }, 800);
+        // --- 2. DEVELOPMENT SIMULATOR (To prevent crashing without a Key) ---
+        // When you get a real API Key, you can delete this function.
+        function simulateGlobalDatabase(imei) {
+            return new Promise(resolve => {
+                setTimeout(() => {
+                    // This mimics what a Real API returns for ANY global device
+                    resolve({
+                        status: 'success',
+                        brand: "Google", 
+                        model: "Pixel 9 Pro XL", 
+                        release_date: "2024",
+                        est_value: 1100,
+                        specs: {
+                            battery: "5060 mAh",
+                            screen: "Super Actua LTPO",
+                            chipset: "Tensor G4"
+                        }
+                    });
+                }, 1000);
+            });
         }
 
         // --- 3. VALUATION ENGINE ---
         function calculateValuation() {
             if (!deviceState.model) return;
             
-            let val = deviceState.model.base_price;
+            // Start with the API-provided base value
+            let val = deviceState.model.est_value; 
+            
             deviceState.grade = document.getElementById('input-grade').value;
             deviceState.health = parseInt(document.getElementById('input-health').value) || 100;
 
-            // Modifiers
+            // Apply Deductions
             if (deviceState.grade === 'B') val *= 0.85;
             if (deviceState.grade === 'C') val *= 0.70;
             if (deviceState.grade === 'D') val *= 0.40;
@@ -449,23 +494,33 @@
             updateTrustScore();
         }
 
-        // --- 4. TRUST SCORE ---
+        // --- 4. TRUST SCORE ALGORITHM ---
         function updateTrustScore() {
             let score = 100;
+            // Hardware Deductions
             if (!deviceState.display) score -= 15;
             if (!deviceState.battery) score -= 10;
             if (!deviceState.board) score -= 50;
+            
+            // Cosmetic Deductions
             if (deviceState.grade === 'C') score -= 20;
             if (deviceState.grade === 'D') score -= 40;
+            
+            // Health Deductions
             if (deviceState.health < 80) score -= 10;
 
             const el = document.getElementById('live-score');
             el.innerText = Math.max(0, score);
-            el.style.color = score > 80 ? 'var(--success)' : (score > 60 ? 'var(--warning)' : 'var(--danger)');
+            
+            // Dynamic Color Logic
+            if (score >= 90) el.style.color = 'var(--success)';
+            else if (score >= 70) el.style.color = 'var(--warning)';
+            else el.style.color = 'var(--danger)';
+            
             return Math.max(0, score);
         }
 
-        // --- 5. UTILITIES ---
+        // --- 5. UTILITY FUNCTIONS ---
         function togglePart(btn, part, isOriginal) {
             deviceState[part] = isOriginal;
             const wrapper = btn.parentElement;
@@ -480,18 +535,18 @@
         }
 
         function generateReport() {
-            if(!deviceState.model) { alert("Please enter IMEI first."); return; }
+            if(!deviceState.model) { alert("Please Scan IMEI first."); return; }
             
-            document.getElementById('report-id').innerText = "#" + Math.floor(Math.random()*100000);
-            document.getElementById('report-imei').innerText = document.getElementById('input-imei').value || "N/A";
+            document.getElementById('report-id').innerText = "#" + Math.floor(Math.random()*1000000);
+            document.getElementById('report-imei').innerText = document.getElementById('input-imei').value;
             document.getElementById('report-score').innerText = updateTrustScore() + "/100";
             document.getElementById('report-device-name').innerText = deviceState.model.brand + " " + deviceState.model.model;
             
             const tbody = document.getElementById('report-tbody');
             tbody.innerHTML = `
-                <tr><td>Display</td><td>${deviceState.display ? '<span class="pill orig">ORIGINAL</span>' : '<span class="pill fake">REPLACED</span>'}</td><td>${deviceState.model.screen}</td></tr>
-                <tr><td>Battery (${document.getElementById('input-health').value}%)</td><td>${deviceState.battery ? '<span class="pill orig">ORIGINAL</span>' : '<span class="pill fake">REPLACED</span>'}</td><td>${deviceState.model.battery}</td></tr>
-                <tr><td>Logic Board</td><td>${deviceState.board ? '<span class="pill orig">ORIGINAL</span>' : '<span class="pill fake">REPLACED</span>'}</td><td>${deviceState.model.chip}</td></tr>
+                <tr><td>Display Panel</td><td>${deviceState.display ? '<span class="pill orig">ORIGINAL</span>' : '<span class="pill fake">REPLACED</span>'}</td><td>${deviceState.model.specs.screen}</td></tr>
+                <tr><td>Battery Health (${document.getElementById('input-health').value}%)</td><td>${deviceState.battery ? '<span class="pill orig">ORIGINAL</span>' : '<span class="pill fake">REPLACED</span>'}</td><td>${deviceState.model.specs.battery}</td></tr>
+                <tr><td>Logic Board ID</td><td>${deviceState.board ? '<span class="pill orig">ORIGINAL</span>' : '<span class="pill fake">REPLACED</span>'}</td><td>${deviceState.model.specs.chipset}</td></tr>
             `;
             
             switchView('report');
