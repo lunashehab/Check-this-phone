@@ -71,7 +71,6 @@
         .view-section { display: none; width: 100%; }
         .view-section.active { display: block; }
 
-        /* INPUT GROUPS */
         .input-group {
             background: var(--panel-dark);
             border: 1px solid var(--border);
@@ -112,40 +111,6 @@
         .card-title { font-weight: 700; font-size: 15px; color: var(--text-main); margin-bottom: 5px; }
         .card-sub { font-size: 11px; color: var(--text-dim); line-height: 1.4; }
 
-        /* NEW: WHAT YOU GET BENTO (HOME) */
-        .info-panel-title {
-            text-align: left;
-            font-size: 18px;
-            font-weight: 800;
-            margin: 40px 0 15px 10px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .info-bento {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            grid-template-rows: auto;
-            gap: 12px;
-            margin-bottom: 30px;
-        }
-
-        .info-tile {
-            background: rgba(255,255,255,0.03);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 20px;
-        }
-
-        .info-tile.large { grid-column: span 2; background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), transparent); border-color: rgba(59, 130, 246, 0.2); }
-
-        .info-tile-icon { font-size: 24px; margin-bottom: 12px; display: block; }
-        .info-tile-h { font-size: 14px; font-weight: 700; color: var(--text-main); margin-bottom: 8px; }
-        .info-tile-p { font-size: 11px; color: var(--text-dim); line-height: 1.5; margin: 0; }
-        .info-tile-p span { display: block; margin-bottom: 4px; position: relative; padding-left: 12px; }
-        .info-tile-p span::before { content: '•'; position: absolute; left: 0; color: var(--accent); }
-
         /* SEARCH BAR */
         .search-container {
             background: var(--panel-dark);
@@ -155,6 +120,7 @@
             align-items: center;
             border: 1px solid var(--border);
             box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            margin-top: 20px;
             margin-bottom: 30px;
         }
         
@@ -170,25 +136,48 @@
             font-family: 'JetBrains Mono', monospace;
         }
 
+        /* INFO BENTO PANELS */
+        .info-panel-title {
+            text-align: left;
+            font-size: 18px;
+            font-weight: 800;
+            margin: 40px 0 15px 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .info-bento {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+
+        .info-tile {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 20px;
+        }
+
+        .info-tile.large { grid-column: span 2; background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), transparent); border-color: rgba(59, 130, 246, 0.2); }
+        .info-tile-icon { font-size: 24px; margin-bottom: 12px; display: block; }
+        .info-tile-h { font-size: 14px; font-weight: 700; color: var(--text-main); margin-bottom: 8px; }
+        .info-tile-p { font-size: 11px; color: var(--text-dim); line-height: 1.5; margin: 0; }
+        .info-tile-p span { display: block; margin-bottom: 4px; position: relative; padding-left: 12px; }
+        .info-tile-p span::before { content: '•'; position: absolute; left: 0; color: var(--accent); }
+
         /* BUTTONS */
         .btn { padding: 16px 24px; border-radius: 16px; font-weight: 800; cursor: pointer; border: none; font-size: 15px; transition: 0.2s; width: 100%; display: flex; justify-content: center; align-items: center; gap: 10px; }
-        
         .btn-free { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4); }
-        .btn-free:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(16, 185, 129, 0.5); }
-
         .btn-primary { background: var(--accent); color: white; box-shadow: 0 4px 15px var(--accent-glow); }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px var(--accent-glow); }
-
         .btn-gold { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4); }
-        .btn-gold:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(245, 158, 11, 0.5); }
-
         .price-badge { margin-left: auto; font-size: 18px; font-weight: 800; }
 
-        /* NAV & HEADERS */
+        /* SYSTEM STYLE */
         .nav-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
         .back-btn { background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
-
-        /* TECHNICIAN & SCORES */
         .score-display { position: absolute; top: 25px; right: 25px; text-align: right; }
         .big-score { font-size: 42px; font-weight: 800; color: var(--success); line-height: 1; }
         .score-sub { font-size: 10px; text-transform: uppercase; color: var(--text-dim); }
@@ -222,6 +211,7 @@
             .specs-grid { grid-template-columns: 1fr 1fr; }
             .info-bento { grid-template-columns: 1fr; }
             .info-tile.large { grid-column: span 1; }
+            .bento-grid { grid-template-columns: 1fr 1fr; }
         }
 
         @media print {
@@ -248,92 +238,8 @@
                 <p style="color: var(--text-dim); margin-bottom: 40px; font-size: 16px; max-width: 500px; margin-left: auto; margin-right: auto;">
                     Professional IMEI analysis and hardware diagnostics for buyers, sellers, and technicians.
                 </p>
-                
-                <div class="search-container">
-                    <input type="text" id="home-imei-input" class="search-input" placeholder="Enter IMEI Number..." maxlength="15">
-                    <button class="btn btn-primary" style="width: auto; padding: 10px 25px; border-radius: 18px;" onclick="initiatePaidCheck()">GO</button>
-                </div>
 
-                <div class="info-panel-title">⭐ IMEI Full Check — What You Get</div>
-                
-                <div class="info-bento">
-                    <div class="info-tile">
-                        <span class="info-tile-icon">🚫</span>
-                        <div class="info-tile-h">Blacklist & Theft</div>
-                        <div class="info-tile-p">
-                            <span>Lost / Stolen status</span>
-                            <span>Carrier blacklist</span>
-                            <span>Fraud / Blocked flags</span>
-                        </div>
-                    </div>
-
-                    <div class="info-tile">
-                        <span class="info-tile-icon">📶</span>
-                        <div class="info-tile-h">Carrier & Network</div>
-                        <div class="info-tile-p">
-                            <span>SIM-Lock status</span>
-                            <span>Unlock eligibility</span>
-                            <span>Supported bands (5G)</span>
-                        </div>
-                    </div>
-
-                    <div class="info-tile large">
-                        <div style="display: flex; gap: 20px;">
-                            <div style="flex: 1;">
-                                <span class="info-tile-icon">🆔</span>
-                                <div class="info-tile-h">Identity & Production</div>
-                                <div class="info-tile-p">
-                                    <span>Exact model, color, & storage</span>
-                                    <span>Manufacturing date & week</span>
-                                    <span>Factory location & region</span>
-                                </div>
-                            </div>
-                            <div style="flex: 1;">
-                                <span class="info-tile-icon">🛡️</span>
-                                <div class="info-tile-h">Authenticity</div>
-                                <div class="info-tile-p">
-                                    <span>IMEI tampering detection</span>
-                                    <span>Mismatched board alerts</span>
-                                    <span>Fake/Cloned IMEI check</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="info-tile">
-                        <span class="info-tile-icon">📜</span>
-                        <div class="info-tile-h">Warranty & Support</div>
-                        <div class="info-tile-p">
-                            <span>Active/Expired status</span>
-                            <span>AppleCare / Samsung Care</span>
-                            <span>Purchase & Activation dates</span>
-                        </div>
-                    </div>
-
-                    <div class="info-tile">
-                        <span class="info-tile-icon">🔐</span>
-                        <div class="info-tile-h">Activation & iCloud</div>
-                        <div class="info-tile-p">
-                            <span>Find My iPhone status</span>
-                            <span>iCloud / Activation Lock</span>
-                            <span>Refurbished/Replacement ID</span>
-                        </div>
-                    </div>
-
-                    <div class="info-tile large" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), transparent); border-color: rgba(16, 185, 129, 0.2);">
-                        <div style="display: flex; align-items: center; gap: 20px;">
-                            <span class="info-tile-icon" style="font-size: 40px;">📈</span>
-                            <div style="text-align: left;">
-                                <div class="info-tile-h" style="color: var(--success);">Market Value & Trust Rating</div>
-                                <div class="info-tile-p">
-                                    Estimated resale value range • Global risk score based on history • Pro Buy/Sell recommendation
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div style="display: flex; flex-direction: column; gap: 12px;">
+                <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 30px;">
                     <button class="btn btn-free" onclick="switchView('diagnostics')">
                         <div style="display:flex; flex-direction: column; align-items: flex-start;">
                             <span style="font-size: 15px; font-weight: 800;">FREE DIAGNOSTICS</span>
@@ -357,6 +263,83 @@
                         </div>
                         <div class="price-badge">$14.99</div>
                     </button>
+                </div>
+
+                <div class="search-container">
+                    <input type="text" id="home-imei-input" class="search-input" placeholder="Enter IMEI Number..." maxlength="15">
+                    <button class="btn btn-primary" style="width: auto; padding: 10px 25px; border-radius: 18px;" onclick="initiatePaidCheck()">GO</button>
+                </div>
+
+                <div class="info-panel-title">⭐ IMEI Full Check — What You Get</div>
+                
+                <div class="info-bento">
+                    <div class="info-tile">
+                        <span class="info-tile-icon">🚫</span>
+                        <div class="info-tile-h">Blacklist & Theft</div>
+                        <div class="info-tile-p">
+                            <span>Lost / Stolen status</span>
+                            <span>Carrier blacklist</span>
+                            <span>Fraud / Blocked flags</span>
+                        </div>
+                    </div>
+                    <div class="info-tile">
+                        <span class="info-tile-icon">📶</span>
+                        <div class="info-tile-h">Carrier & Network</div>
+                        <div class="info-tile-p">
+                            <span>SIM-Lock status</span>
+                            <span>Unlock eligibility</span>
+                            <span>Supported bands (5G)</span>
+                        </div>
+                    </div>
+                    <div class="info-tile large">
+                        <div style="display: flex; gap: 20px;">
+                            <div style="flex: 1;">
+                                <span class="info-tile-icon">🆔</span>
+                                <div class="info-tile-h">Identity & Production</div>
+                                <div class="info-tile-p">
+                                    <span>Exact model, color, & storage</span>
+                                    <span>Manufacturing date & week</span>
+                                    <span>Factory location & region</span>
+                                </div>
+                            </div>
+                            <div style="flex: 1;">
+                                <span class="info-tile-icon">🛡️</span>
+                                <div class="info-tile-h">Authenticity</div>
+                                <div class="info-tile-p">
+                                    <span>IMEI tampering detection</span>
+                                    <span>Mismatched board alerts</span>
+                                    <span>Fake/Cloned IMEI check</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="info-tile">
+                        <span class="info-tile-icon">📜</span>
+                        <div class="info-tile-h">Warranty & Support</div>
+                        <div class="info-tile-p">
+                            <span>Active/Expired status</span>
+                            <span>AppleCare / Samsung Care</span>
+                            <span>Purchase & Activation dates</span>
+                        </div>
+                    </div>
+                    <div class="info-tile">
+                        <span class="info-tile-icon">🔐</span>
+                        <div class="info-tile-h">Activation & iCloud</div>
+                        <div class="info-tile-p">
+                            <span>Find My iPhone status</span>
+                            <span>iCloud / Activation Lock</span>
+                            <span>Refurbished/Replacement ID</span>
+                        </div>
+                    </div>
+                    <div class="info-tile large" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), transparent); border-color: rgba(16, 185, 129, 0.2);">
+                        <div style="display: flex; align-items: center; gap: 20px;">
+                            <span class="info-tile-icon" style="font-size: 40px;">📈</span>
+                            <div style="text-align: left;">
+                                <div class="info-tile-h" style="color: var(--success);">Market Value & Trust Rating</div>
+                                <div class="info-tile-p">Estimated resale value range • Global risk score based on history • Pro Buy/Sell recommendation</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div style="margin-top: 30px; font-size: 11px; color: var(--text-dim); display: flex; justify-content: center; gap: 20px;">
@@ -599,7 +582,6 @@
             loader.style.display = 'inline-block';
             specsBox.style.display = 'none';
 
-            // SIMULATOR DATA
             setTimeout(() => {
                 const data = { status: 'success', brand: "Samsung", model: "S24 Ultra", release_date: "2024", est_value: 1100, specs: { battery: "5000mAh", screen: "AMOLED", chipset: "SD 8 Gen3" } };
                 document.getElementById('auto-brand').value = data.brand;
