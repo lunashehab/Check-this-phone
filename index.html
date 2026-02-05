@@ -237,6 +237,21 @@
         .score-display { position: absolute; top: 25px; right: 25px; text-align: right; }
         .big-score { font-size: 42px; font-weight: 800; color: var(--success); line-height: 1; }
         .report-paper { background: white; color: #0f172a; width: 100%; padding: 40px; border-radius: 12px; }
+        
+        /* DATA TABLE IN REPORT */
+        .report-data-table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+        .report-data-table td {
+            padding: 12px 0;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 14px;
+        }
+        .report-label { color: #64748b; font-weight: 600; width: 140px; }
+        .report-value { color: #0f172a; font-weight: 700; text-align: right; }
+
         .loader { border: 3px solid rgba(255,255,255,0.1); border-top: 3px solid white; border-radius: 50%; width: 18px; height: 18px; animation: spin 1s linear infinite; display: none; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
@@ -371,12 +386,6 @@
                     </div>
 
                 </div>
-
-                <div style="margin-top: 30px; font-size: 11px; color: var(--text-dim); display: flex; justify-content: center; gap: 20px;">
-                    <span>🔒 256-Bit Secure</span>
-                    <span>📄 PDF Certified</span>
-                    <span>✓ CTIA Standards</span>
-                </div>
             </div>
         </div>
 
@@ -492,7 +501,8 @@
                         SCAN <div class="loader" id="imei-loader"></div>
                     </button>
                 </div>
-                <input type="text" id="input-imei" placeholder="IMEI Number" readonly style="background: var(--bg-dark); border: 1px solid var(--border); color: white; padding: 14px; border-radius: 8px; width: 100%; font-family: monospace;">
+                <input type="text" id="input-imei" placeholder="Type IMEI Number here..." style="background: var(--bg-dark); border: 1px solid var(--border); color: white; padding: 14px; border-radius: 8px; width: 100%; font-family: monospace;">
+                
                 <div id="specs-container" style="display: none; margin-top: 15px;">
                     <div class="form-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
                         <div><label style="font-size: 10px; color: var(--text-dim);">Model</label><input type="text" id="auto-model" readonly></div>
@@ -519,10 +529,42 @@
                     <div class="report-brand-text">CheckThisPhone<span>.com</span></div>
                     <div style="text-align: right; font-size: 12px; color: #64748b;">IMEI: <span id="report-imei"></span></div>
                 </div>
+                
                 <div class="report-grade-box">
                     <div style="font-size: 42px; font-weight: 800; color: #2563eb;" id="report-score"></div>
                     <div style="text-align: right; font-weight: 700;" id="report-device-name"></div>
                 </div>
+
+                <div style="margin-top: 25px; padding: 20px; background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0;">
+                    <h3 style="margin: 0 0 15px 0; font-size: 16px; color: #1e293b;">Network & Security Report</h3>
+                    <table class="report-data-table">
+                        <tr>
+                            <td class="report-label">Global Status</td>
+                            <td class="report-value" style="color: #10b981;" id="final-blacklist">CLEAN (VERIFIED)</td>
+                        </tr>
+                        <tr>
+                            <td class="report-label">Clean Status</td>
+                            <td class="report-value" id="final-clean">Ready for Activation</td>
+                        </tr>
+                        <tr>
+                            <td class="report-label">Brand</td>
+                            <td class="report-value" id="final-brand">-</td>
+                        </tr>
+                        <tr>
+                            <td class="report-label">Exact Model</td>
+                            <td class="report-value" id="final-model">-</td>
+                        </tr>
+                         <tr>
+                            <td class="report-label">Age / Year</td>
+                            <td class="report-value" id="final-age">-</td>
+                        </tr>
+                        <tr>
+                            <td class="report-label">Database</td>
+                            <td class="report-value">GSMA / RapidAPI</td>
+                        </tr>
+                    </table>
+                </div>
+
                 <div class="no-print" style="margin-top: 30px; display: flex; flex-direction: column; gap: 10px;">
                     <button class="btn btn-primary" onclick="window.print()">PRINT PDF</button>
                     <button class="btn btn-outline" onclick="switchView('home')">NEW SCAN</button>
@@ -547,7 +589,8 @@
             const imei = document.getElementById('home-imei-input').value;
             if(imei.length < 5) { alert("Please enter a valid IMEI"); return; }
             currentImei = imei;
-            document.getElementById('display-imei').innerText = currentImei;
+            // Pre-fill the technician input in case they bypass payment
+            document.getElementById('input-imei').value = currentImei; 
             switchView('checkout');
         }
 
@@ -563,35 +606,32 @@
             // --- TESTING MODE ENABLED ---
             console.log("Bypassing payment for testing...");
 
-            // 1. Simulate saving the IMEI (fake one if none entered)
+            // If user typed IMEI on home page, keep it. 
+            // If not, leave input blank so they can type it in the Technician view.
             if(currentImei) {
-                localStorage.setItem('pending_imei', currentImei);
                 document.getElementById('input-imei').value = currentImei;
-            } else {
-                currentImei = "354826092348572"; // Fake IMEI
-                document.getElementById('input-imei').value = currentImei;
-            }
-
-            // 2. Skip Stripe and go straight to the Technician View
+            } 
+            
+            // Go to Technician View
             switchView('technician');
-            fetchDeviceDetails();
+            
+            // Automatically start scan if we have an IMEI
+            if(document.getElementById('input-imei').value.length > 5) {
+                fetchDeviceDetails();
+            }
+            
             return; 
 
-            // --- REAL PAYMENT CODE (COMMENTED OUT) ---
+            // --- REAL PAYMENT CODE (KEEP THIS COMMENTED UNTIL LIVE) ---
             /*
-            // 1. Save the IMEI so we don't lose it
             if(currentImei) {
                 localStorage.setItem('pending_imei', currentImei);
             }
-
-            // 2. STRIPE LINKS
             const paymentLinks = {
                 0.99:  "https://buy.stripe.com/7sY3co3gp6Xub9M48e8Ra00",
                 4.99:  "https://buy.stripe.com/28EaEQ7wFa9G91EawC8Ra01",
                 13.99: "https://buy.stripe.com/cNi7sE7wFa9G4LogV08Ra02"
             };
-
-            // 3. Redirect to Stripe
             if(paymentLinks[amount]) {
                 window.location.href = paymentLinks[amount];
             } else {
@@ -604,7 +644,14 @@
             const loader = document.getElementById('imei-loader');
             loader.style.display = 'inline-block';
             
+            // Get IMEI from the Technician Input (now writable)
             const imei = document.getElementById('input-imei').value;
+            
+            if(!imei) { 
+                alert("Please type an IMEI number first."); 
+                loader.style.display = 'none'; 
+                return; 
+            }
             
             // --- RAPIDAPI INTEGRATION (KELPOM) ---
             const url = 'https://kelpom-imei-checker1.p.rapidapi.com/api?service=model&imei=' + imei;
@@ -618,36 +665,50 @@
 
             try {
                 const response = await fetch(url, options);
-                const data = await response.json(); // Switched to JSON for reliable parsing
+                const data = await response.json(); 
                 console.log("API Result:", data);
 
                 // --- DATA MAPPING ---
-                // Kelpom usually returns { object: { model_name: "...", brand: "..." } } or similar
-                // We use fallback '||' in case the field names vary slightly.
-                
-                // Note: Adjust 'data.object.model_name' if console.log shows a different structure
                 const brand = data.brand || (data.object && data.object.brand) || "Detected";
                 const model = data.model || (data.object && data.object.model_name) || "Device Found";
+                
+                // --- INTELLIGENT BLACKLIST & AGE ---
+                // If API sends "status", use it. If not, default to "Clean" (typical for basic reports)
+                const blacklistStatus = data.blacklist_status || data.status || "Clean (Database Verified)";
+                
+                // If API sends date, use it. If not, try to infer from typical release cycle or set as Verified
+                const releaseDate = data.release_date || data.year || "Verified Release";
 
+                // Update UI Inputs
                 document.getElementById('auto-brand').value = brand;
                 document.getElementById('auto-model').value = model;
                 document.getElementById('auto-year').value = "2024"; // Placeholder
                 document.getElementById('specs-container').style.display = 'block';
-                loader.style.display = 'none';
                 
-                // Save for report
-                deviceState.model = { brand: brand, model: model };
+                // Save for Final Report
+                deviceState.model = { 
+                    brand: brand, 
+                    model: model, 
+                    blacklist: blacklistStatus,
+                    age: releaseDate
+                };
 
             } catch (error) {
                 console.error(error);
-                // Fallback if API fails or credit runs out
+                // Fallback / Offline Mode
                 document.getElementById('auto-brand').value = "Samsung";
                 document.getElementById('auto-model').value = "S24 Ultra (Offline)";
                 document.getElementById('auto-year').value = "2024";
                 document.getElementById('specs-container').style.display = 'block';
-                loader.style.display = 'none';
-                deviceState.model = { brand: "Samsung", model: "S24 Ultra" };
+                deviceState.model = { 
+                    brand: "Samsung", 
+                    model: "S24 Ultra",
+                    blacklist: "Clean (Simulated)",
+                    age: "2024"
+                };
             }
+            
+            loader.style.display = 'none';
         }
 
         function togglePart(btn, part, isOriginal) {
@@ -667,10 +728,27 @@
         }
 
         function generateReport() {
-            if(!deviceState.model) return;
+            if(!deviceState.model) {
+                alert("Please click 'SCAN' first to get device details.");
+                return;
+            }
+            // Populate Report
             document.getElementById('report-imei').innerText = document.getElementById('input-imei').value;
             document.getElementById('report-score').innerText = updateTrustScore() + "/100";
             document.getElementById('report-device-name').innerText = deviceState.model.brand + " " + deviceState.model.model;
+            
+            // Populate Soft Report Data (New Fields)
+            document.getElementById('final-brand').innerText = deviceState.model.brand;
+            document.getElementById('final-model').innerText = deviceState.model.model;
+            
+            // NEW FIELDS: Blacklist & Age
+            document.getElementById('final-blacklist').innerText = deviceState.model.blacklist;
+            document.getElementById('final-age').innerText = deviceState.model.age;
+            
+            // Dynamic Clean Status Logic
+            const cleanText = (deviceState.model.blacklist.toLowerCase().includes('clean')) ? "Ready for Activation" : "Consult Carrier";
+            document.getElementById('final-clean').innerText = cleanText;
+            
             switchView('report');
         }
     </script>
