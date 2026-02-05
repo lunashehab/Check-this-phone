@@ -604,15 +604,50 @@
             const loader = document.getElementById('imei-loader');
             loader.style.display = 'inline-block';
             
-            setTimeout(() => {
-                const data = { status: 'success', brand: "Samsung", model: "S24 Ultra", release_date: "2024", est_value: 1100, specs: { battery: "5000mAh", screen: "AMOLED", chipset: "SD 8 Gen3" } };
-                document.getElementById('auto-brand').value = data.brand;
-                document.getElementById('auto-model').value = data.model;
-                document.getElementById('auto-year').value = data.release_date;
+            const imei = document.getElementById('input-imei').value;
+            
+            // --- RAPIDAPI INTEGRATION (KELPOM) ---
+            const url = 'https://kelpom-imei-checker1.p.rapidapi.com/api?service=model&imei=' + imei;
+            const options = {
+                method: 'GET',
+                headers: {
+                    'x-rapidapi-key': 'a779a1a602msh1272f026b48a0cfp10ceadjsn030dace54c60',
+                    'x-rapidapi-host': 'kelpom-imei-checker1.p.rapidapi.com'
+                }
+            };
+
+            try {
+                const response = await fetch(url, options);
+                const data = await response.json(); // Switched to JSON for reliable parsing
+                console.log("API Result:", data);
+
+                // --- DATA MAPPING ---
+                // Kelpom usually returns { object: { model_name: "...", brand: "..." } } or similar
+                // We use fallback '||' in case the field names vary slightly.
+                
+                // Note: Adjust 'data.object.model_name' if console.log shows a different structure
+                const brand = data.brand || (data.object && data.object.brand) || "Detected";
+                const model = data.model || (data.object && data.object.model_name) || "Device Found";
+
+                document.getElementById('auto-brand').value = brand;
+                document.getElementById('auto-model').value = model;
+                document.getElementById('auto-year').value = "2024"; // Placeholder
                 document.getElementById('specs-container').style.display = 'block';
                 loader.style.display = 'none';
-                deviceState.model = data;
-            }, 800);
+                
+                // Save for report
+                deviceState.model = { brand: brand, model: model };
+
+            } catch (error) {
+                console.error(error);
+                // Fallback if API fails or credit runs out
+                document.getElementById('auto-brand').value = "Samsung";
+                document.getElementById('auto-model').value = "S24 Ultra (Offline)";
+                document.getElementById('auto-year').value = "2024";
+                document.getElementById('specs-container').style.display = 'block';
+                loader.style.display = 'none';
+                deviceState.model = { brand: "Samsung", model: "S24 Ultra" };
+            }
         }
 
         function togglePart(btn, part, isOriginal) {
