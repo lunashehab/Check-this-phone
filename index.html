@@ -560,6 +560,25 @@
         }
 
         function proceedToPayment(amount, name) {
+            // --- TESTING MODE ENABLED ---
+            console.log("Bypassing payment for testing...");
+
+            // 1. Simulate saving the IMEI (fake one if none entered)
+            if(currentImei) {
+                localStorage.setItem('pending_imei', currentImei);
+                document.getElementById('input-imei').value = currentImei;
+            } else {
+                currentImei = "354826092348572"; // Fake IMEI
+                document.getElementById('input-imei').value = currentImei;
+            }
+
+            // 2. Skip Stripe and go straight to the Technician View
+            switchView('technician');
+            fetchDeviceDetails();
+            return; 
+
+            // --- REAL PAYMENT CODE (COMMENTED OUT) ---
+            /*
             // 1. Save the IMEI so we don't lose it
             if(currentImei) {
                 localStorage.setItem('pending_imei', currentImei);
@@ -578,6 +597,7 @@
             } else {
                 alert("Error: Payment link not configured for $" + amount);
             }
+            */
         }
 
         async function fetchDeviceDetails() {
