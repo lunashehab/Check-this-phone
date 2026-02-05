@@ -560,11 +560,23 @@
         }
 
         function proceedToPayment(amount, name) {
-            if(confirm(`Proceed with ${name} for $${amount}?`)) {
-                // Pass the IMEI to the technician view and start scan
-                document.getElementById('input-imei').value = currentImei;
-                switchView('technician');
-                fetchDeviceDetails();
+            // 1. Save the IMEI so we don't lose it
+            if(currentImei) {
+                localStorage.setItem('pending_imei', currentImei);
+            }
+
+            // 2. STRIPE LINKS
+            const paymentLinks = {
+                0.99:  "https://buy.stripe.com/7sY3co3gp6Xub9M48e8Ra00",
+                4.99:  "https://buy.stripe.com/28EaEQ7wFa9G91EawC8Ra01",
+                13.99: "https://buy.stripe.com/cNi7sE7wFa9G4LogV08Ra02"
+            };
+
+            // 3. Redirect to Stripe
+            if(paymentLinks[amount]) {
+                window.location.href = paymentLinks[amount];
+            } else {
+                alert("Error: Payment link not configured for $" + amount);
             }
         }
 
