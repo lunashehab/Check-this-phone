@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Don Systems Power Lab</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Don Systems Power Core</title>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         :root { 
@@ -12,307 +12,265 @@
             --border: #2d3748; 
             --text: #a0aec0; 
             --text-bright: #e2e8f0;
-            --accent: #00f0ff; /* Cyber Blue */
-            --success: #00ff9d; /* Matrix Green */
-            --danger: #ff0055; 
-            --warn: #ffb700; 
+            --accent: #10b981; /* Emerald Green */
+            --secondary: #3b82f6; /* Electric Blue */
+            --danger: #ef4444; 
+            --warn: #f59e0b; 
         }
         
-        * { box-sizing: border-box; }
-        body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; padding: 20px; margin: 0; min-height: 100vh; font-size: 14px; }
+        * { box-sizing: border-box; touch-action: manipulation; -webkit-tap-highlight-color: transparent; user-select: none; }
+        body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; padding: 20px; margin: 0; min-height: 100vh; font-size: 14px; overflow-x: hidden; }
         
         /* HEADER */
         .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 15px; margin-bottom: 20px; }
         .logo { font-family: 'JetBrains Mono', monospace; font-weight: 800; font-size: 18px; color: var(--text-bright); letter-spacing: -1px; }
         .logo span { color: var(--accent); }
-        .live-badge { display: flex; align-items: center; gap: 6px; font-size: 10px; color: var(--success); font-weight: 700; background: rgba(0, 255, 157, 0.1); padding: 4px 8px; border-radius: 4px; border: 1px solid rgba(0, 255, 157, 0.2); }
-        .blink { animation: blink 1s infinite; width: 6px; height: 6px; background: var(--success); border-radius: 50%; }
+        .live-badge { display: flex; align-items: center; gap: 6px; font-size: 10px; color: var(--accent); font-weight: 700; background: rgba(16, 185, 129, 0.1); padding: 4px 8px; border-radius: 4px; border: 1px solid rgba(16, 185, 129, 0.2); }
+        .blink { animation: blink 1s infinite; width: 6px; height: 6px; background: var(--accent); border-radius: 50%; }
         @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0; } 100% { opacity: 1; } }
 
-        /* GRID LAYOUT */
-        .grid-master { display: grid; grid-template-columns: 1fr; gap: 15px; max-width: 600px; margin: 0 auto; }
+        /* BATTERY HERO */
+        .battery-container { 
+            background: #000; border: 1px solid var(--border); border-radius: 16px; padding: 30px; margin-bottom: 20px; position: relative; overflow: hidden;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; height: 220px;
+        }
+        
+        /* THE BATTERY GRAPHIC */
+        .batt-shell {
+            width: 120px; height: 60px; border: 4px solid var(--text); border-radius: 12px; position: relative; padding: 4px;
+            display: flex; align-items: center;
+        }
+        .batt-shell::after {
+            content: ""; position: absolute; right: -10px; top: 18px; width: 6px; height: 16px; background: var(--text); border-radius: 0 4px 4px 0;
+        }
+        .batt-fill {
+            height: 100%; width: 0%; background: var(--accent); border-radius: 6px; transition: width 0.5s ease, background 0.5s;
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+        }
+        .batt-bolt {
+            position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); font-size: 24px; color: white; display: none; text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
 
-        /* 1. HERO METRIC */
-        .hero-card { background: radial-gradient(circle at top right, #1a202c, #0f1218); border: 1px solid var(--border); border-radius: 16px; padding: 25px; display: flex; justify-content: space-between; align-items: center; position: relative; overflow: hidden; }
-        .hero-left h3 { margin: 0; font-size: 12px; color: var(--text); text-transform: uppercase; letter-spacing: 1px; }
-        .hero-left .big-val { font-family: 'JetBrains Mono', monospace; font-size: 42px; font-weight: 700; color: var(--text-bright); display: block; margin: 5px 0; }
-        .hero-left .sub-val { font-size: 12px; color: var(--warn); display: flex; align-items: center; gap: 5px; }
-        .battery-visual { width: 60px; height: 100px; border: 3px solid var(--text); border-radius: 12px; position: relative; padding: 3px; }
-        .battery-visual::before { content: ""; position: absolute; top: -8px; left: 50%; transform: translateX(-50%); width: 20px; height: 6px; background: var(--text); border-radius: 2px; }
-        .battery-fill { width: 100%; height: 50%; background: var(--success); position: absolute; bottom: 3px; left: 3px; width: calc(100% - 6px); border-radius: 8px; transition: height 0.5s, background 0.5s; box-shadow: 0 0 15px var(--success); }
+        .status-text { font-family: 'JetBrains Mono'; font-size: 32px; font-weight: 800; color: var(--text-bright); margin-top: 20px; }
+        .sub-text { font-size: 12px; color: var(--text); margin-top: 5px; text-transform: uppercase; letter-spacing: 1px; }
 
-        /* 2. SENSOR MATRIX */
-        .matrix-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
-        .sensor-box { background: var(--panel); border: 1px solid var(--border); padding: 12px; border-radius: 8px; }
-        .sensor-label { font-size: 10px; text-transform: uppercase; color: var(--text); display: block; margin-bottom: 4px; }
-        .sensor-val { font-family: 'JetBrains Mono', monospace; font-size: 16px; font-weight: 700; color: var(--accent); }
-        .unit { font-size: 10px; color: var(--text); font-weight: 400; }
+        /* CHARGING STATE */
+        .charging .batt-fill { background: var(--success); box-shadow: 0 0 30px var(--success); }
+        .charging .batt-bolt { display: block; }
+        .charging .status-text { color: var(--success); }
+        
+        /* LOW BATTERY STATE */
+        .low-batt .batt-fill { background: var(--danger); box-shadow: 0 0 30px var(--danger); }
+        .low-batt .status-text { color: var(--danger); }
 
-        /* 3. GRAPH */
-        .graph-wrapper { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 15px; height: 150px; position: relative; }
-        canvas { width: 100%; height: 100%; }
-        .graph-overlay { position: absolute; top: 10px; left: 15px; font-size: 10px; color: var(--text); font-weight: 700; display: flex; gap: 10px; }
-        .leg-v { color: var(--accent); } .leg-a { color: var(--warn); }
+        /* INSTRUCTION PANELS */
+        .info-panel { background: rgba(16, 185, 129, 0.05); border-left: 3px solid var(--accent); padding: 15px; margin-bottom: 15px; border-radius: 0 8px 8px 0; font-size: 12px; line-height: 1.5; color: var(--text-bright); }
+        .info-title { font-weight: 800; color: var(--accent); text-transform: uppercase; margin-bottom: 5px; display: block; letter-spacing: 1px; }
 
-        /* 4. CONTROL PANEL */
-        .control-panel { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .btn-test { background: var(--panel); border: 1px solid var(--border); color: var(--text-bright); padding: 15px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 12px; text-align: left; display: flex; align-items: center; justify-content: space-between; transition: 0.2s; }
-        .btn-test:hover { border-color: var(--accent); background: rgba(0, 240, 255, 0.05); }
-        .btn-test.active { border-color: var(--warn); background: rgba(255, 183, 0, 0.1); color: var(--warn); }
-        .btn-icon { font-size: 18px; }
+        /* DATA GRID */
+        .grid-master { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+        .stat-card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 15px; }
+        .stat-label { font-size: 10px; text-transform: uppercase; color: var(--text); display: block; margin-bottom: 4px; letter-spacing: 1px; }
+        .stat-val { font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700; color: var(--text-bright); display: flex; align-items: center; gap: 8px; }
+        
+        .val-ok { color: var(--accent); }
+        .val-warn { color: var(--warn); }
 
-        /* 5. TERMINAL LOG */
-        .terminal { background: #000; border: 1px solid var(--border); border-radius: 8px; padding: 10px; height: 120px; overflow: hidden; font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--success); position: relative; }
-        .log-line { margin-bottom: 2px; opacity: 0.8; }
-        .terminal::after { content: ""; position: absolute; bottom: 0; left: 0; width: 100%; height: 30px; background: linear-gradient(to top, #000, transparent); }
+        /* FAQ ACCORDION */
+        .faq-section { display: grid; gap: 10px; margin-top: 30px; }
+        .faq-item { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+        .faq-q { padding: 15px; font-weight: 700; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .faq-q:hover { color: var(--accent); }
+        .faq-a { padding: 0 15px 15px 15px; color: var(--text); font-size: 12px; line-height: 1.5; display: none; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px; }
+        .faq-icon { font-size: 10px; transition: 0.2s; }
+        .faq-item.active .faq-a { display: block; }
+        .faq-item.active .faq-icon { transform: rotate(180deg); color: var(--accent); }
 
         .back-btn { display: block; text-align: center; margin-top: 20px; color: var(--text); text-decoration: none; font-weight: 700; padding: 15px; background: var(--panel); border-radius: 12px; }
     </style>
 </head>
 <body>
 
-    <div class="grid-master">
-        <div class="header">
-            <div class="logo">DON<span>SYSTEMS</span></div>
-            <div class="live-badge"><div class="blink"></div> LIVE SENSORS</div>
-        </div>
-
-        <div class="hero-card">
-            <div class="hero-left">
-                <h3>Main Capacity</h3>
-                <span class="big-percent" id="main-pct">--%</span>
-                <span class="sub-val" id="main-status">⚡ CALIBRATING...</span>
-                <div style="margin-top: 10px; font-size: 11px; color: #64748b;">
-                    Design: <span style="color:white">5000mAh</span><br>
-                    Est. Real: <span style="color:white" id="real-mah">4850mAh</span>
-                </div>
-            </div>
-            <div class="battery-visual">
-                <div class="battery-fill" id="visual-fill"></div>
-            </div>
-        </div>
-
-        <div class="matrix-grid">
-            <div class="sensor-box">
-                <span class="sensor-label">Voltage (mV)</span>
-                <span class="sensor-val" id="val-mv">4201</span>
-            </div>
-            <div class="sensor-box">
-                <span class="sensor-label">Current (mA)</span>
-                <span class="sensor-val" id="val-ma">-240</span>
-            </div>
-            <div class="sensor-box">
-                <span class="sensor-label">Power (W)</span>
-                <span class="sensor-val" id="val-w">1.1</span>
-            </div>
-            <div class="sensor-box">
-                <span class="sensor-label">Temp (°C)</span>
-                <span class="sensor-val" id="val-temp">34.2</span>
-            </div>
-            <div class="sensor-box">
-                <span class="sensor-label">Resistance (mΩ)</span>
-                <span class="sensor-val" id="val-res">142</span>
-            </div>
-            <div class="sensor-box">
-                <span class="sensor-label">Cycles</span>
-                <span class="sensor-val" id="val-cyc">241</span>
-            </div>
-        </div>
-
-        <div class="graph-wrapper">
-            <div class="graph-overlay">
-                <span class="leg-v">VOLTAGE</span>
-                <span class="leg-a">CURRENT</span>
-            </div>
-            <canvas id="mainCanvas"></canvas>
-        </div>
-
-        <div class="control-panel">
-            <button class="btn-test" onclick="startTest('drain')">
-                <span>DRAIN SPEED</span> <span class="btn-icon">📉</span>
-            </button>
-            <button class="btn-test" onclick="startTest('load')">
-                <span>CPU LOAD SIM</span> <span class="btn-icon">🔥</span>
-            </button>
-            <button class="btn-test" onclick="startTest('port')">
-                <span>PORT STABILITY</span> <span class="btn-icon">🔌</span>
-            </button>
-            <button class="btn-test" onclick="startTest('health')">
-                <span>INT. RESISTANCE</span> <span class="btn-icon">Ω</span>
-            </button>
-        </div>
-
-        <div class="terminal" id="console-output">
-            <div class="log-line">> SYSTEM INIT... OK</div>
-            <div class="log-line">> CONNECTING TO PMIC... OK</div>
-            <div class="log-line">> READING SENSOR ARRAY [0x4F]...</div>
-        </div>
-
-        <a href="../index.html" class="back-btn">EXIT LABORATORY</a>
+    <div class="header">
+        <div class="logo">DON<span>POWER</span></div>
+        <div class="live-badge"><div class="blink"></div> MONITORING</div>
     </div>
 
-    <script>
-        // --- 1. SYSTEM CORE ---
-        let isCharging = false;
-        let batteryLevel = 50;
-        let logs = [];
+    <div class="battery-container" id="batt-container">
+        <div class="batt-shell">
+            <div class="batt-fill" id="batt-fill"></div>
+            <div class="batt-bolt">⚡</div>
+        </div>
+        <div class="status-text" id="batt-pct">--%</div>
+        <div class="sub-text" id="batt-state">CALCULATING FLOW...</div>
+    </div>
+
+    <div class="info-panel">
+        <span class="info-title">1. BATTERY HEALTH</span>
         
-        // Canvas Setup
-        const canvas = document.getElementById('mainCanvas');
-        const ctx = canvas.getContext('2d');
-        const dpr = window.devicePixelRatio || 1;
-        // Resize logic
-        function resize() {
-            const rect = canvas.getBoundingClientRect();
-            canvas.width = rect.width * dpr;
-            canvas.height = rect.height * dpr;
-            ctx.scale(dpr, dpr);
-        }
-        resize();
-        window.addEventListener('resize', resize);
+        Browsers cannot read your "Health Percentage" (e.g. 84% capacity) for security reasons. However, we can detect if your charging logic is working correctly.
+    </div>
 
-        let vHistory = new Array(60).fill(4.0);
-        let aHistory = new Array(60).fill(0.5);
+    <div class="grid-master">
+        <div class="stat-card">
+            <span class="stat-label">POWER SOURCE</span>
+            <span class="stat-val" id="pwr-source">--</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-label">DISCHARGE TIME</span>
+            <span class="stat-val" id="dis-time">--</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-label">CHARGING TIME</span>
+            <span class="stat-val" id="chg-time">--</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-label">VOLTAGE</span>
+            <span class="stat-val">3.8V (EST)</span>
+        </div>
+    </div>
 
-        // --- 2. LOGGING SYSTEM ---
-        function log(msg) {
-            const term = document.getElementById('console-output');
-            const time = new Date().toLocaleTimeString().split(' ')[0];
-            const line = document.createElement('div');
-            line.className = 'log-line';
-            line.innerHTML = `<span style="color:#64748b">[${time}]</span> ${msg}`;
-            term.appendChild(line);
-            if(term.children.length > 8) term.removeChild(term.children[0]);
-            term.scrollTop = term.scrollHeight;
-        }
+    <div class="info-panel" style="border-color: var(--warn); background: rgba(245, 158, 11, 0.05);">
+        <span class="info-title" style="color: var(--warn);">2. THE 20-80 RULE</span>
+        To double your battery's lifespan, keep it between **20%** and **80%**. Charging to 100% creates heat and stress on the chemical ions.
+    </div>
 
-        // --- 3. PHYSICS ENGINE (Simulate Sensors) ---
-        function physicsLoop() {
-            // Voltage (3.6V - 4.3V)
-            const noiseV = (Math.random() - 0.5) * 0.02;
-            let volts = isCharging ? 4.2 + noiseV : 3.7 + noiseV;
+    <h3 style="font-size: 14px; margin-bottom: 15px; color: var(--text-bright);">FAQ: BATTERY & CHARGING</h3>
+    <div class="faq-section">
+        
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">1. Is "Fast Charging" bad? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">Only because of heat. Fast charging generates massive heat, which degrades the battery chemistry. If your phone gets hot, unplug it.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">2. Can I charge overnight? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">Yes. Modern phones have chips that cut off power at 100%. However, holding a battery at 100% for 8 hours is still slightly stressful for it.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">3. What is a "Cycle"? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">One cycle is using 100% of the battery (e.g., draining from 100% to 0%, or 50% to 0% twice). Batteries usually last 500-800 cycles.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">4. Why wireless charging is hot? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">Wireless charging is inefficient. About 30% of the energy is lost as waste heat. Heat kills batteries. Cable is always better.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">5. Should I drain to 0%? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">NEVER. Lithium-Ion batteries hate being empty. Draining to 0% can cause the battery to become unstable or fail completely.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">6. Why does 100% drop fast? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">Battery voltage isn't linear. The drop from 100% to 90% usually happens faster than 50% to 40% due to voltage curves.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">7. When to replace the battery? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">When its "Maximum Capacity" (Health) drops below 80%. At this point, the phone may slow down (throttle) to prevent crashing.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">8. What uses the most power? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">1. The Screen (Brightness). 2. GPS/Location. 3. Cellular Data (especially in low signal areas).</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">9. Does "Dark Mode" save battery? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">Yes! On OLED screens (iPhone/Samsung), black pixels are turned off completely, using zero power. It saves about 10-20%.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">10. Are power banks safe? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">Yes, as long as they are from a reputable brand (Anker, Samsung, etc.). Cheap gas station power banks can have unstable voltage.</div>
+        </div>
+
+    </div>
+
+    <a href="../index.html" class="back-btn">EXIT POWER CORE</a>
+
+    <script>
+        // --- BATTERY MANAGER ---
+        navigator.getBattery().then(function(battery) {
             
-            // Amps (-500mA to +2000mA)
-            const noiseA = (Math.random() - 0.5) * 50;
-            let amps = isCharging ? 1500 + noiseA : -350 + noiseA;
-            
-            // Wattage (P=VI)
-            let watts = (volts * (Math.abs(amps)/1000)).toFixed(2);
-            
-            // Resistance (Simulated based on load)
-            let res = 140 + (Math.random() * 5);
+            function updateAll() {
+                updateLevel(battery.level);
+                updateChargeInfo(battery.charging);
+                updateTime(battery.charging, battery.dischargingTime, battery.chargingTime);
+            }
 
-            // Temp (Starts at 30, rises with load)
-            let temp = 30 + (Math.abs(amps)/1000 * 2) + Math.random();
+            // Listeners for changes
+            battery.addEventListener('chargingchange', function(){ updateAll(); });
+            battery.addEventListener('levelchange', function(){ updateAll(); });
+            battery.addEventListener('chargingtimechange', function(){ updateAll(); });
+            battery.addEventListener('dischargingtimechange', function(){ updateAll(); });
 
-            // UPDATE UI
-            document.getElementById('val-mv').innerText = (volts * 1000).toFixed(0);
-            document.getElementById('val-ma').innerText = amps.toFixed(0);
-            document.getElementById('val-ma').style.color = isCharging ? "#00ff9d" : "#ff0055";
-            document.getElementById('val-w').innerText = watts;
-            document.getElementById('val-temp').innerText = temp.toFixed(1);
-            document.getElementById('val-res').innerText = res.toFixed(0);
-
-            // PUSH TO GRAPH
-            vHistory.push(volts); vHistory.shift();
-            aHistory.push(amps/1000); aHistory.shift(); // Normalize amps for graph
-
-            // DRAW GRAPH
-            drawGraph();
-        }
-
-        function drawGraph() {
-            const w = canvas.width / dpr;
-            const h = canvas.height / dpr;
-            ctx.clearRect(0, 0, w, h);
-
-            // Grid
-            ctx.strokeStyle = 'rgba(255,255,255,0.05)';
-            ctx.lineWidth = 1;
-            ctx.beginPath(); ctx.moveTo(0, h/2); ctx.lineTo(w, h/2); ctx.stroke();
-
-            // Voltage Line (Blue)
-            ctx.strokeStyle = '#00f0ff';
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            vHistory.forEach((v, i) => {
-                let y = h - ((v - 3.5) / (4.5 - 3.5)) * h;
-                if(i===0) ctx.moveTo(0, y); else ctx.lineTo(i*(w/60), y);
-            });
-            ctx.stroke();
-
-            // Amps Line (Orange/Red)
-            ctx.strokeStyle = '#ffb700';
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            aHistory.forEach((a, i) => {
-                // Map -2A to +2A to height
-                let y = h/2 - (a/4 * h); 
-                if(i===0) ctx.moveTo(0, y); else ctx.lineTo(i*(w/60), y);
-            });
-            ctx.stroke();
-        }
-
-        setInterval(physicsLoop, 500);
-
-        // --- 4. REAL BATTERY API ---
-        navigator.getBattery().then(bat => {
-            updateBat(bat);
-            bat.addEventListener('levelchange', () => updateBat(bat));
-            bat.addEventListener('chargingchange', () => updateBat(bat));
-            log("> BATTERY API ACCESS GRANTED");
+            // Initial Run
+            updateAll();
         });
 
-        function updateBat(bat) {
-            isCharging = bat.charging;
-            batteryLevel = Math.round(bat.level * 100);
-            
-            document.getElementById('main-pct').innerText = batteryLevel + "%";
-            document.getElementById('visual-fill').style.height = batteryLevel + "%";
-            
-            const statusDiv = document.getElementById('main-status');
-            if(isCharging) {
-                statusDiv.innerHTML = "⚡ AC POWER CONNECTED";
-                statusDiv.style.color = "#00ff9d";
-                document.getElementById('visual-fill').style.background = "#00ff9d";
-                log("> DETECTED CHARGER CONNECTION");
+        function updateLevel(level) {
+            const pct = Math.round(level * 100);
+            document.getElementById('batt-pct').innerText = pct + "%";
+            document.getElementById('batt-fill').style.width = pct + "%";
+
+            // Visual Logic
+            const container = document.getElementById('batt-container');
+            if(pct <= 20) {
+                container.classList.add('low-batt');
             } else {
-                statusDiv.innerHTML = "🔋 DISCHARGING";
-                statusDiv.style.color = "#ffb700";
-                document.getElementById('visual-fill').style.background = "#00f0ff";
+                container.classList.remove('low-batt');
             }
         }
 
-        // --- 5. TEST SUITE LOGIC ---
-        function startTest(type) {
-            log(`> INITIATING TEST SEQUENCE: ${type.toUpperCase()}...`);
-            
-            if(type === 'drain') {
-                alert("📉 DRAIN TEST\n\nWe will monitor discharge rate for 5 seconds.\nPlease unplug charger.");
-                setTimeout(() => { log("> DRAIN RATE: 0.8% / Hour (Excellent)"); alert("Result: Excellent Stability"); }, 3000);
-            }
-            
-            if(type === 'load') {
-                log("> RAM & CPU STRESS APPLIED");
-                // Freeze UI slightly to simulate load
-                const start = Date.now();
-                while(Date.now() - start < 500) {}; 
-                setTimeout(() => { log("> THERMAL THROTTLE: NONE"); alert("CPU Load Handled. Temp rise: 0.2°C"); }, 2000);
-            }
+        function updateChargeInfo(isCharging) {
+            const container = document.getElementById('batt-container');
+            const stateText = document.getElementById('batt-state');
+            const pwrText = document.getElementById('pwr-source');
 
-            if(type === 'port') {
-                if(!isCharging) { alert("Please Plug in Charger"); return; }
-                alert("🔌 WIGGLE TEST\n\nWiggle cable now. Monitoring for voltage drops...");
-                log("> MONITORING VBUS VOLTAGE...");
-                setTimeout(() => { log("> PORT CONNECTION: STABLE"); alert("Port Passed: No drops detected."); }, 4000);
-            }
-
-            if(type === 'health') {
-                log("> PULSING BATTERY...");
-                log("> MEASURING VOLTAGE SAG...");
-                setTimeout(() => { log("> INTERNAL RESISTANCE: 142mΩ"); alert("Battery Health: 92% (Good Condition)"); }, 3000);
+            if(isCharging) {
+                container.classList.add('charging');
+                container.classList.remove('low-batt'); // Charging overrides low batt warning
+                stateText.innerText = "CHARGING ACTIVE";
+                pwrText.innerText = "AC ADAPTER / USB";
+                pwrText.className = "stat-val val-ok";
+                document.querySelector('.live-badge').innerText = "CHARGING";
+            } else {
+                container.classList.remove('charging');
+                stateText.innerText = "DISCHARGING";
+                pwrText.innerText = "BATTERY";
+                pwrText.className = "stat-val";
+                document.querySelector('.live-badge').innerText = "DRAINING";
             }
         }
+
+        function updateTime(isCharging, disTime, chgTime) {
+            const disEl = document.getElementById('dis-time');
+            const chgEl = document.getElementById('chg-time');
+
+            if(isCharging) {
+                disEl.innerText = "--";
+                if(chgTime && chgTime !== Infinity) {
+                    chgEl.innerText = (chgTime / 60).toFixed(0) + " MINS";
+                } else {
+                    chgEl.innerText = "CALCULATING...";
+                }
+            } else {
+                chgEl.innerText = "--";
+                if(disTime && disTime !== Infinity) {
+                    const hours = Math.floor(disTime / 3600);
+                    const mins = Math.floor((disTime % 3600) / 60);
+                    disEl.innerText = `${hours}H ${mins}M`;
+                } else {
+                    disEl.innerText = "CALCULATING...";
+                }
+            }
+        }
+
+        function toggleFaq(el) { el.classList.toggle('active'); }
 
     </script>
 </body>
