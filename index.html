@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="CheckThisPhone.com - Universal Android Diagnostic Standard by Don Systems">
+    <meta name="description" content="CheckThisPhone.com - Universal Android Diagnostic Standard">
     <title>CheckThisPhone.com | Universal Phone Check</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -69,7 +69,7 @@
         }
 
         .view-section { display: none; width: 100%; }
-        .view-section.active { display: block; }
+        .view-section.active { display: block; animation: fadeIn 0.4s ease-out; }
 
         /* BENTO GRID - DIAGNOSTICS */
         .bento-grid {
@@ -214,7 +214,7 @@
         }
 
         /* BUTTONS */
-        .btn { padding: 14px 20px; border-radius: 14px; font-weight: 800; cursor: pointer; border: none; font-size: 14px; transition: 0.2s; width: 100%; display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 20px; }
+        .btn { padding: 14px 20px; border-radius: 14px; font-weight: 800; cursor: pointer; border: none; font-size: 14px; transition: 0.2s; width: 100%; display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 20px; text-decoration: none; }
         .btn-free { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4); }
         .btn-primary { background: var(--accent); color: white; box-shadow: 0 4px 15px var(--accent-glow); }
         .btn-gold { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4); }
@@ -252,142 +252,4 @@
         .report-label { color: #64748b; font-weight: 600; width: 140px; }
         .report-value { color: #0f172a; font-weight: 700; text-align: right; }
 
-        .loader { border: 3px solid rgba(255,255,255,0.1); border-top: 3px solid white; border-radius: 50%; width: 18px; height: 18px; animation: spin 1s linear infinite; display: none; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-    </style>
-</head>
-<body>
-
-    <div class="app-container">
-        
-        <div class="brand-header">
-            <img src="logo-text-variant.png" alt="CheckThisPhone.com" class="brand-logo-img">
-        </div>
-
-        <div id="view-home" class="view-section active">
-            <div style="text-align: center;">
-                <h1 style="font-size: 32px; font-weight: 800; margin-bottom: 10px; letter-spacing: -0.5px;">Universal Phone Verification</h1>
-                <p style="color: var(--text-dim); margin-bottom: 40px; font-size: 16px; max-width: 500px; margin-left: auto; margin-right: auto;">
-                    Select your phone brand below to see available check options.
-                </p>
-
-                <div style="margin-bottom: 30px; max-width: 600px; margin-left: auto; margin-right: auto;">
-                    <select id="brand-select-home" onchange="updatePricingVisibility()" style="width: 100%; padding: 15px; background: var(--panel-dark); border: 2px solid var(--accent); color: white; border-radius: 18px; text-align: center; font-size: 18px; font-weight: 700; cursor: pointer; outline: none; -webkit-appearance: none; box-shadow: 0 4px 20px rgba(59, 130, 246, 0.2);">
-                        <option value="universal">▼ Select Your Brand ▼</option>
-                        <option value="apple">Apple (iPhone / iPad)</option>
-                        <option value="samsung">Samsung</option>
-                        <option value="sony">Sony</option>
-                        <option value="lg">LG</option>
-                        <option value="oppo">Oppo</option>
-                        <option value="zte">ZTE</option>
-                        <option value="xiaomi">Xiaomi</option>
-                        <option value="realme">Realme</option>
-                        <option value="oneplus">OnePlus</option>
-                        <option value="motorola">Motorola</option>
-                        <option value="iqoo">IQOO</option>
-                        <option value="huawei">Huawei</option>
-                        <option value="asus">Asus</option>
-                        <option value="honor">Honor</option>
-                        <option value="pixel">Google Pixel</option>
-                        <option value="doogee">Doogee</option>
-                        <option value="itel">Itel</option>
-                        <option value="kyocera">Kyocera</option>
-                    </select>
-                </div>
-
-                <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 30px;">
-                    
-                    <button class="btn btn-free" onclick="switchView('diagnostics')">
-                        <div style="display:flex; flex-direction: column; align-items: flex-start;">
-                            <span style="font-size: 15px; font-weight: 800;">FREE DIAGNOSTICS</span>
-                            <span style="font-size: 11px; opacity: 0.9;">Hardware & System Scan</span>
-                        </div>
-                        <div class="price-badge">FREE</div>
-                    </button>
-
-                    <button class="btn btn-primary" onclick="proceedToPayment(1.49, 'Standard Report')">
-                        <div style="display:flex; flex-direction: column; align-items: flex-start;">
-                            <span style="font-size: 15px; font-weight: 800;">STANDARD REPORT</span>
-                            <span style="font-size: 11px; opacity: 0.8;">Blacklist + Carrier + SimLock</span>
-                        </div>
-                        <div class="price-badge">$1.49</div>
-                    </button>
-
-                    <button id="btn-gsx-top" class="btn btn-gold apple-only-btn" onclick="proceedToPayment(4.99, 'Apple GSX Report')">
-                        <div style="display:flex; flex-direction: column; align-items: flex-start;">
-                            <span style="font-size: 15px; font-weight: 800;">APPLE GSX HISTORY</span>
-                            <span style="font-size: 11px; opacity: 0.9;">Repairs, Cases & iCloud History</span>
-                        </div>
-                        <div class="price-badge">$4.99</div>
-                    </button>
-                </div>
-
-                <div class="search-container">
-                    <input type="text" id="home-imei-input" class="search-input" placeholder="Enter IMEI to start..." maxlength="15">
-                    <button class="btn btn-primary" style="width: auto; padding: 10px 25px; border-radius: 18px;" onclick="handleImeiSearch()">GO</button>
-                </div>
-
-                <div class="comparison-container">
-                    
-                    <div class="comp-panel tier-basic">
-                        <div class="comp-header">
-                            <span style="font-size: 24px; color: var(--accent);">🛡️</span>
-                            <div>
-                                <span class="comp-title" style="color: var(--accent);">Standard Check</span>
-                                <div style="font-size: 10px; color: var(--text-dim);">ESSENTIAL SECURITY</div>
-                            </div>
-                            <div class="comp-price-tag">$1.49</div>
-                        </div>
-                        <div class="comp-list">
-                            <div class="comp-item"><span class="comp-icon">🚫</span><div><b>Blacklist / Stolen Check</b><span>Global GSMA Police Database.</span></div></div>
-                            <div class="comp-item"><span class="comp-icon">🔓</span><div><b>SimLock Status</b><span>Locked or Unlocked Verification.</span></div></div>
-                            <div class="comp-item"><span class="comp-icon">📡</span><div><b>Original Carrier</b><span>Network Identification (AT&T, etc).</span></div></div>
-                            <div class="comp-item"><span class="comp-icon">🆔</span><div><b>Device Identity</b><span>Brand, Model & Warranty Status.</span></div></div>
-                        </div>
-                        <button class="btn btn-primary" onclick="proceedToPayment(1.49, 'Standard Report')">Purchase</button>
-                    </div>
-
-                    <div id="card-gsx-bottom" class="comp-panel tier-premium apple-only-btn">
-                        <div class="comp-header">
-                            <span style="font-size: 24px; color: #fbbf24;">👑</span>
-                            <div>
-                                <span class="comp-title" style="color: #fbbf24;">Apple GSX</span>
-                                <div style="font-size: 10px; color: rgba(255,255,255,0.6);">OFFICIAL REPAIR HISTORY</div>
-                            </div>
-                            <div class="comp-price-tag" style="color: #fbbf24;">$4.99</div>
-                        </div>
-                        <div class="includes-badge" style="color: #fbbf24;">+ INCLUDES STANDARD REPORT</div>
-                        <div class="comp-list">
-                            <div class="comp-item"><span class="comp-icon">🔧</span><div><b>Repair History</b><span>Official Apple Store repairs.</span></div></div>
-                            <div class="comp-item"><span class="comp-icon">📅</span><div><b>Purchase Date</b><span>Exact sales date & location.</span></div></div>
-                            <div class="comp-item"><span class="comp-icon">☁️</span><div><b>iCloud / FMI</b><span>Find My iPhone Status.</span></div></div>
-                            <div class="comp-item"><span class="comp-icon">📂</span><div><b>Case History</b><span>Support tickets & logs.</span></div></div>
-                        </div>
-                        <button class="btn btn-gold" onclick="proceedToPayment(4.99, 'Apple GSX Report')">Purchase GSX</button>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-
-        <div id="view-checkout" class="view-section">
-            <div class="nav-header">
-                <button class="back-btn" onclick="switchView('home')">← Back to Home</button>
-                <div style="font-size: 11px; color: var(--accent); font-weight: 700;">SECURE CHECKOUT</div>
-            </div>
-            <div class="input-group" style="text-align: center;">
-                <h2 style="margin-bottom: 5px;">Confirm Your Order</h2>
-                <div id="checkout-price-display" style="font-size: 32px; font-weight: 800; color: var(--success); margin: 20px 0;">$1.49</div>
-                <button class="btn btn-primary" onclick="proceedToTechnician()">PAY & START SCAN</button>
-            </div>
-        </div>
-
-        <div id="view-diagnostics" class="view-section">
-            <div class="nav-header">
-                <button class="back-btn" onclick="switchView('home')">← Back to Home</button>
-                <div style="font-size: 11px; color: var(--success); font-weight: 700;">● SYSTEM ONLINE</div>
-            </div>
-            <div class="input-group">
-                <h2 style="margin: 0 0 5px 0; font-size: 20px; font-weight: 800;">Diagnostic Suite</h2>
-                <div class="bento-grid">
-                    <div class="b
+        .loader { border: 3px solid rgba(255
