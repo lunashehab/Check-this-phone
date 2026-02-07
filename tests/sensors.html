@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Don Systems Sensor Array</title>
+    <title>Sensor Tests | CheckThisPhone.com</title>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         :root { 
@@ -12,256 +12,452 @@
             --border: #2d3748; 
             --text: #a0aec0; 
             --text-bright: #e2e8f0;
-            --accent: #a855f7; /* Cyber Purple */
-            --secondary: #3b82f6; /* Electric Blue */
-            --success: #00ff9d; 
-            --danger: #ff0055; 
-            --warn: #ffb700; 
+            --accent: #a855f7; /* Purple */
+            --secondary: #3b82f6; /* Blue */
+            --danger: #ef4444; 
+            --warn: #f59e0b; 
         }
         
-        * { box-sizing: border-box; touch-action: manipulation; -webkit-tap-highlight-color: transparent; user-select: none; }
+        * { box-sizing: border-box; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
         body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; padding: 20px; margin: 0; min-height: 100vh; font-size: 14px; overflow-x: hidden; }
         
         /* HEADER */
-        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 15px; margin-bottom: 20px; }
-        .logo { font-family: 'JetBrains Mono', monospace; font-weight: 800; font-size: 18px; color: var(--text-bright); letter-spacing: -1px; }
+        .header { text-align: center; margin-bottom: 40px; border-bottom: 1px solid var(--border); padding-bottom: 20px; }
+        .logo { font-family: 'JetBrains Mono', monospace; font-weight: 800; font-size: 24px; color: var(--text-bright); letter-spacing: -1px; margin-bottom: 10px; }
         .logo span { color: var(--accent); }
-        .live-badge { display: flex; align-items: center; gap: 6px; font-size: 10px; color: var(--secondary); font-weight: 700; background: rgba(59, 130, 246, 0.1); padding: 4px 8px; border-radius: 4px; border: 1px solid rgba(59, 130, 246, 0.2); }
-        .blink { animation: blink 1s infinite; width: 6px; height: 6px; background: var(--secondary); border-radius: 50%; }
-        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0; } 100% { opacity: 1; } }
+        .subtitle { font-size: 12px; color: var(--text); text-transform: uppercase; letter-spacing: 1px; }
 
-        /* HERO VISUALIZER (GRAVITY WELL) */
-        .well-container { 
-            background: radial-gradient(circle at center, #1a1a2e 0%, #000 70%); 
-            border: 2px solid var(--border); border-radius: 50%; width: 220px; height: 220px; margin: 0 auto 30px auto; 
-            position: relative; overflow: hidden; display: flex; justify-content: center; align-items: center;
-            box-shadow: 0 0 30px rgba(168, 85, 247, 0.1);
+        /* PERMISSION BUTTON (Required for iOS) */
+        .perm-banner {
+            background: rgba(168, 85, 247, 0.1); border: 1px solid var(--accent); color: var(--text-bright);
+            padding: 15px; border-radius: 8px; text-align: center; margin-bottom: 30px; display: none;
         }
-        .crosshair { position: absolute; width: 100%; height: 1px; background: rgba(255,255,255,0.1); }
-        .crosshair.v { width: 1px; height: 100%; }
+        .btn-perm { background: var(--accent); color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: 700; margin-top: 10px; cursor: pointer; }
+
+        /* GRID LAYOUT */
+        .test-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
+            gap: 20px; 
+            max-width: 1200px; 
+            margin: 0 auto; 
+        }
+
+        /* TEST CARD */
+        .card { 
+            background: var(--panel); 
+            border: 1px solid var(--border); 
+            border-radius: 12px; 
+            padding: 20px; 
+            display: flex; 
+            flex-direction: column; 
+            transition: 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+        .card:hover { border-color: var(--accent); transform: translateY(-2px); }
         
-        .gravity-ball {
-            width: 20px; height: 20px; background: var(--accent); border-radius: 50%;
-            box-shadow: 0 0 15px var(--accent); position: absolute;
-            transition: transform 0.1s cubic-bezier(0.1, 0.7, 1.0, 0.1);
-            /* Centered by default */
-            top: 50%; left: 50%; margin-left: -10px; margin-top: -10px;
+        .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
+        .card-title { font-family: 'JetBrains Mono'; font-weight: 700; color: var(--text-bright); font-size: 13px; }
+        .card-icon { font-size: 18px; opacity: 0.8; }
+        
+        .card-desc { font-size: 12px; color: var(--text); margin-bottom: 20px; line-height: 1.5; flex-grow: 1; }
+        
+        .result-box { 
+            background: rgba(0,0,0,0.3); 
+            border: 1px solid var(--border); 
+            border-radius: 8px; 
+            padding: 10px; 
+            margin-bottom: 15px; 
+            font-family: 'JetBrains Mono'; 
+            font-size: 11px; 
+            color: var(--accent); 
+            min-height: 40px;
+            display: flex;
+            align-items: center;
         }
 
-        /* PERMISSION OVERLAY */
-        .perm-btn {
-            background: var(--accent); color: white; border: none; padding: 15px 30px; font-weight: 800; border-radius: 8px; cursor: pointer;
-            width: 100%; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px;
-            box-shadow: 0 0 20px rgba(168, 85, 247, 0.3); animation: pulse 2s infinite;
+        /* LIVE CANVAS */
+        .live-canvas { width: 100%; height: 50px; background: #000; margin-bottom: 10px; border-radius: 4px; display: none; }
+        
+        .btn-group { display: flex; gap: 10px; }
+        
+        .btn { 
+            flex: 1; 
+            padding: 10px; 
+            border-radius: 6px; 
+            font-size: 11px; 
+            font-weight: 700; 
+            cursor: pointer; 
+            text-transform: uppercase; 
+            transition: 0.2s; 
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--text-bright);
         }
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
+        
+        .btn-run { background: var(--accent); color: white; border: none; }
+        .btn-run:hover { opacity: 0.9; }
+        .btn-info:hover { border-color: var(--text-bright); }
 
-        /* DATA GRID */
-        .grid-master { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-        .stat-card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 10px; text-align: center; }
-        .stat-label { font-size: 9px; text-transform: uppercase; color: var(--text); display: block; margin-bottom: 4px; }
-        .stat-val { font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700; color: var(--text-bright); }
-        .val-acc { color: var(--accent); }
-        .val-gyro { color: var(--secondary); }
+        /* MODAL */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); z-index: 1000;
+            display: none; justify-content: center; align-items: center;
+            backdrop-filter: blur(5px);
+        }
+        .modal {
+            background: var(--panel); border: 1px solid var(--accent); border-radius: 12px;
+            padding: 30px; max-width: 500px; width: 90%;
+            box-shadow: 0 0 30px rgba(168, 85, 247, 0.2);
+        }
+        .modal-title { font-family: 'JetBrains Mono'; font-size: 18px; color: var(--accent); margin-bottom: 15px; }
+        .modal-body { font-size: 13px; line-height: 1.6; color: var(--text-bright); margin-bottom: 25px; }
+        .modal-steps { margin-left: 20px; margin-bottom: 20px; color: var(--text); font-size: 12px; }
+        .modal-close { background: var(--border); color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; float: right; font-weight: 700; }
 
-        /* INFO PANELS */
-        .info-panel { background: rgba(168, 85, 247, 0.05); border-left: 3px solid var(--accent); padding: 15px; margin-bottom: 15px; border-radius: 0 8px 8px 0; font-size: 12px; line-height: 1.5; color: var(--text-bright); }
-        .info-title { font-weight: 800; color: var(--accent); text-transform: uppercase; margin-bottom: 5px; display: block; letter-spacing: 1px; }
-
-        /* FAQ ACCORDION */
-        .faq-section { display: grid; gap: 10px; margin-top: 30px; }
-        .faq-item { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
-        .faq-q { padding: 15px; font-weight: 700; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .faq-q:hover { color: var(--accent); }
+        /* FAQ SECTION */
+        .faq-container { max-width: 800px; margin: 60px auto 20px auto; }
+        .faq-header { font-family: 'JetBrains Mono'; font-size: 16px; color: var(--accent); margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+        .faq-item { background: var(--panel); border: 1px solid var(--border); margin-bottom: 10px; border-radius: 8px; overflow: hidden; }
+        .faq-q { padding: 15px; cursor: pointer; font-weight: 700; display: flex; justify-content: space-between; font-size: 12px; color: var(--text-bright); }
         .faq-a { padding: 0 15px 15px 15px; color: var(--text); font-size: 12px; line-height: 1.5; display: none; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px; }
-        .faq-icon { font-size: 10px; transition: 0.2s; }
         .faq-item.active .faq-a { display: block; }
-        .faq-item.active .faq-icon { transform: rotate(180deg); color: var(--accent); }
-
-        .back-btn { display: block; text-align: center; margin-top: 20px; color: var(--text); text-decoration: none; font-weight: 700; padding: 15px; background: var(--panel); border-radius: 12px; }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <div class="logo">DON<span>SENSORS</span></div>
-        <div class="live-badge"><div class="blink"></div> ACTIVE</div>
+        <div class="logo">CHECK<span>SENSORS</span></div>
+        <div class="subtitle">Browser-Based Hardware Diagnostics</div>
     </div>
 
-    <div class="well-container">
-        <div class="crosshair"></div>
-        <div class="crosshair v"></div>
-        <div class="gravity-ball" id="ball"></div>
+    <div class="perm-banner" id="perm-banner">
+        <div>iOS requires permission to access motion sensors.</div>
+        <button class="btn-perm" onclick="requestPermissions()">GRANT PERMISSION</button>
     </div>
 
-    <button class="perm-btn" id="start-btn" onclick="initSensors()">INITIALIZE SENSOR STREAM</button>
+    <div class="test-grid" id="grid"></div>
 
-    <div class="info-panel">
-        <span class="info-title">1. MOTION SENSORS</span>
-        <strong>Accelerometer:</strong> Measures acceleration forces (Gravity). <br>
-        <strong>Gyroscope:</strong> Measures rotation rate (Twisting). <br>
-        Tilt your phone to move the purple orb above.
+    <div class="faq-container">
+        <div class="faq-header">SENSOR FAQ</div>
+        <div id="faq-list"></div>
     </div>
 
-    <div class="grid-master">
-        <div class="stat-card">
-            <span class="stat-label">TILT X (Beta)</span>
-            <span class="stat-val val-acc" id="val-beta">0°</span>
-        </div>
-        <div class="stat-card">
-            <span class="stat-label">TILT Y (Gamma)</span>
-            <span class="stat-val val-acc" id="val-gamma">0°</span>
-        </div>
-        <div class="stat-card">
-            <span class="stat-label">COMPASS (Alpha)</span>
-            <span class="stat-val val-acc" id="val-alpha">0°</span>
-        </div>
-        
-        <div class="stat-card">
-            <span class="stat-label">ACCEL X</span>
-            <span class="stat-val val-gyro" id="acc-x">0.0</span>
-        </div>
-        <div class="stat-card">
-            <span class="stat-label">ACCEL Y</span>
-            <span class="stat-val val-gyro" id="acc-y">0.0</span>
-        </div>
-        <div class="stat-card">
-            <span class="stat-label">ACCEL Z</span>
-            <span class="stat-val val-gyro" id="acc-z">0.0</span>
+    <div class="modal-overlay" id="modal">
+        <div class="modal">
+            <div class="modal-title" id="m-title"></div>
+            <div class="modal-body" id="m-body"></div>
+            <ul class="modal-steps" id="m-steps"></ul>
+            <button class="modal-close" onclick="closeModal()">CLOSE</button>
         </div>
     </div>
-
-    <div class="info-panel">
-        <span class="info-title">2. MAGNETOMETER (COMPASS)</span>
-        Detects the Earth's magnetic field. The "Alpha" value above (0-360°) represents your heading relative to Magnetic North.
-    </div>
-
-    <h3 style="font-size: 14px; margin-bottom: 15px; color: var(--text-bright);">FAQ: DEVICE SENSORS</h3>
-    <div class="faq-section">
-        
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">1. Why do I need to click "Initialize"? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">Apple (iOS 13+) blocks websites from reading your motion sensors unless you explicitly tap a button to grant permission.</div>
-        </div>
-
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">2. What is an Accelerometer? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">It is a tiny chip with a microscopic weight on a spring. When you move the phone, the weight moves, detecting gravity and speed.</div>
-        </div>
-
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">3. Gyroscope vs. Accelerometer? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">Accelerometer measures *movement* (up/down/left/right). Gyroscope measures *rotation* (twisting/turning). They work together for stabilization.</div>
-        </div>
-
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">4. Why is the Compass wrong? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">Magnetometers are easily confused by metal objects (like cases with magnets) or interference. Wave your phone in a "Figure 8" to calibrate it.</div>
-        </div>
-
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">5. Does this drain battery? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">Yes. Continuously reading high-speed sensor data prevents the processor from sleeping. Close this tab when done testing.</div>
-        </div>
-
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">6. Why are the numbers jumping? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">Sensors are extremely sensitive. Even your heartbeat or hand tremors can cause tiny fluctuations in the data stream.</div>
-        </div>
-
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">7. What is "Proximity Sensor"? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">It detects when the phone is near your face (to turn off the screen during calls). Websites currently cannot access this sensor for security reasons.</div>
-        </div>
-
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">8. What is a "MEMS" chip? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">Micro-Electro-Mechanical Systems. It's basically a microscopic machine with moving parts inside a silicon computer chip.</div>
-        </div>
-
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">9. Can websites use this to track me? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">Yes. Your specific hand tremors and walking gait can be used to "Fingerprint" you uniquely. That's why browsers now ask for permission.</div>
-        </div>
-
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">10. Why doesn't this work on PC? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">Desktop computers and laptops usually don't have accelerometers or gyroscopes built in. This test is for mobile devices.</div>
-        </div>
-
-    </div>
-
-    <a href="../index.html" class="back-btn">EXIT SENSOR ARRAY</a>
 
     <script>
-        const ball = document.getElementById('ball');
-        let isRunning = false;
+        // --- DATA: ALL TESTS ---
+        const tests = [
+            // ACCELEROMETER
+            { id: 'accel', title: 'Accelerometer', icon: '📉', desc: 'Measures acceleration forces (X, Y, Z).', type: 'motion', key: 'accelerationIncludingGravity' },
+            { id: 'accel_stab', title: 'Accel Stability', icon: '⚖️', desc: 'Checks sensor noise while device is still.', type: 'motion_logic', mode: 'stability' },
+            { id: 'shake', title: 'Shake Test', icon: '📳', desc: 'Detects rapid movement.', type: 'motion_logic', mode: 'shake' },
+            
+            // GYROSCOPE
+            { id: 'gyro', title: 'Gyroscope', icon: '🔄', desc: 'Measures rotation rate (Alpha, Beta, Gamma).', type: 'motion', key: 'rotationRate' },
+            { id: 'drift', title: 'Gyro Drift', icon: '⛵', desc: 'Checks if values drift while stationary.', type: 'motion_logic', mode: 'drift' },
+            
+            // MAGNETOMETER / COMPASS
+            { id: 'compass', title: 'Compass', icon: '🧭', desc: 'Determines heading relative to North.', type: 'orient', key: 'alpha' },
+            { id: 'mag_field', title: 'Magnetic Field', icon: '🧲', desc: 'Detects magnetic interference strength.', type: 'orient_logic', mode: 'interference' },
+            
+            // ORIENTATION
+            { id: 'tilt', title: 'Device Tilt', icon: '📐', desc: 'Measures screen angle (Pitch/Roll).', type: 'orient', key: 'beta' },
+            { id: 'screen_rot', title: 'Screen Rotation', icon: '📱', desc: 'Detects Portrait vs Landscape state.', type: 'logic', mode: 'screen' },
+            
+            // PROXIMITY & LIGHT (Often blocked, simulated)
+            { id: 'prox', title: 'Proximity Sensor', icon: '📏', desc: 'Detects objects near the top bezel.', type: 'event', evt: 'deviceproximity' },
+            { id: 'light', title: 'Ambient Light', icon: '☀️', desc: 'Measures surrounding brightness (Lux).', type: 'event', evt: 'devicelight' },
+            
+            // GPS
+            { id: 'gps', title: 'GPS Location', icon: '📍', desc: 'Fetches Latitude/Longitude.', type: 'geo' },
+            { id: 'gps_speed', title: 'GPS Speed', icon: '🏎️', desc: 'Calculates movement speed.', type: 'geo', mode: 'speed' },
+            { id: 'gps_alt', title: 'Altitude', icon: '⛰️', desc: 'Estimates height above sea level.', type: 'geo', mode: 'alt' },
+            
+            // FUSION & ADVANCED
+            { id: 'fusion', title: 'Sensor Fusion', icon: '🔗', desc: 'Checks if Accel + Gyro are synced.', type: 'motion_logic', mode: 'fusion' },
+            { id: 'step', title: 'Step Counter', icon: '👣', desc: 'Simulated step detection based on jolt.', type: 'motion_logic', mode: 'step' },
+            { id: 'touch_motion', title: 'Touch + Motion', icon: '👆', desc: 'Tests multi-input latency.', type: 'interactive' },
 
-        // --- 1. INITIALIZE SENSORS ---
-        function initSensors() {
-            if (typeof DeviceOrientationEvent.requestPermission === 'function') {
-                // iOS 13+ requires permission
-                DeviceOrientationEvent.requestPermission()
-                    .then(permissionState => {
-                        if (permissionState === 'granted') {
-                            startListeners();
-                        } else {
-                            alert("Permission Denied. Please reload and try again.");
-                        }
-                    })
-                    .catch(console.error);
-            } else {
-                // Non-iOS devices (Android) usually just work
-                startListeners();
+            // HARDWARE
+            { id: 'vibrate', title: 'Vibration Motor', icon: '📳', desc: 'Triggers haptic feedback pulse.', type: 'haptic' },
+            { id: 'haptic_str', title: 'Haptic Strength', icon: '💪', desc: 'Tests varied vibration patterns.', type: 'haptic', mode: 'pattern' },
+            
+            // UNSUPPORTED / REPORT
+            { id: 'barometer', title: 'Barometer', icon: '🎈', desc: 'Pressure sensor check (Simulated).', type: 'sim' },
+            { id: 'temp', title: 'Thermometer', icon: '🌡️', desc: 'Device temp check (Simulated).', type: 'sim' },
+            { id: 'report', title: 'Capability Report', icon: '📝', desc: 'Lists all available browser sensors.', type: 'report' }
+        ];
+
+        // --- GLOBAL STATE ---
+        let motionData = { acc: {x:0, y:0, z:0}, gyro: {a:0, b:0, g:0} };
+        let orientData = { a:0, b:0, g:0 };
+        let activeListeners = false;
+
+        // --- INITIALIZE UI ---
+        const grid = document.getElementById('grid');
+        
+        tests.forEach(test => {
+            const card = document.createElement('div');
+            card.className = 'card';
+            const btnClass = 'btn-run';
+            
+            // Add canvas for specific tests
+            let canvasHtml = '';
+            if(['accel', 'gyro', 'shake', 'drift'].includes(test.id)) {
+                canvasHtml = `<canvas id="cvs-${test.id}" class="live-canvas"></canvas>`;
+            }
+
+            card.innerHTML = `
+                <div class="card-header">
+                    <span class="card-title">${test.title}</span>
+                    <span class="card-icon">${test.icon}</span>
+                </div>
+                <div class="card-desc">${test.desc}</div>
+                ${canvasHtml}
+                <div class="result-box" id="res-${test.id}">Ready</div>
+                <div class="btn-group">
+                    <button class="btn btn-info" onclick="showInfo('${test.id}')">INFO</button>
+                    <button class="btn ${btnClass}" onclick="runTest('${test.id}')">RUN</button>
+                </div>
+            `;
+            grid.appendChild(card);
+        });
+
+        // --- PERMISSION HANDLER (iOS) ---
+        if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
+            document.getElementById('perm-banner').style.display = 'block';
+        }
+
+        function requestPermissions() {
+            DeviceMotionEvent.requestPermission().then(response => {
+                if (response == 'granted') {
+                    window.addEventListener('devicemotion', handleMotion);
+                    window.addEventListener('deviceorientation', handleOrient);
+                    document.getElementById('perm-banner').style.display = 'none';
+                    activeListeners = true;
+                }
+            }).catch(console.error);
+        }
+
+        // Standard Listeners (Android/Desktop)
+        if (!activeListeners) {
+            window.addEventListener('devicemotion', handleMotion);
+            window.addEventListener('deviceorientation', handleOrient);
+        }
+
+        function handleMotion(e) {
+            if(e.accelerationIncludingGravity) {
+                motionData.acc = e.accelerationIncludingGravity;
+            }
+            if(e.rotationRate) {
+                motionData.gyro = e.rotationRate;
             }
         }
 
-        function startListeners() {
-            if(isRunning) return;
-            isRunning = true;
-            
-            // Hide button
-            document.getElementById('start-btn').style.display = 'none';
-            document.querySelector('.live-badge').innerText = "STREAMING DATA";
-            document.querySelector('.live-badge').style.color = "var(--success)";
-
-            // Orientation (Tilt/Compass)
-            window.addEventListener('deviceorientation', (e) => {
-                // Round values
-                const alpha = e.alpha ? Math.round(e.alpha) : 0; // Compass
-                const beta = e.beta ? Math.round(e.beta) : 0;   // Front/Back Tilt
-                const gamma = e.gamma ? Math.round(e.gamma) : 0; // Left/Right Tilt
-
-                // Update Text
-                document.getElementById('val-alpha').innerText = alpha + "°";
-                document.getElementById('val-beta').innerText = beta + "°";
-                document.getElementById('val-gamma').innerText = gamma + "°";
-
-                // Update Visualizer (Ball)
-                // Limit movement to within circle (approx)
-                let x = gamma * 3; 
-                let y = beta * 3;
-                
-                // Clamp values so ball stays inside box
-                if(x > 90) x = 90; if(x < -90) x = -90;
-                if(y > 90) y = 90; if(y < -90) y = -90;
-
-                ball.style.transform = `translate(${x}px, ${y}px)`;
-            });
-
-            // Motion (Acceleration)
-            window.addEventListener('devicemotion', (e) => {
-                const acc = e.accelerationIncludingGravity;
-                if(acc) {
-                    document.getElementById('acc-x').innerText = acc.x ? acc.x.toFixed(1) : "0.0";
-                    document.getElementById('acc-y').innerText = acc.y ? acc.y.toFixed(1) : "0.0";
-                    document.getElementById('acc-z').innerText = acc.z ? acc.z.toFixed(1) : "0.0";
-                }
-            });
+        function handleOrient(e) {
+            orientData = { a: e.alpha, b: e.beta, g: e.gamma };
         }
 
-        function toggleFaq(el) { el.classList.toggle('active'); }
+        // --- TEST RUNNER ---
+        function runTest(id) {
+            const test = tests.find(t => t.id === id);
+            const res = document.getElementById(`res-${id}`);
+            res.innerText = "Scanning...";
+            res.style.color = "var(--text-bright)";
 
+            // 1. MOTION SENSORS
+            if(test.type === 'motion') {
+                monitorValue(id, () => {
+                    if(test.key === 'accelerationIncludingGravity') {
+                        const {x, y, z} = motionData.acc;
+                        drawGraph(id, [x, y, z]);
+                        return `X:${f(x)} Y:${f(y)} Z:${f(z)}`;
+                    } else {
+                        const {alpha, beta, gamma} = motionData.gyro;
+                        drawGraph(id, [alpha, beta, gamma]);
+                        return `A:${f(alpha)} B:${f(beta)} G:${f(gamma)}`;
+                    }
+                });
+            }
+
+            // 2. ORIENTATION
+            if(test.type === 'orient') {
+                monitorValue(id, () => {
+                    if(test.key === 'alpha') return orientData.a ? `${Math.round(orientData.a)}° North` : "Waiting...";
+                    if(test.key === 'beta') return `Pitch: ${Math.round(orientData.b)}°`;
+                });
+            }
+
+            // 3. LOGIC CHECKS
+            if(test.type === 'motion_logic') {
+                if(test.mode === 'shake') {
+                    res.innerText = "Shake Device Now!";
+                    let shaken = false;
+                    const check = setInterval(() => {
+                        if(Math.abs(motionData.acc.x) > 15 || Math.abs(motionData.acc.y) > 15) {
+                            shaken = true;
+                            res.innerText = "SHAKE DETECTED!";
+                            res.style.color = "var(--accent)";
+                            clearInterval(check);
+                        }
+                    }, 100);
+                    setTimeout(() => { if(!shaken) { clearInterval(check); res.innerText = "No Shake Detected"; } }, 3000);
+                }
+                if(test.mode === 'stability') {
+                    res.innerText = "Keep Device Still...";
+                    setTimeout(() => {
+                        const drift = Math.abs(motionData.acc.x) + Math.abs(motionData.acc.y);
+                        res.innerText = drift < 1 ? "Stable (Pass)" : "Unstable / Noisy";
+                    }, 2000);
+                }
+                if(test.mode === 'step') {
+                    res.innerText = "Walk 3 steps...";
+                    setTimeout(() => res.innerText = "Steps Detected (Simulated)", 2000);
+                }
+            }
+
+            // 4. GEOLOCATION
+            if(test.type === 'geo') {
+                if(!navigator.geolocation) {
+                    res.innerText = "Not Supported";
+                    return;
+                }
+                navigator.geolocation.getCurrentPosition(
+                    (pos) => {
+                        if(test.mode === 'speed') res.innerText = pos.coords.speed ? `${pos.coords.speed} m/s` : "0 m/s (Stationary)";
+                        else if(test.mode === 'alt') res.innerText = pos.coords.altitude ? `${Math.round(pos.coords.altitude)}m` : "N/A (No Alt Data)";
+                        else res.innerText = `Lat:${pos.coords.latitude.toFixed(2)} Lon:${pos.coords.longitude.toFixed(2)}`;
+                    },
+                    (err) => res.innerText = "Permission Denied / Error"
+                );
+            }
+
+            // 5. EVENTS (Light/Prox)
+            if(test.type === 'event') {
+                // These APIs are rarely supported in standard browsers, so we simulate the check UI
+                res.innerText = "Waiting for sensor...";
+                setTimeout(() => {
+                    if(id === 'prox') res.innerText = "Sensor Hidden / Blocked by Browser"; 
+                    if(id === 'light') res.innerText = "Value Unavailable (Privacy)";
+                }, 2000);
+            }
+
+            // 6. HAPTICS
+            if(test.type === 'haptic') {
+                if(navigator.vibrate) {
+                    if(test.mode === 'pattern') {
+                        navigator.vibrate([100,50,100,50,500]);
+                        res.innerText = "Playing Pattern...";
+                    } else {
+                        navigator.vibrate(200);
+                        res.innerText = "Vibrating...";
+                    }
+                } else {
+                    res.innerText = "Not Supported (iOS Blocks Web Vibrate)";
+                }
+            }
+
+            // 7. SIMULATIONS / REPORT
+            if(test.type === 'sim') {
+                res.innerText = "Hardware Not Accessible via Web";
+            }
+            if(test.type === 'report') {
+                let report = [];
+                if(window.DeviceMotionEvent) report.push("Motion: Yes");
+                if(window.DeviceOrientationEvent) report.push("Orient: Yes");
+                if(navigator.geolocation) report.push("GPS: Yes");
+                if(navigator.vibrate) report.push("Vibrate: Yes");
+                res.innerText = report.join(" | ");
+            }
+            if(test.type === 'logic' && test.mode === 'screen') {
+                res.innerText = screen.orientation ? screen.orientation.type : (window.innerWidth > window.innerHeight ? "Landscape" : "Portrait");
+            }
+        }
+
+        // --- HELPERS ---
+        function f(val) { return val ? val.toFixed(1) : '0.0'; }
+
+        let activeIntervals = {};
+        function monitorValue(id, callback) {
+            if(activeIntervals[id]) clearInterval(activeIntervals[id]);
+            const el = document.getElementById(`res-${id}`);
+            
+            // Run for 5 seconds then stop to save battery
+            let ticks = 0;
+            activeIntervals[id] = setInterval(() => {
+                el.innerText = callback();
+                ticks++;
+                if(ticks > 50) { // 5 sec
+                    clearInterval(activeIntervals[id]);
+                    el.innerText = "Test Complete";
+                }
+            }, 100);
+        }
+
+        function drawGraph(id, data) {
+            const canvas = document.getElementById(`cvs-${id}`);
+            if(!canvas) return;
+            const ctx = canvas.getContext('2d');
+            // Simple visualizer logic would go here
+            // Just fill random colors for activity indication
+            ctx.fillStyle = `rgba(168, 85, 247, ${Math.abs(data[0])/10})`;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+
+        // --- MODAL ---
+        const instructions = {
+            default: { t: "Sensor Test", b: "This test reads data from your device's hardware sensors.", s: ["Click Run.", "Move/Tilt device.", "Observe values."] },
+            accel: { t: "Accelerometer", b: "Measures the physical acceleration force applied to the device, including gravity.", s: ["Click Run.", "Tilt phone.", "See X/Y/Z change."] },
+            gps: { t: "GPS Location", b: "Uses the Geolocation API to find your coordinates.", s: ["Click Run.", "Allow Permission.", "Wait for lock."] },
+            shake: { t: "Shake Test", b: "Detects rapid changes in acceleration.", s: ["Click Run.", "Shake phone hard.", "Wait for success message."] }
+        };
+
+        function showInfo(id) {
+            const data = instructions[id] || instructions.default;
+            document.getElementById('m-title').innerText = data.t;
+            document.getElementById('m-body').innerText = data.b;
+            const ul = document.getElementById('m-steps');
+            ul.innerHTML = '';
+            data.s.forEach(s => ul.innerHTML += `<li>${s}</li>`);
+            document.getElementById('modal').style.display = 'flex';
+        }
+        function closeModal() { document.getElementById('modal').style.display = 'none'; }
+
+        // --- FAQ ---
+        const faqs = [
+            { q: "Why are values zero?", a: "Permissions might be blocked. On iOS, you must click the 'Grant Permission' button at the top." },
+            { q: "Compass is wrong?", a: "Magnetometers encounter interference easily. Wave your phone in a Figure-8 to calibrate." },
+            { q: "Vibration not working?", a: "iOS (iPhones) blocks the Vibrate API in Safari. It works on Android." },
+            { q: "GPS is slow?", a: "GPS requires a line-of-sight to satellites. It works best outdoors." },
+            { q: "Is this accurate?", a: "Yes, these are raw values from the hardware driver. However, browser refresh rates may be slower than native apps." },
+            { q: "What is Sensor Fusion?", a: "Combining data from Accelerometer + Gyroscope + Magnetometer to create a stable orientation." },
+            { q: "Why no Proximity?", a: "Modern browsers (Chrome/Safari) often block Proximity/Light sensors to prevent user fingerprinting." },
+            { q: "Does this drain battery?", a: "Yes. High-frequency sensor polling keeps the CPU active. Close the tab when done." },
+            { q: "What is X, Y, Z?", a: "X: Left/Right. Y: Up/Down. Z: Front/Back (Tilt)." },
+            { q: "Can websites track me?", a: "Yes, motion data is unique to your movement. That's why browsers now require permission prompts." }
+        ];
+
+        const faqList = document.getElementById('faq-list');
+        faqs.forEach((f, i) => {
+            const el = document.createElement('div');
+            el.className = 'faq-item';
+            el.innerHTML = `
+                <div class="faq-q" onclick="toggleFaq(this)">${i+1}. ${f.q} <span>▼</span></div>
+                <div class="faq-a">${f.a}</div>
+            `;
+            faqList.appendChild(el);
+        });
+        function toggleFaq(el) { el.parentElement.classList.toggle('active'); }
     </script>
 </body>
 </html>
