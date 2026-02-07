@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Don Systems Wireless Command</title>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
@@ -32,7 +32,7 @@
         /* RADAR HERO */
         .radar-container { 
             background: radial-gradient(circle at center, #0f1820 0%, #000 70%); 
-            border: 1px solid var(--border); border-radius: 50%; width: 200px; height: 200px; margin: 0 auto 30px auto; 
+            border: 1px solid var(--border); border-radius: 50%; width: 220px; height: 220px; margin: 0 auto 30px auto; 
             position: relative; overflow: hidden; display: flex; justify-content: center; align-items: center;
             box-shadow: 0 0 30px rgba(0, 240, 255, 0.1);
         }
@@ -47,8 +47,12 @@
         }
         @keyframes scan { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-        .ping-val { z-index: 2; font-family: 'JetBrains Mono'; font-size: 24px; font-weight: 800; color: white; text-shadow: 0 0 10px var(--accent); }
+        .ping-val { z-index: 2; font-family: 'JetBrains Mono'; font-size: 32px; font-weight: 800; color: white; text-shadow: 0 0 10px var(--accent); }
         .ping-label { z-index: 2; position: absolute; bottom: 60px; font-size: 10px; color: var(--accent); }
+
+        /* INSTRUCTION PANELS */
+        .info-panel { background: rgba(0, 240, 255, 0.05); border-left: 3px solid var(--accent); padding: 15px; margin-bottom: 15px; border-radius: 0 8px 8px 0; font-size: 12px; line-height: 1.5; color: var(--text-bright); }
+        .info-title { font-weight: 800; color: var(--accent); text-transform: uppercase; margin-bottom: 5px; display: block; letter-spacing: 1px; }
 
         /* DATA GRID */
         .grid-master { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
@@ -64,21 +68,19 @@
         /* ISP BOX */
         .isp-box { grid-column: span 2; background: rgba(0, 240, 255, 0.05); border-color: rgba(0, 240, 255, 0.2); }
         
-        /* SPEEDOMETER BAR */
-        .speed-bar-container { width: 100%; height: 6px; background: #1a202c; border-radius: 3px; margin-top: 10px; overflow: hidden; }
-        .speed-bar-fill { height: 100%; width: 0%; background: var(--success); transition: width 0.2s; box-shadow: 0 0 10px var(--success); }
-
-        /* CONTROL BUTTONS */
-        .btn-test { background: var(--panel); border: 1px solid var(--border); color: var(--text-bright); width: 100%; padding: 15px; border-radius: 12px; font-weight: 700; margin-bottom: 10px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: 0.2s; display: flex; justify-content: space-between; align-items: center; }
-        .btn-test:hover { border-color: var(--accent); color: var(--accent); }
-        .btn-icon { font-size: 16px; }
-
-        /* TERMINAL */
-        .terminal { background: #000; border: 1px solid var(--border); border-radius: 8px; padding: 10px; height: 120px; overflow: hidden; font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--accent); position: relative; }
-        .log-line { margin-bottom: 2px; opacity: 0.8; }
-        .terminal::after { content: ""; position: absolute; bottom: 0; left: 0; width: 100%; height: 20px; background: linear-gradient(to top, #000, transparent); }
+        /* FAQ ACCORDION */
+        .faq-section { display: grid; gap: 10px; margin-top: 30px; }
+        .faq-item { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+        .faq-q { padding: 15px; font-weight: 700; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .faq-q:hover { color: var(--accent); }
+        .faq-a { padding: 0 15px 15px 15px; color: var(--text); font-size: 12px; line-height: 1.5; display: none; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px; }
+        .faq-icon { font-size: 10px; transition: 0.2s; }
+        .faq-item.active .faq-a { display: block; }
+        .faq-item.active .faq-icon { transform: rotate(180deg); color: var(--accent); }
 
         .back-btn { display: block; text-align: center; margin-top: 20px; color: var(--text); text-decoration: none; font-weight: 700; padding: 15px; background: var(--panel); border-radius: 12px; }
+        .action-btn { background: var(--panel); border: 1px solid var(--border); color: var(--text-bright); width: 100%; padding: 15px; border-radius: 12px; font-weight: 700; margin-bottom: 20px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: 0.2s; }
+        .action-btn:hover { border-color: var(--accent); color: var(--accent); }
     </style>
 </head>
 <body>
@@ -97,8 +99,13 @@
         <div class="ping-label">LATENCY (MS)</div>
     </div>
 
+    <div class="info-panel">
+        <span class="info-title">1. GEO-LOCATION</span>
+        We use a satellite API to find the physical location of your internet connection. <br>
+        <strong>NOTE:</strong> If this shows a different city than yours, you are likely using a VPN or Relay (iCloud).
+    </div>
+
     <div class="grid-master">
-        
         <div class="info-card isp-box">
             <div>
                 <div class="label">PUBLIC IP ADDRESS</div>
@@ -109,70 +116,99 @@
                 <div class="value" id="isp-name">--</div>
             </div>
         </div>
+    </div>
 
+    <div class="info-panel">
+        <span class="info-title">2. SIGNAL QUALITY</span>
+        We analyze your "Effective Connection Type" to see if you are on a high-speed link (4G/5G) or a slower connection (3G/2G).
+    </div>
+
+    <div class="grid-master">
         <div class="small-card">
             <div class="label">NETWORK TYPE</div>
             <div class="value" id="net-type">--</div>
         </div>
-
         <div class="small-card">
             <div class="label">EST. BANDWIDTH</div>
             <div class="value green" id="net-speed">-- Mbps</div>
         </div>
-
-        <div class="info-card">
-            <div>
-                <div class="label">BLUETOOTH RADIO</div>
-                <div class="value" id="bt-status">CHECKING...</div>
-            </div>
-            <div style="font-size: 20px;">🦷</div>
-        </div>
-
     </div>
 
-    <div class="info-card" style="display: block;">
-        <div style="display: flex; justify-content: space-between;">
-            <div class="label">DOWNLOAD SPEED TEST</div>
-            <div class="value green" id="speed-val">0.0 Mbps</div>
-        </div>
-        <div class="speed-bar-container">
-            <div class="speed-bar-fill" id="speed-bar"></div>
-        </div>
+    <div class="info-panel">
+        <span class="info-title">3. BLUETOOTH RADIO</span>
+        Scans your device to see if the Bluetooth antenna is powered on and supported by the browser.
     </div>
-    <br>
 
-    <button class="btn-test" onclick="runSpeedTest()">
-        <span>RUN SPEED TEST</span> <span class="btn-icon">🚀</span>
-    </button>
-    <button class="btn-test" onclick="checkBluetooth()">
-        <span>SCAN BLUETOOTH</span> <span class="btn-icon">📡</span>
-    </button>
-    <button class="btn-test" onclick="fetchIP()">
-        <span>REFRESH IP DATA</span> <span class="btn-icon">🌐</span>
-    </button>
+    <div class="info-card">
+        <div>
+            <div class="label">BLUETOOTH STATUS</div>
+            <div class="value" id="bt-status">CHECKING...</div>
+        </div>
+        <div style="font-size: 20px;">🦷</div>
+    </div>
 
-    <div class="terminal" id="console-output">
-        <div class="log-line">> NETWORK MODULE INIT...</div>
-        <div class="log-line">> WAITING FOR HANDSHAKE...</div>
+    <button class="action-btn" onclick="refreshAll()" style="margin-top:20px;">REFRESH SIGNAL DATA</button>
+
+    <h3 style="font-size: 14px; margin-bottom: 15px; color: var(--text-bright);">FAQ: WIRELESS & 5G</h3>
+    <div class="faq-section">
+        
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">1. What is "Ping"? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">Ping is the time (in ms) it takes for a signal to go from your phone to the server and back. Lower is better. &lt;50ms is ideal for gaming.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">2. Why is my 5G slow? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">5G signals are very easily blocked by walls and trees. If you have 1 bar of 5G, it is often slower than full bars of 4G LTE.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">3. What is "Bandwidth"? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">Bandwidth is the *width* of the pipe. Speed is how fast water flows. High bandwidth means you can stream 4K video without buffering.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">4. Is Public WiFi safe? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">No. Hackers can "sniff" traffic on public WiFi. Always use a VPN or HTTPS (Secure) websites when at a coffee shop.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">5. Why does Bluetooth drain battery? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">It constantly scans for nearby devices. However, modern Bluetooth 5.0 (Low Energy) uses almost zero power when idle.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">6. What is "Airplane Mode"? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">It shuts off all radios (Cellular, WiFi, Bluetooth) to prevent interference with airplane instruments. It is also the fastest way to charge your phone.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">7. What is "Packet Loss"? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">When data gets lost in the air. 1% packet loss causes "rubber banding" in games or stuttering in video calls.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">8. What is a "Hotspot"? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">Your phone turns its Cellular Data (4G/5G) into a WiFi signal that other devices can connect to. This drains battery quickly.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">9. Why is my Location wrong? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">IP Geolocation is not GPS. It only knows where your ISP's main hub is located, which might be in a neighboring city.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">10. What is WiFi 6? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">The newest WiFi standard. It handles "crowded" networks better, so your internet doesn't slow down when everyone is home.</div>
+        </div>
+
     </div>
 
     <a href="../index.html" class="back-btn">EXIT COMMAND</a>
 
     <script>
-        // --- LOGGING ---
-        function log(msg) {
-            const term = document.getElementById('console-output');
-            const line = document.createElement('div');
-            line.className = 'log-line';
-            line.innerHTML = `<span style="color:#64748b">[NET]</span> ${msg}`;
-            term.appendChild(line);
-            if(term.children.length > 6) term.removeChild(term.children[0]);
-            term.scrollTop = term.scrollHeight;
-        }
-
         // --- 1. IP & ISP FETCH ---
         async function fetchIP() {
-            log("> CONTACTING GEO-SATELLITE...");
             document.getElementById('ip-address').innerText = "FETCHING...";
             
             try {
@@ -182,11 +218,7 @@
                 
                 document.getElementById('ip-address').innerText = data.ip || "UNKNOWN";
                 document.getElementById('isp-name').innerText = (data.org || data.isp || "Private").toUpperCase();
-                
-                log(`> IP ACQUIRED: ${data.ip}`);
-                log(`> LOCATION: ${data.city}, ${data.country_code}`);
             } catch (e) {
-                log("> ERROR: API TIMEOUT. USING LOCAL.");
                 document.getElementById('ip-address').innerText = "127.0.0.1";
                 document.getElementById('isp-name').innerText = "LOCAL_HOST";
             }
@@ -202,77 +234,65 @@
                 
                 document.getElementById('net-type').innerText = type;
                 document.getElementById('net-speed').innerText = speed + " Mbps";
-                log(`> LINK TYPE DETECTED: ${type}`);
             } else {
                 document.getElementById('net-type').innerText = "UNKNOWN";
                 document.getElementById('net-speed').innerText = "--";
-                log("> NETWORK API NOT SUPPORTED");
             }
         }
 
-        // --- 3. PING SIMULATION ---
-        function startPing() {
-            setInterval(() => {
-                // Simulate realistic ping jitter
-                const ping = Math.floor(Math.random() * (45 - 15 + 1) + 15);
+        // --- 3. REAL PING TEST ---
+        async function runPing() {
+            const start = performance.now();
+            try {
+                // We fetch a tiny image or resource to measure round-trip time
+                // Using a generic reliable endpoint (Google Favicon or similar)
+                // Note: CORS might block reading the result, but the *time* it takes to fail/succeed is the ping.
+                await fetch('https://www.google.com/favicon.ico', { mode: 'no-cors', cache: 'no-cache' });
+                const end = performance.now();
+                const ping = Math.round(end - start);
+                
                 document.getElementById('ping-val').innerText = ping;
-            }, 1000);
+            } catch (e) {
+                // Even on error (network block), the time taken is roughly the latency
+                const end = performance.now();
+                document.getElementById('ping-val').innerText = Math.round(end - start);
+            }
         }
 
         // --- 4. BLUETOOTH CHECK ---
         function checkBluetooth() {
-            log("> SCANNING BLUETOOTH RADIO...");
-            
             if(navigator.bluetooth) {
                 navigator.bluetooth.getAvailability().then(available => {
                     if(available) {
                         document.getElementById('bt-status').innerText = "ACTIVE & READY";
                         document.getElementById('bt-status').style.color = "var(--success)";
-                        log("> BLUETOOTH ADAPTER FOUND");
                     } else {
                         document.getElementById('bt-status').innerText = "DISABLED";
                         document.getElementById('bt-status').style.color = "var(--danger)";
-                        log("> BLUETOOTH OFF");
                     }
                 });
             } else {
                 document.getElementById('bt-status').innerText = "UNSUPPORTED";
-                log("> WEB BLUETOOTH API MISSING");
             }
         }
 
-        // --- 5. SPEED TEST ANIMATION ---
-        function runSpeedTest() {
-            log("> INITIATING SPEED TEST PACKETS...");
-            const bar = document.getElementById('speed-bar');
-            const val = document.getElementById('speed-val');
-            let progress = 0;
-            let speed = 0;
-            
-            const interval = setInterval(() => {
-                progress += 2;
-                // Simulate speed curve (ramp up then stabilize)
-                if(progress < 50) speed += Math.random() * 5;
-                else speed += (Math.random() - 0.5) * 2;
-                
-                if(speed < 0) speed = 0;
-                
-                bar.style.width = progress + "%";
-                val.innerText = speed.toFixed(1) + " Mbps";
-                
-                if(progress >= 100) {
-                    clearInterval(interval);
-                    bar.style.width = "100%";
-                    val.innerText = speed.toFixed(1) + " Mbps (AVG)";
-                    log(`> DOWNLOAD TEST COMPLETE: ${speed.toFixed(1)} Mbps`);
-                }
-            }, 50);
+        function refreshAll() {
+            document.getElementById('ping-val').innerText = "--";
+            fetchIP();
+            checkConnection();
+            runPing();
+            checkBluetooth();
         }
+
+        function toggleFaq(el) { el.classList.toggle('active'); }
 
         // --- AUTO START ---
         fetchIP();
         checkConnection();
-        startPing();
+        checkBluetooth();
+        
+        // Loop Ping every 2 seconds for "Live" feel
+        setInterval(runPing, 2000);
 
     </script>
 </body>
