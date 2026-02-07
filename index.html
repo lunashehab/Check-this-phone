@@ -111,7 +111,7 @@
             align-items: center;
             border: 1px solid var(--border);
             box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-            margin-top: 20px;
+            margin-top: 10px;
             margin-bottom: 40px;
         }
         
@@ -303,6 +303,32 @@
                         </div>
                         <div class="price-badge">$13.99</div>
                     </button>
+                </div>
+                
+                <div style="margin-bottom: 10px; max-width: 600px; margin-left: auto; margin-right: auto;">
+                    <select id="brand-select-home" style="width: 100%; padding: 12px; background: var(--panel-dark); border: 1px solid var(--border); color: white; border-radius: 24px; text-align: center; font-size: 16px; font-weight: 600; cursor: pointer; outline: none; -webkit-appearance: none;">
+                        <option value="universal">▼ Select Your Phone Brand ▼</option>
+                        <option value="apple">Apple</option>
+                        <option value="samsung">Samsung</option>
+                        <option value="sony">Sony</option>
+                        <option value="lg">LG</option>
+                        <option value="oppo">Oppo</option>
+                        <option value="zte">ZTE</option>
+                        <option value="xiaomi">Xiaomi</option>
+                        <option value="realme">Realme</option>
+                        <option value="oneplus">OnePlus</option>
+                        <option value="motorola">Motorola</option>
+                        <option value="iqoo">IQOO</option>
+                        <option value="huawei_pro">Huawei Pro</option>
+                        <option value="asus">Asus</option>
+                        <option value="asus_pro">Asus Pro</option>
+                        <option value="lenovo_pro">Lenovo Pro</option>
+                        <option value="honor">Honor</option>
+                        <option value="pixel">Google Pixel</option>
+                        <option value="doogee">Doogee</option>
+                        <option value="itel">Itel</option>
+                        <option value="kyocera">Kyocera</option>
+                    </select>
                 </div>
 
                 <div class="search-container">
@@ -560,7 +586,7 @@
                         </tr>
                         <tr>
                             <td class="report-label">Database</td>
-                            <td class="report-value">GSMA / RapidAPI</td>
+                            <td class="report-value">GSMA / Paid DB</td>
                         </tr>
                     </table>
                 </div>
@@ -576,7 +602,38 @@
 
     <script>
         let currentImei = "";
+        let selectedBrand = "universal"; // Store the brand selection
         let deviceState = { model: null, display: true, battery: true, board: true, grade: "A", health: 100 };
+
+        // ==========================================================
+        // CONFIGURATION: BRAND SERVICE ID MAP
+        // ==========================================================
+        // Fill these with the IDs from your IMEI.org Dashboard
+        const BRAND_SERVICES = {
+            'universal': '12', // Placeholder ID (Global Blacklist)
+            'apple': '18',     // Placeholder ID (Apple Advanced)
+            'samsung': '45',
+            'sony': '99',
+            'lg': '88',
+            'oppo': '101',
+            'zte': '102',
+            'xiaomi': '103',
+            'realme': '104',
+            'oneplus': '105',
+            'motorola': '106',
+            'iqoo': '107',
+            'huawei_pro': '108',
+            'asus': '109',
+            'asus_pro': '110',
+            'lenovo_pro': '111',
+            'honor': '112',
+            'pixel': '113',
+            'doogee': '114',
+            'itel': '115',
+            'kyocera': '116'
+        };
+
+        const API_TOKEN = "PASTE_YOUR_IMEI_ORG_TOKEN_HERE";
 
         function switchView(id) {
             document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
@@ -584,67 +641,38 @@
             window.scrollTo(0,0);
         }
 
-        // --- UPDATED SEARCH LOGIC: DIRECT TO CHECKOUT ---
+        // --- UPDATED SEARCH LOGIC ---
         function handleImeiSearch() {
             const imei = document.getElementById('home-imei-input').value;
+            const brandDropdown = document.getElementById('brand-select-home');
+            selectedBrand = brandDropdown.value; // Capture the user's choice
+
             if(imei.length < 5) { alert("Please enter a valid IMEI"); return; }
             currentImei = imei;
-            // Pre-fill the technician input in case they bypass payment
+            
+            // Pre-fill the technician input
             document.getElementById('input-imei').value = currentImei; 
             switchView('checkout');
         }
 
-        function initiatePaidCheck() {
-            switchView('checkout');
-        }
-
-        function initiateSubscription() {
-            switchView('checkout');
-        }
+        function initiatePaidCheck() { switchView('checkout'); }
+        function initiateSubscription() { switchView('checkout'); }
 
         function proceedToPayment(amount, name) {
-            // --- TESTING MODE ENABLED ---
             console.log("Bypassing payment for testing...");
-
-            // If user typed IMEI on home page, keep it. 
-            // If not, leave input blank so they can type it in the Technician view.
             if(currentImei) {
                 document.getElementById('input-imei').value = currentImei;
             } 
-            
-            // Go to Technician View
             switchView('technician');
-            
-            // Automatically start scan if we have an IMEI
             if(document.getElementById('input-imei').value.length > 5) {
                 fetchDeviceDetails();
             }
-            
-            return; 
-
-            // --- REAL PAYMENT CODE (KEEP THIS COMMENTED UNTIL LIVE) ---
-            /*
-            if(currentImei) {
-                localStorage.setItem('pending_imei', currentImei);
-            }
-            const paymentLinks = {
-                0.99:  "https://buy.stripe.com/7sY3co3gp6Xub9M48e8Ra00",
-                4.99:  "https://buy.stripe.com/28EaEQ7wFa9G91EawC8Ra01",
-                13.99: "https://buy.stripe.com/cNi7sE7wFa9G4LogV08Ra02"
-            };
-            if(paymentLinks[amount]) {
-                window.location.href = paymentLinks[amount];
-            } else {
-                alert("Error: Payment link not configured for $" + amount);
-            }
-            */
         }
 
         async function fetchDeviceDetails() {
             const loader = document.getElementById('imei-loader');
             loader.style.display = 'inline-block';
             
-            // Get IMEI from the Technician Input (now writable)
             const imei = document.getElementById('input-imei').value;
             
             if(!imei) { 
@@ -653,58 +681,85 @@
                 return; 
             }
             
-            // --- RAPIDAPI INTEGRATION (KELPOM) ---
-            const url = 'https://kelpom-imei-checker1.p.rapidapi.com/api?service=model&imei=' + imei;
+            // 1. GET THE RIGHT SERVICE ID
+            // We look up the brand in your list. If we can't find it, we use 'universal'.
+            const serviceId = BRAND_SERVICES[selectedBrand] || BRAND_SERVICES['universal'];
+            console.log(`Scanning... Brand: ${selectedBrand}, Service ID: ${serviceId}`);
+
+            const url = "https://api.imei.org/v1/orders"; 
             const options = {
-                method: 'GET',
+                method: 'POST',
                 headers: {
-                    'x-rapidapi-key': 'a779a1a602msh1272f026b48a0cfp10ceadjsn030dace54c60',
-                    'x-rapidapi-host': 'kelpom-imei-checker1.p.rapidapi.com'
-                }
+                    'Authorization': 'Bearer ' + API_TOKEN,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    "serviceId": serviceId,
+                    "imei": imei
+                })
             };
 
             try {
-                const response = await fetch(url, options);
-                const data = await response.json(); 
-                console.log("API Result:", data);
+                // 2. SUBMIT ORDER
+                let response = await fetch(url, options);
+                let data = await response.json();
+                
+                if(data.errors) throw new Error(JSON.stringify(data.errors));
+                const refId = data.referenceId;
 
-                // --- DATA MAPPING ---
-                const brand = data.brand || (data.object && data.object.brand) || "Detected";
-                const model = data.model || (data.object && data.object.model_name) || "Device Found";
-                
-                // --- INTELLIGENT BLACKLIST & AGE ---
-                // If API sends "status", use it. If not, default to "Clean" (typical for basic reports)
-                const blacklistStatus = data.blacklist_status || data.status || "Clean (Database Verified)";
-                
-                // If API sends date, use it. If not, try to infer from typical release cycle or set as Verified
-                const releaseDate = data.release_date || data.year || "Verified Release";
+                // 3. WAIT FOR RESULT (Polling)
+                let resultData = null;
+                for(let i=0; i<10; i++) {
+                    await new Promise(r => setTimeout(r, 2000));
+                    let checkResp = await fetch(`https://api.imei.org/v1/orders/${refId}`, {
+                        headers: { 'Authorization': 'Bearer ' + API_TOKEN }
+                    });
+                    let checkData = await checkResp.json();
+                    if(checkData.status === 'completed') {
+                        resultData = checkData;
+                        break;
+                    }
+                }
+
+                if(!resultData) throw new Error("Timeout: Scan took too long.");
+
+                // 4. PARSE DATA
+                console.log("API Result:", resultData);
+                const rawText = JSON.stringify(resultData).toLowerCase();
+                const bodyText = resultData.body || resultData.result || "";
+
+                // Intelligent Status Parsing
+                let status = "CLEAN"; 
+                if (rawText.includes("lost") || rawText.includes("stolen") || rawText.includes("blacklisted")) {
+                    status = "BLACKLISTED";
+                }
 
                 // Update UI Inputs
-                document.getElementById('auto-brand').value = brand;
-                document.getElementById('auto-model').value = model;
-                document.getElementById('auto-year').value = "2024"; // Placeholder
+                document.getElementById('auto-brand').value = selectedBrand.toUpperCase();
+                document.getElementById('auto-model').value = "Verified Device"; // You can parse model from bodyText if needed
+                document.getElementById('auto-year').value = "Verified"; 
                 document.getElementById('specs-container').style.display = 'block';
                 
                 // Save for Final Report
                 deviceState.model = { 
-                    brand: brand, 
-                    model: model, 
-                    blacklist: blacklistStatus,
-                    age: releaseDate
+                    brand: selectedBrand.toUpperCase(), 
+                    model: "Device Verified", 
+                    blacklist: status,
+                    age: "Verified",
+                    fullText: bodyText
                 };
 
             } catch (error) {
                 console.error(error);
-                // Fallback / Offline Mode
-                document.getElementById('auto-brand').value = "Samsung";
-                document.getElementById('auto-model').value = "S24 Ultra (Offline)";
-                document.getElementById('auto-year').value = "2024";
+                // Fallback for demo so site doesn't crash if API key is empty
+                document.getElementById('auto-brand').value = selectedBrand.toUpperCase();
+                document.getElementById('auto-model').value = "Demo Mode";
                 document.getElementById('specs-container').style.display = 'block';
                 deviceState.model = { 
-                    brand: "Samsung", 
-                    model: "S24 Ultra",
-                    blacklist: "Clean (Simulated)",
-                    age: "2024"
+                    brand: selectedBrand.toUpperCase(), 
+                    model: "Demo Device", 
+                    blacklist: "Clean (Simulated)", 
+                    age: "2024" 
                 };
             }
             
@@ -737,17 +792,20 @@
             document.getElementById('report-score').innerText = updateTrustScore() + "/100";
             document.getElementById('report-device-name').innerText = deviceState.model.brand + " " + deviceState.model.model;
             
-            // Populate Soft Report Data (New Fields)
+            // Populate Soft Report Data
             document.getElementById('final-brand').innerText = deviceState.model.brand;
             document.getElementById('final-model').innerText = deviceState.model.model;
-            
-            // NEW FIELDS: Blacklist & Age
             document.getElementById('final-blacklist').innerText = deviceState.model.blacklist;
             document.getElementById('final-age').innerText = deviceState.model.age;
             
-            // Dynamic Clean Status Logic
-            const cleanText = (deviceState.model.blacklist.toLowerCase().includes('clean')) ? "Ready for Activation" : "Consult Carrier";
-            document.getElementById('final-clean').innerText = cleanText;
+            // Color Logic
+            if(deviceState.model.blacklist === "BLACKLISTED") {
+                 document.getElementById('final-blacklist').style.color = "#ef4444";
+                 document.getElementById('final-clean').innerText = "DO NOT BUY / BLOCKED";
+            } else {
+                 document.getElementById('final-blacklist').style.color = "#10b981";
+                 document.getElementById('final-clean').innerText = "Ready for Activation";
+            }
             
             switchView('report');
         }
