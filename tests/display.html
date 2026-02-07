@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Don Systems Display Lab 3.0</title>
+    <title>Don Systems Visual Command</title>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         :root { 
@@ -12,87 +12,70 @@
             --border: #2d3748; 
             --text: #a0aec0; 
             --text-bright: #e2e8f0;
-            --accent: #f000ff; /* Neon Purple */
+            --accent: #22d3ee; /* Cyan */
+            --secondary: #a855f7; /* Purple */
             --success: #00ff9d; 
             --danger: #ff0055; 
             --warn: #ffb700; 
         }
         
-        * { box-sizing: border-box; }
+        * { box-sizing: border-box; touch-action: none; -webkit-tap-highlight-color: transparent; user-select: none; }
         body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; padding: 20px; margin: 0; min-height: 100vh; font-size: 14px; overflow-x: hidden; }
         
         /* HEADER */
         .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 15px; margin-bottom: 20px; }
         .logo { font-family: 'JetBrains Mono', monospace; font-weight: 800; font-size: 18px; color: var(--text-bright); letter-spacing: -1px; }
         .logo span { color: var(--accent); }
-        .live-badge { display: flex; align-items: center; gap: 6px; font-size: 10px; color: var(--success); font-weight: 700; background: rgba(0, 255, 157, 0.1); padding: 4px 8px; border-radius: 4px; border: 1px solid rgba(0, 255, 157, 0.2); }
-        .blink { animation: blink 1s infinite; width: 6px; height: 6px; background: var(--success); border-radius: 50%; }
+        .live-badge { display: flex; align-items: center; gap: 6px; font-size: 10px; color: var(--accent); font-weight: 700; background: rgba(34, 211, 238, 0.1); padding: 4px 8px; border-radius: 4px; border: 1px solid rgba(34, 211, 238, 0.2); }
+        .blink { animation: blink 1s infinite; width: 6px; height: 6px; background: var(--accent); border-radius: 50%; }
         @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0; } 100% { opacity: 1; } }
 
-        /* REFRESH RATE HERO */
-        .hero-card { background: radial-gradient(circle at top right, #1a202c, #0f1218); border: 1px solid var(--border); border-radius: 16px; padding: 25px; display: flex; justify-content: space-between; align-items: center; position: relative; overflow: hidden; margin-bottom: 20px; }
-        .hero-left .big-val { font-family: 'JetBrains Mono', monospace; font-size: 48px; font-weight: 700; color: var(--text-bright); display: block; margin: 5px 0; }
-        .hero-left .sub-val { font-size: 12px; color: var(--accent); font-weight: 700; }
-
-        /* TOUCH ZONE */
-        .touch-zone { 
-            background: #000; border: 2px dashed var(--border); border-radius: 12px; height: 250px; position: relative; overflow: hidden; margin-bottom: 20px;
-            display: flex; justify-content: center; align-items: center;
+        /* HERO REFRESH RATE */
+        .hz-container { 
+            background: radial-gradient(circle at center, #0f1820 0%, #000 70%); 
+            border: 1px solid var(--border); border-radius: 16px; padding: 30px; margin-bottom: 20px; position: relative; overflow: hidden;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; height: 180px;
         }
-        .touch-grid-bg {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; opacity: 0.2; display: none;
-            background-image: linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px);
-            background-size: 40px 40px;
-        }
-        .touch-instruction { position: absolute; pointer-events: none; color: var(--text); font-size: 12px; text-transform: uppercase; letter-spacing: 1px; text-align: center; z-index: 2; }
-        .touch-count { position: absolute; top: 10px; right: 15px; font-family: 'JetBrains Mono', monospace; font-size: 24px; color: var(--success); font-weight: 800; z-index: 2; display: none; }
-        canvas { width: 100%; height: 100%; touch-action: none; position: absolute; top: 0; left: 0; z-index: 1; }
+        .hz-val { font-family: 'JetBrains Mono'; font-size: 48px; font-weight: 800; color: white; text-shadow: 0 0 20px var(--accent); line-height: 1; }
+        .hz-label { font-size: 12px; color: var(--accent); margin-top: 5px; text-transform: uppercase; letter-spacing: 2px; }
 
-        /* CONTROL GRID */
-        .control-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 20px; }
-        .btn-test { background: var(--panel); border: 1px solid var(--border); color: var(--text-bright); padding: 12px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 10px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 5px; transition: 0.2s; }
-        .btn-test:active { transform: scale(0.95); background: var(--border); }
-        .btn-icon { font-size: 16px; margin-bottom: 2px; }
+        /* INSTRUCTION PANELS */
+        .info-panel { background: rgba(34, 211, 238, 0.05); border-left: 3px solid var(--accent); padding: 15px; margin-bottom: 15px; border-radius: 0 8px 8px 0; font-size: 12px; line-height: 1.5; color: var(--text-bright); }
+        .info-title { font-weight: 800; color: var(--accent); text-transform: uppercase; margin-bottom: 5px; display: block; letter-spacing: 1px; }
 
-        /* OVERLAYS */
-        #fullscreen-overlay {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: black; z-index: 9999; display: none; cursor: pointer;
-        }
-        .overlay-hint {
-            position: absolute; bottom: 50px; left: 50%; transform: translateX(-50%);
-            color: rgba(255,255,255,0.5); font-size: 12px; pointer-events: none;
-            text-transform: uppercase; letter-spacing: 2px; text-align: center; width: 100%; z-index: 10001;
+        /* COLOR GRID */
+        .color-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 20px; }
+        .color-btn { height: 50px; border-radius: 8px; border: 2px solid var(--border); cursor: pointer; transition: 0.1s; }
+        .color-btn:active { transform: scale(0.9); }
+        .c-red { background: #ff0000; }
+        .c-green { background: #00ff00; }
+        .c-blue { background: #0000ff; }
+        .c-white { background: #ffffff; }
+        .c-black { background: #000000; border-color: #333; }
+
+        /* FULLSCREEN OVERLAY */
+        #pixel-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 9999;
+            display: none; cursor: pointer;
         }
 
-        /* 1. MOTION TEST */
-        .motion-track { position: absolute; top: 50%; left: 0; width: 100%; height: 60px; transform: translateY(-50%); border-top: 1px solid white; border-bottom: 1px solid white; display: none; }
-        .motion-block { width: 40px; height: 40px; background: var(--accent); position: absolute; top: 10px; animation: moveRight 1s linear infinite; box-shadow: 0 0 10px var(--accent); }
-        @keyframes moveRight { 0% { left: -50px; } 100% { left: 100%; } }
-
-        /* 2. GAMMA TEST */
-        .gamma-pattern {
-            display: none; width: 100%; height: 100%;
-            background: repeating-linear-gradient(90deg, #000, #000 2px, #fff 2px, #fff 4px);
-            justify-content: center; align-items: center;
+        /* TOUCH CANVAS */
+        .touch-zone {
+            width: 100%; height: 250px; background: #111; border: 1px dashed var(--border); border-radius: 12px;
+            position: relative; overflow: hidden; cursor: crosshair; touch-action: none;
         }
-        .gamma-circle { width: 200px; height: 200px; background: #808080; border-radius: 50%; } /* 50% Grey */
+        canvas { width: 100%; height: 100%; }
+        .clear-btn { position: absolute; bottom: 10px; right: 10px; background: var(--panel); border: 1px solid var(--border); color: var(--text); padding: 5px 10px; border-radius: 6px; font-size: 10px; cursor: pointer; }
 
-        /* 3. TEXT TEST */
-        .text-chart { display: none; color: white; padding: 40px; text-align: center; flex-direction: column; gap: 20px; width: 100%; }
-        
-        /* 4. VIEWING ANGLE */
-        .view-pattern { display: none; width: 100%; height: 100%; background: conic-gradient(red, yellow, lime, aqua, blue, magenta, red); }
-
-        /* 5. CONTRAST BARS */
-        .contrast-container { display: none; width: 100%; height: 100%; flex-direction: column; justify-content: center; align-items: center; padding: 20px; }
-        .contrast-row { display: flex; width: 100%; height: 100px; margin-bottom: 20px; }
-        .contrast-block { flex: 1; height: 100%; border-right: 1px solid #333; }
-
-        /* TERMINAL */
-        .terminal { background: #000; border: 1px solid var(--border); border-radius: 8px; padding: 10px; height: 100px; overflow: hidden; font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--success); position: relative; }
-        .log-line { margin-bottom: 2px; opacity: 0.8; }
-        .terminal::after { content: ""; position: absolute; bottom: 0; left: 0; width: 100%; height: 20px; background: linear-gradient(to top, #000, transparent); }
+        /* FAQ ACCORDION */
+        .faq-section { display: grid; gap: 10px; margin-top: 30px; }
+        .faq-item { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+        .faq-q { padding: 15px; font-weight: 700; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .faq-q:hover { color: var(--accent); }
+        .faq-a { padding: 0 15px 15px 15px; color: var(--text); font-size: 12px; line-height: 1.5; display: none; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px; }
+        .faq-icon { font-size: 10px; transition: 0.2s; }
+        .faq-item.active .faq-a { display: block; }
+        .faq-item.active .faq-icon { transform: rotate(180deg); color: var(--accent); }
 
         .back-btn { display: block; text-align: center; margin-top: 20px; color: var(--text); text-decoration: none; font-weight: 700; padding: 15px; background: var(--panel); border-radius: 12px; }
     </style>
@@ -100,261 +83,194 @@
 <body>
 
     <div class="header">
-        <div class="logo">DON<span>SYSTEMS</span></div>
-        <div class="live-badge"><div class="blink"></div> GPU SYNC ACTIVE</div>
+        <div class="logo">DON<span>DISPLAY</span></div>
+        <div class="live-badge"><div class="blink"></div> PANEL ACTIVE</div>
     </div>
 
-    <div class="hero-card">
-        <div class="hero-left">
-            <span class="big-val" id="fps-counter">-- Hz</span>
-            <span class="sub-val" id="fps-status">CALIBRATING...</span>
-        </div>
-        <div style="text-align: right; font-size: 10px; color: var(--text);">
-            FRAME TIME: <span id="frame-time">--ms</span><br>
-            RENDER: HARDWARE
-        </div>
+    <div class="hz-container">
+        <div class="hz-val" id="hz-val">--</div>
+        <div class="hz-label">REFRESH RATE (FPS)</div>
     </div>
 
-    <div class="touch-zone" id="touch-container">
-        <div class="touch-grid-bg" id="touch-grid"></div>
-        <div class="touch-instruction" id="touch-text">DRAG FINGER TO TEST</div>
-        <div class="touch-count" id="touch-counter">0 POINTS</div>
+    <div class="info-panel">
+        <span class="info-title">1. DEAD PIXEL CHECK</span>
+        Tap a color below to fill the screen. Look closely for any tiny dots that *don't* change color.
+        
+        <br><strong>Stuck:</strong> Red/Green/Blue dot. <br><strong>Dead:</strong> Black dot.
+    </div>
+
+    <div class="color-grid">
+        <div class="color-btn c-red" onclick="openOverlay('red')"></div>
+        <div class="color-btn c-green" onclick="openOverlay('green')"></div>
+        <div class="color-btn c-blue" onclick="openOverlay('blue')"></div>
+        <div class="color-btn c-white" onclick="openOverlay('white')"></div>
+        <div class="color-btn c-black" onclick="openOverlay('black')"></div>
+    </div>
+
+    <div id="pixel-overlay" onclick="closeOverlay()"></div>
+
+    <div class="info-panel">
+        <span class="info-title">2. DIGITIZER HEALTH</span>
+        Draw lines across the entire box below. If a line breaks or jumps, you have a "Dead Zone" in your touchscreen.
+    </div>
+
+    <div class="touch-zone">
         <canvas id="touchCanvas"></canvas>
+        <button class="clear-btn" onclick="clearCanvas()">RESET</button>
     </div>
 
-    <div class="control-grid">
-        <button class="btn-test" onclick="startColorTest('red')"><span class="btn-icon">🔴</span> RED PIXEL</button>
-        <button class="btn-test" onclick="startColorTest('green')"><span class="btn-icon">🟢</span> GREEN PIXEL</button>
-        <button class="btn-test" onclick="startColorTest('blue')"><span class="btn-icon">🔵</span> BLUE PIXEL</button>
+    <h3 style="font-size: 14px; margin-bottom: 15px; color: var(--text-bright);">FAQ: SCREENS & DISPLAY</h3>
+    <div class="faq-section">
         
-        <button class="btn-test" onclick="startColorTest('white')"><span class="btn-icon">⚪</span> MAX BRIGHT</button>
-        <button class="btn-test" onclick="startColorTest('black')"><span class="btn-icon">⚫</span> PURE BLACK</button>
-        <button class="btn-test" onclick="startContrastTest()"><span class="btn-icon">🌗</span> CONTRAST</button>
-        
-        <button class="btn-test" onclick="startMotionTest()"><span class="btn-icon">🏃</span> GHOSTING</button>
-        <button class="btn-test" onclick="toggleTouchGrid()"><span class="btn-icon">📐</span> LINEARITY</button>
-        <button class="btn-test" onclick="startColorTest('gradient')"><span class="btn-icon">🌈</span> BANDING</button>
-        
-        <button class="btn-test" onclick="startGammaTest()"><span class="btn-icon">👁️</span> GAMMA 2.2</button>
-        <button class="btn-test" onclick="startTextTest()"><span class="btn-icon">🔡</span> TEXT SHARP</button>
-        <button class="btn-test" onclick="startViewTest()"><span class="btn-icon">👀</span> ANGLE TEST</button>
-    </div>
-
-    <div class="terminal" id="console-output">
-        <div class="log-line">> DISPLAY DRIVER INIT... OK</div>
-        <div class="log-line">> DETECTING SUB-PIXEL LAYOUT... OK</div>
-    </div>
-
-    <a href="../index.html" class="back-btn">EXIT LABORATORY</a>
-
-    <div id="fullscreen-overlay" onclick="closeOverlay()">
-        <div class="overlay-hint" id="overlay-msg">TAP TO CLOSE</div>
-        
-        <div id="motion-box" class="motion-track"><div class="motion-block"></div></div>
-
-        <div id="gamma-box" class="gamma-pattern"><div class="gamma-circle"></div></div>
-
-        <div id="view-box" class="view-pattern"></div>
-
-        <div id="contrast-box" class="contrast-container">
-            <div class="contrast-row">
-                <div class="contrast-block" style="background:#000"></div>
-                <div class="contrast-block" style="background:#111"></div>
-                <div class="contrast-block" style="background:#222"></div>
-                <div class="contrast-block" style="background:#333"></div>
-                <div class="contrast-block" style="background:#444"></div>
-                <div class="contrast-block" style="background:#666"></div>
-                <div class="contrast-block" style="background:#777"></div>
-                <div class="contrast-block" style="background:#888"></div>
-                <div class="contrast-block" style="background:#999"></div>
-                <div class="contrast-block" style="background:#fff"></div>
-            </div>
-            <div style="color:white; font-family:monospace;">BLACK LEVEL TEST (0% - 100%)</div>
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">1. What is "Burn-In"? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">On OLED screens, displaying the same image (like a status bar) for hours can permanently "burn" a ghost image into the pixels.</div>
         </div>
 
-        <div id="text-box" class="text-chart">
-            <div style="font-size: 32px; font-weight: 800;">Don Systems Display Lab</div>
-            <div style="font-size: 24px;">Sharpness Render Test</div>
-            <div style="font-size: 18px;">Check for fringing on edges</div>
-            <div style="font-size: 14px;">The quick brown fox jumps over the lazy dog.</div>
-            <div style="font-size: 10px;">The quick brown fox jumps over the lazy dog.</div>
-            <div style="font-size: 6px;">The quick brown fox jumps over the lazy dog.</div>
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">2. 60Hz vs 120Hz? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">60Hz updates 60 times a second. 120Hz is twice as fast, making scrolling and animations look incredibly smooth.</div>
         </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">3. What is a "Dead Pixel"? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">A pixel that receives no power and stays black. It cannot be fixed.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">4. What is a "Stuck Pixel"? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">A pixel stuck displaying one color (usually Red, Green, or Blue). Sometimes, flashing colors rapidly can "unstuck" it.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">5. Why does Black look Gray? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">You have an LCD screen (backlit). OLED screens (like iPhone Pro/Samsung S) turn off black pixels completely for "True Black."</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">6. What is "Ghost Touch"? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">When the screen registers a tap you didn't make. This is often caused by a cheap charger or a damaged digitizer.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">7. Does brightness affect battery? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">Yes, massively. The screen is the #1 battery drain. Lowering brightness to 50% can double your battery life.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">8. What is "PPI"? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">Pixels Per Inch. Higher PPI means sharper text. Anything above 400 PPI is considered "Retina" quality (invisible pixels).</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">9. What is "HDR"? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">High Dynamic Range. It allows the screen to get much brighter for highlights (sun/explosions) while keeping shadows dark.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">10. Can I fix a cracked screen? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">No software can fix hardware damage. You must replace the glass digitizer assembly.</div>
+        </div>
+
     </div>
+
+    <a href="../index.html" class="back-btn">EXIT VISUAL COMMAND</a>
 
     <script>
-        // --- LOGGING ---
-        function log(msg) {
-            const term = document.getElementById('console-output');
-            const line = document.createElement('div');
-            line.className = 'log-line';
-            line.innerHTML = `<span style="color:#64748b">[SYS]</span> ${msg}`;
-            term.appendChild(line);
-            if(term.children.length > 6) term.removeChild(term.children[0]);
-            term.scrollTop = term.scrollHeight;
-        }
-
-        // --- HZ METER ---
-        let lastLoop = new Date();
-        let frameCount = 0;
-        let fpsBuffer = [];
-
-        function fpsLoop() { 
-            let thisLoop = new Date();
-            let frameTime = thisLoop - lastLoop;
-            let fps = 1000 / frameTime;
-            lastLoop = thisLoop;
+        // --- 1. HZ COUNTER ---
+        let lastTime = performance.now();
+        let frames = 0;
+        
+        function countHz() {
+            const now = performance.now();
+            frames++;
             
-            fpsBuffer.push(fps);
-            if(fpsBuffer.length > 20) fpsBuffer.shift();
-            let avgFps = Math.round(fpsBuffer.reduce((a,b)=>a+b)/fpsBuffer.length);
-
-            frameCount++;
-            if(frameCount % 15 === 0) {
-                document.getElementById('fps-counter').innerText = avgFps + " Hz";
-                document.getElementById('frame-time').innerText = frameTime.toFixed(1) + "ms";
-                
-                let status = "STANDARD";
-                let color = "#a0aec0";
-                if(avgFps > 85) { status = "PRO MOTION"; color = "#00ff9d"; }
-                if(avgFps > 115) { status = "ULTRA FLUID"; color = "#f000ff"; }
-                
-                const statusEl = document.getElementById('fps-status');
-                statusEl.innerText = status;
-                statusEl.style.color = color;
+            if (now - lastTime >= 1000) {
+                document.getElementById('hz-val').innerText = frames;
+                frames = 0;
+                lastTime = now;
             }
-            requestAnimationFrame(fpsLoop);
-        }
-        requestAnimationFrame(fpsLoop);
-
-        // --- TOUCH SYSTEM ---
-        const canvas = document.getElementById('touchCanvas');
-        const ctx = canvas.getContext('2d');
-        const container = document.getElementById('touch-container');
-        const countDisplay = document.getElementById('touch-counter');
-        const touchGrid = document.getElementById('touch-grid');
-
-        function resizeCanvas() {
-            canvas.width = container.offsetWidth;
-            canvas.height = container.offsetHeight;
-        }
-        resizeCanvas();
-        window.addEventListener('resize', resizeCanvas);
-
-        const touchColors = ['#f000ff', '#00ff9d', '#ff0055', '#ffb700', '#00f0ff'];
-
-        function handleTouch(e) {
-            e.preventDefault();
-            ctx.clearRect(0, 0, canvas.width, canvas.height); 
             
-            const touches = e.touches;
-            const count = touches.length;
+            requestAnimationFrame(countHz);
+        }
+        requestAnimationFrame(countHz);
 
-            if(count > 0) {
-                document.getElementById('touch-text').style.display = 'none';
-                countDisplay.style.display = 'block';
-                countDisplay.innerText = count + (count === 1 ? " POINT" : " POINTS");
-                
-                for(let i=0; i<count; i++) {
-                    const touch = touches[i];
-                    const rect = canvas.getBoundingClientRect();
-                    const x = touch.clientX - rect.left;
-                    const y = touch.clientY - rect.top;
-                    
-                    ctx.beginPath();
-                    ctx.arc(x, y, 25, 0, 2 * Math.PI);
-                    ctx.fillStyle = touchColors[i % touchColors.length];
-                    ctx.fill();
-                    ctx.strokeStyle = "white";
-                    ctx.lineWidth = 2;
-                    ctx.stroke();
-                    
-                    // Crosshair
-                    ctx.beginPath();
-                    ctx.moveTo(x-40, y); ctx.lineTo(x+40, y);
-                    ctx.moveTo(x, y-40); ctx.lineTo(x, y+40);
-                    ctx.strokeStyle = "rgba(255,255,255,0.3)";
-                    ctx.stroke();
-                }
-            } else {
-                countDisplay.style.display = 'none';
-                document.getElementById('touch-text').style.display = 'block';
+        // --- 2. DEAD PIXEL OVERLAY ---
+        function openOverlay(color) {
+            const ol = document.getElementById('pixel-overlay');
+            ol.style.display = 'block';
+            ol.style.backgroundColor = color === 'black' ? '#000' : 
+                                     color === 'white' ? '#fff' : 
+                                     color === 'red' ? '#f00' : 
+                                     color === 'green' ? '#0f0' : '#00f';
+            
+            // Enter Fullscreen for better check
+            if (document.documentElement.requestFullscreen) {
+                document.documentElement.requestFullscreen();
             }
-        }
-
-        canvas.addEventListener('touchstart', handleTouch);
-        canvas.addEventListener('touchmove', handleTouch);
-        canvas.addEventListener('touchend', handleTouch);
-        canvas.addEventListener('touchcancel', handleTouch);
-
-        function toggleTouchGrid() {
-            log("> TOGGLING LINEARITY GRID");
-            touchGrid.style.display = (touchGrid.style.display === 'block') ? 'none' : 'block';
-            window.scrollTo(0, document.getElementById('touch-container').offsetTop - 20);
-        }
-
-        // --- TEST RUNNERS ---
-        const overlay = document.getElementById('fullscreen-overlay');
-        const elements = ['motion-box', 'gamma-box', 'view-box', 'contrast-box', 'text-box'];
-
-        function clearOverlay() {
-            elements.forEach(id => document.getElementById(id).style.display = 'none');
-            overlay.style.background = ''; 
-            document.getElementById('overlay-msg').style.color = 'rgba(255,255,255,0.5)';
-        }
-
-        function startColorTest(type) {
-            log(`> PIXEL TEST: ${type.toUpperCase()}`);
-            clearOverlay();
-            overlay.style.display = 'block';
-            
-            if(type === 'red') overlay.style.background = '#ff0000';
-            if(type === 'green') overlay.style.background = '#00ff00';
-            if(type === 'blue') overlay.style.background = '#0000ff';
-            if(type === 'black') overlay.style.background = '#000000';
-            if(type === 'white') { overlay.style.background = '#ffffff'; document.getElementById('overlay-msg').style.color = '#000'; }
-            if(type === 'gradient') overlay.style.background = 'linear-gradient(to right, black, white)';
-        }
-
-        function startMotionTest() {
-            log("> MOTION BLUR TEST");
-            clearOverlay();
-            overlay.style.display = 'block';
-            document.getElementById('motion-box').style.display = 'block';
-        }
-
-        function startGammaTest() {
-            log("> GAMMA CALIBRATION CHECK");
-            clearOverlay();
-            overlay.style.display = 'block';
-            document.getElementById('gamma-box').style.display = 'flex';
-        }
-
-        function startViewTest() {
-            log("> VIEWING ANGLE CHECK");
-            clearOverlay();
-            overlay.style.display = 'block';
-            document.getElementById('view-box').style.display = 'block';
-        }
-
-        function startContrastTest() {
-            log("> BLACK LEVEL CHECK");
-            clearOverlay();
-            overlay.style.display = 'block';
-            document.getElementById('contrast-box').style.display = 'flex';
-        }
-
-        function startTextTest() {
-            log("> TEXT RENDERING CHECK");
-            clearOverlay();
-            overlay.style.display = 'block';
-            document.getElementById('text-box').style.display = 'flex';
         }
 
         function closeOverlay() {
-            overlay.style.display = 'none';
-            log("> TEST COMPLETE. RETURNING.");
+            document.getElementById('pixel-overlay').style.display = 'none';
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            }
         }
+
+        // --- 3. TOUCH CANVAS ---
+        const canvas = document.getElementById('touchCanvas');
+        const ctx = canvas.getContext('2d');
+        let drawing = false;
+
+        function resizeCanvas() {
+            const rect = canvas.parentElement.getBoundingClientRect();
+            canvas.width = rect.width;
+            canvas.height = rect.height;
+            
+            // Style setup
+            ctx.lineWidth = 4;
+            ctx.lineCap = 'round';
+            ctx.strokeStyle = '#22d3ee'; // Cyan
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        function startDraw(e) {
+            drawing = true;
+            draw(e);
+        }
+        function endDraw() {
+            drawing = false;
+            ctx.beginPath(); // Reset path
+        }
+        function draw(e) {
+            if (!drawing) return;
+            
+            e.preventDefault(); // Stop scrolling
+            
+            const rect = canvas.getBoundingClientRect();
+            const x = (e.clientX || e.touches[0].clientX) - rect.left;
+            const y = (e.clientY || e.touches[0].clientY) - rect.top;
+
+            ctx.lineTo(x, y);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+        }
+
+        canvas.addEventListener('mousedown', startDraw);
+        canvas.addEventListener('mouseup', endDraw);
+        canvas.addEventListener('mousemove', draw);
+        
+        canvas.addEventListener('touchstart', startDraw);
+        canvas.addEventListener('touchend', endDraw);
+        canvas.addEventListener('touchmove', draw);
+
+        function clearCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        function toggleFaq(el) { el.classList.toggle('active'); }
 
     </script>
 </body>
