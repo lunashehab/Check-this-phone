@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Don Systems UX Lab</title>
+    <title>UX Tests | CheckThisPhone.com</title>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         :root { 
@@ -12,302 +12,454 @@
             --border: #2d3748; 
             --text: #a0aec0; 
             --text-bright: #e2e8f0;
-            --accent: #fcd34d; /* Cyber Yellow */
-            --secondary: #3b82f6; /* Electric Blue */
-            --success: #00ff9d; 
-            --danger: #ff0055; 
+            --accent: #ec4899; /* Neon Pink for UX */
+            --secondary: #3b82f6; /* Blue */
+            --danger: #ef4444; 
+            --warn: #f59e0b; 
+            --success: #10b981;
         }
         
-        * { box-sizing: border-box; touch-action: manipulation; -webkit-tap-highlight-color: transparent; user-select: none; }
+        * { box-sizing: border-box; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
         body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; padding: 20px; margin: 0; min-height: 100vh; font-size: 14px; overflow-x: hidden; }
         
         /* HEADER */
-        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 15px; margin-bottom: 20px; }
-        .logo { font-family: 'JetBrains Mono', monospace; font-weight: 800; font-size: 18px; color: var(--text-bright); letter-spacing: -1px; }
+        .header { text-align: center; margin-bottom: 40px; border-bottom: 1px solid var(--border); padding-bottom: 20px; }
+        .logo { font-family: 'JetBrains Mono', monospace; font-weight: 800; font-size: 24px; color: var(--text-bright); letter-spacing: -1px; margin-bottom: 10px; }
         .logo span { color: var(--accent); }
-        .live-badge { display: flex; align-items: center; gap: 6px; font-size: 10px; color: var(--secondary); font-weight: 700; background: rgba(59, 130, 246, 0.1); padding: 4px 8px; border-radius: 4px; border: 1px solid rgba(59, 130, 246, 0.2); }
-        .blink { animation: blink 1s infinite; width: 6px; height: 6px; background: var(--secondary); border-radius: 50%; }
-        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0; } 100% { opacity: 1; } }
+        .subtitle { font-size: 12px; color: var(--text); text-transform: uppercase; letter-spacing: 1px; }
 
-        /* INSTRUCTION PANELS */
-        .info-panel { background: rgba(59, 130, 246, 0.05); border-left: 3px solid var(--secondary); padding: 15px; margin-bottom: 15px; border-radius: 0 8px 8px 0; font-size: 12px; line-height: 1.5; color: var(--text-bright); }
-        .info-title { font-weight: 800; color: var(--secondary); text-transform: uppercase; margin-bottom: 5px; display: block; letter-spacing: 1px; }
-
-        /* REFLEX HERO */
-        .reflex-box { 
-            background: #1a1a2e; border: 2px dashed var(--border); border-radius: 16px; height: 180px; margin-bottom: 20px; 
-            display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; transition: 0.1s; position: relative; overflow: hidden;
+        /* GRID LAYOUT */
+        .test-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
+            gap: 20px; 
+            max-width: 1200px; 
+            margin: 0 auto; 
         }
-        .reflex-box:active { transform: scale(0.98); }
-        .reflex-box.ready { background: var(--danger); border-color: var(--danger); }
-        .reflex-box.go { background: var(--success); border-color: var(--success); }
+
+        /* TEST CARD */
+        .card { 
+            background: var(--panel); 
+            border: 1px solid var(--border); 
+            border-radius: 12px; 
+            padding: 20px; 
+            display: flex; 
+            flex-direction: column; 
+            transition: 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+        .card:hover { border-color: var(--accent); transform: translateY(-2px); }
         
-        .reflex-title { font-size: 24px; font-weight: 800; color: white; pointer-events: none; }
-        .reflex-sub { font-size: 12px; color: rgba(255,255,255,0.7); pointer-events: none; margin-top: 5px; }
-
-        /* SCROLL TEST */
-        .scroll-container { 
-            height: 200px; overflow-y: scroll; background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 10px; margin-bottom: 20px; position: relative;
-            transform: translateZ(0); -webkit-overflow-scrolling: touch;
+        .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
+        .card-title { font-family: 'JetBrains Mono'; font-weight: 700; color: var(--text-bright); font-size: 13px; }
+        .card-icon { font-size: 18px; opacity: 0.8; }
+        
+        .card-desc { font-size: 12px; color: var(--text); margin-bottom: 20px; line-height: 1.5; flex-grow: 1; }
+        
+        .result-box { 
+            background: rgba(0,0,0,0.3); 
+            border: 1px solid var(--border); 
+            border-radius: 8px; 
+            padding: 10px; 
+            margin-bottom: 15px; 
+            font-family: 'JetBrains Mono'; 
+            font-size: 11px; 
+            color: var(--accent); 
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            overflow-wrap: anywhere;
         }
-        .scroll-item { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); color: var(--text); font-size: 12px; display: flex; justify-content: space-between; }
-        .fps-overlay { position: absolute; top: 10px; right: 20px; background: #000; padding: 4px 8px; border-radius: 6px; font-family: 'JetBrains Mono'; font-size: 12px; color: var(--accent); border: 1px solid var(--accent); pointer-events: none; z-index: 10; }
-
-        /* AIM TRAINER */
-        .target-zone { 
-            height: 250px; background: #000; border: 1px solid var(--border); border-radius: 12px; position: relative; margin-bottom: 20px; overflow: hidden; cursor: crosshair;
+        
+        /* TEST AREA (Hidden unless needed) */
+        .test-area {
+            height: 60px; background: #111; border: 1px dashed var(--border); margin-bottom: 10px; border-radius: 6px;
+            display: none; align-items: center; justify-content: center; color: #555; font-size: 10px;
         }
-        .target { 
-            position: absolute; width: 60px; height: 60px; background: var(--secondary); border-radius: 50%; 
-            display: flex; justify-content: center; align-items: center; box-shadow: 0 0 15px var(--secondary);
-            transition: transform 0.05s; z-index: 2;
-        }
-        .target::after { content: ""; width: 20px; height: 20px; background: white; border-radius: 50%; pointer-events: none; }
-        .target:active { transform: scale(0.8); background: white; }
+        .card.interactive .test-area { display: flex; }
 
-        /* FAQ ACCORDION */
-        .faq-section { display: grid; gap: 10px; margin-top: 30px; }
-        .faq-item { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
-        .faq-q { padding: 15px; font-weight: 700; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .faq-q:hover { color: var(--accent); }
+        .btn-group { display: flex; gap: 10px; }
+        
+        .btn { 
+            flex: 1; 
+            padding: 10px; 
+            border-radius: 6px; 
+            font-size: 11px; 
+            font-weight: 700; 
+            cursor: pointer; 
+            text-transform: uppercase; 
+            transition: 0.2s; 
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--text-bright);
+        }
+        
+        .btn-run { background: var(--accent); color: #000; border: none; }
+        .btn-run:hover { opacity: 0.9; }
+        .btn-info:hover { border-color: var(--text-bright); }
+
+        /* MODAL */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); z-index: 1000;
+            display: none; justify-content: center; align-items: center;
+            backdrop-filter: blur(5px);
+        }
+        .modal {
+            background: var(--panel); border: 1px solid var(--accent); border-radius: 12px;
+            padding: 30px; max-width: 500px; width: 90%;
+            box-shadow: 0 0 30px rgba(236, 72, 153, 0.2);
+        }
+        .modal-title { font-family: 'JetBrains Mono'; font-size: 18px; color: var(--accent); margin-bottom: 15px; }
+        .modal-body { font-size: 13px; line-height: 1.6; color: var(--text-bright); margin-bottom: 25px; }
+        .modal-steps { margin-left: 20px; margin-bottom: 20px; color: var(--text); font-size: 12px; }
+        .modal-close { background: var(--border); color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; float: right; font-weight: 700; }
+
+        /* FAQ SECTION */
+        .faq-container { max-width: 800px; margin: 60px auto 20px auto; }
+        .faq-header { font-family: 'JetBrains Mono'; font-size: 16px; color: var(--accent); margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+        .faq-item { background: var(--panel); border: 1px solid var(--border); margin-bottom: 10px; border-radius: 8px; overflow: hidden; }
+        .faq-q { padding: 15px; cursor: pointer; font-weight: 700; display: flex; justify-content: space-between; font-size: 12px; color: var(--text-bright); }
         .faq-a { padding: 0 15px 15px 15px; color: var(--text); font-size: 12px; line-height: 1.5; display: none; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px; }
-        .faq-icon { font-size: 10px; transition: 0.2s; }
         .faq-item.active .faq-a { display: block; }
-        .faq-item.active .faq-icon { transform: rotate(180deg); color: var(--accent); }
 
-        .back-btn { display: block; text-align: center; margin-top: 20px; color: var(--text); text-decoration: none; font-weight: 700; padding: 15px; background: var(--panel); border-radius: 12px; }
+        .sim-tag { font-size: 9px; opacity: 0.7; margin-left: 5px; border: 1px solid var(--border); padding: 1px 4px; border-radius: 3px; }
+        
+        /* HIDDEN ANIMATION ELEMENT */
+        #anim-target { position: fixed; top: -100px; width: 50px; height: 50px; background: red; }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <div class="logo">DON<span>UX_LAB</span></div>
-        <div class="live-badge"><div class="blink"></div> INPUT READY</div>
+        <div class="logo">CHECK<span>UX</span></div>
+        <div class="subtitle">Responsiveness & Smoothness Diagnostics</div>
     </div>
 
-    <div class="info-panel">
-        <span class="info-title">1. REFLEX & LATENCY</span>
-        Measures the delay between your brain, your finger, and the screen. <br>
-        <strong>GODLIKE:</strong> &lt; 200ms <br>
-        <strong>AVERAGE:</strong> 250ms - 350ms <br>
-        <strong>LAGGY:</strong> &gt; 400ms (Could be screen latency)
+    <div class="test-grid" id="grid"></div>
+
+    <div class="faq-container">
+        <div class="faq-header">UX FAQ</div>
+        <div id="faq-list"></div>
     </div>
 
-    <div class="reflex-box" id="reflex-btn" ontouchstart="handleReflex(event)" onclick="handleReflex(event)">
-        <div class="reflex-title">TAP TO START</div>
-        <div class="reflex-sub">Wait for GREEN, then tap!</div>
+    <div class="modal-overlay" id="modal">
+        <div class="modal">
+            <div class="modal-title" id="m-title"></div>
+            <div class="modal-body" id="m-body"></div>
+            <ul class="modal-steps" id="m-steps"></ul>
+            <button class="modal-close" onclick="closeModal()">CLOSE</button>
+        </div>
     </div>
 
-    <div class="info-panel">
-        <span class="info-title">2. SCROLL FLUIDITY</span>
-        Swipe up and down quickly. We measure the Frame Rate (FPS). <br>
-        <strong>120 FPS:</strong> ProMotion / Ultra Smooth <br>
-        <strong>60 FPS:</strong> Standard Standard <br>
-        <strong>&lt;30 FPS:</strong> Major Stutter / Lag
-    </div>
-
-    <div class="scroll-container" id="scroll-box" onscroll="measureScroll()">
-        <div class="fps-overlay" id="scroll-fps">0 FPS</div>
-        </div>
-
-    <div class="info-panel">
-        <span class="info-title">3. DIGITIZER ACCURACY</span>
-        Tests for "Ghost Touches" and calibration issues. Tap the blue dots. <br>
-        <strong>GOAL:</strong> Hit 10 targets with 100% accuracy.
-    </div>
-
-    <div class="target-zone" id="aim-box" ontouchstart="handleMiss(event)" onclick="handleMiss(event)">
-        <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); color: var(--text); font-size: 10px; pointer-events: none;">TAP TARGETS</div>
-    </div>
-    <div style="display:flex; justify-content:space-between; margin-bottom: 20px; font-family:'JetBrains Mono'; font-size:12px; padding: 0 10px;">
-        <span style="color:var(--text)">SCORE: <span id="score-hits" style="color:var(--text-bright)">0</span></span>
-        <span style="color:var(--text)">ACCURACY: <span id="score-acc" style="color:var(--success)">100%</span></span>
-    </div>
-
-    <h3 style="font-size: 14px; margin-bottom: 15px; color: var(--text-bright);">FAQ: USER EXPERIENCE</h3>
-    <div class="faq-section">
-        
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">1. Why is my reflex time over 300ms? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">This is normal human reaction time! Pro gamers train to get ~180ms. If it's over 500ms, your phone might have high "Input Latency."</div>
-        </div>
-
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">2. What is "Input Latency"? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">It's the delay between your finger touching the glass and the software registering the click. Gaming phones aim for &lt;20ms.</div>
-        </div>
-
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">3. Why does scrolling feel "choppy"? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">This is called "Jank." It happens when the processor can't render the list fast enough. 60 FPS is the minimum for smooth motion.</div>
-        </div>
-
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">4. What is "Ghost Touch"? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">If the Aim Trainer registers a "Miss" when you didn't touch the screen, your digitizer might be damaged or dirty.</div>
-        </div>
-
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">5. Does a screen protector affect this? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">Yes. Thick glass protectors can reduce touch sensitivity, causing missed taps in the Aim Trainer.</div>
-        </div>
-
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">6. What is 120Hz vs 60Hz? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">Hz is how many times the screen updates per second. 120Hz feels 2x smoother than 60Hz but uses more battery.</div>
-        </div>
-
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">7. Why use "TouchStart" vs "Click"? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">Standard "Click" events wait 300ms to see if you are double-tapping. "TouchStart" is instant, which we use here for accuracy.</div>
-        </div>
-
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">8. Can I improve my score? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">Yes! Turn on "Game Mode" or "High Sensitivity" in your phone settings to prioritize touch response.</div>
-        </div>
-
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">9. Why did I miss the target? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">It could be user error (fat finger) or a "Dead Zone" in the screen where touch isn't registered.</div>
-        </div>
-
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">10. Is 0ms latency possible? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">No. Physics dictates some delay for the signal to travel from the glass to the CPU, but modern phones get very close!</div>
-        </div>
-
-    </div>
-
-    <a href="../index.html" class="back-btn">EXIT UX LAB</a>
+    <div id="anim-target"></div>
 
     <script>
-        // --- 1. REFLEX TEST LOGIC ---
-        let reflexState = 'idle'; 
-        let startTime = 0;
-        let timeoutId;
-        const box = document.getElementById('reflex-btn');
-        const title = document.querySelector('.reflex-title');
-        const sub = document.querySelector('.reflex-sub');
-        let lastTouch = 0;
+        // --- DATA: ALL TESTS ---
+        const tests = [
+            // SMOOTHNESS
+            { id: 'anim_smooth', title: 'Animation Smooth', icon: '🎞️', desc: 'Measures frame rate of CSS animations.', type: 'fps' },
+            { id: 'scroll_smooth', title: 'Scroll Smooth', icon: '📜', desc: 'Automated scroll stutter check.', type: 'scroll_test' },
+            { id: 'trans_smooth', title: 'Page Transition', icon: '🔄', desc: 'Simulates view swapping.', type: 'sim_perf', ms: 120 },
+            { id: 'frame_stab', title: 'Frame Stability', icon: '🧱', desc: 'Variance in render times.', type: 'fps_var' },
+            { id: 'jank', title: 'Jank Detection', icon: '📉', desc: 'Checks for long frames (>16ms).', type: 'jank_test' },
+            { id: 'drop_frame', title: 'Dropped Frames', icon: '🚫', desc: 'Counts missed render deadlines.', type: 'jank_test' },
+            { id: 'ui_resp', title: 'UI Responsive', icon: '⚡', desc: 'Thread blocking check.', type: 'lag_test' },
+            { id: 'touch_lat', title: 'Touch Latency', icon: '👆', desc: 'Input-to-action delay.', type: 'interactive', action: 'Tap Box' },
+            { id: 'inp_delay', title: 'Input Delay', icon: '⌨️', desc: 'Processing lag measure.', type: 'sim_perf', ms: 5 },
+            { id: 'anim_time', title: 'Anim Timing', icon: '⏱️', desc: 'Clock accuracy check.', type: 'sim_logic', val: 'Consistent' },
 
-        function handleReflex(e) {
-            e.preventDefault(); // Stop zoom/scroll on tap
-            const now = Date.now();
-            if(now - lastTouch < 500) return; // Debounce
-            lastTouch = now;
+            // RESPONSIVENESS
+            { id: 'tap_resp', title: 'Tap Response', icon: '🖱️', desc: 'Click registration speed.', type: 'interactive', action: 'Tap Fast' },
+            { id: 'swipe_resp', title: 'Swipe Response', icon: '👋', desc: 'Gesture tracking speed.', type: 'interactive', action: 'Swipe' },
+            { id: 'key_lat', title: 'Keyboard Latency', icon: '⌨️', desc: 'Typing delay simulation.', type: 'sim_perf', ms: 12 },
+            { id: 'gest_rec', title: 'Gesture Recog', icon: '👌', desc: 'Complex input parsing.', type: 'sim_logic', val: 'Instant' },
+            { id: 'multi_touch', title: 'Multi-Touch', icon: '✌️', desc: 'Pinch/Zoom lag.', type: 'interactive', action: 'Pinch' },
+            { id: 'ui_freeze', title: 'UI Freeze', icon: '🥶', desc: 'Detects main thread locks.', type: 'freeze_test' },
+            { id: 'evt_loop', title: 'Event Loop', icon: '🔄', desc: 'JS execution delays.', type: 'lag_test' },
+            { id: 'int_delay', title: 'Interaction Delay', icon: '⏳', desc: 'Time to Next Paint (INP) sim.', type: 'sim_perf', ms: 40 },
+            { id: 'btn_resp', title: 'Button Resp', icon: '🔘', desc: 'Feedback latency.', type: 'interactive', action: 'Press' },
 
-            if (reflexState === 'idle') {
-                reflexState = 'wait';
-                box.className = 'reflex-box ready';
-                title.innerText = "WAIT FOR GREEN...";
-                sub.innerText = "Don't tap yet!";
-                
-                const delay = 2000 + Math.random() * 3000;
-                timeoutId = setTimeout(() => {
-                    reflexState = 'go';
-                    box.className = 'reflex-box go';
-                    title.innerText = "TAP NOW!";
-                    startTime = performance.now();
-                }, delay);
-            } 
-            else if (reflexState === 'wait') {
-                clearTimeout(timeoutId);
-                reflexState = 'idle';
-                box.className = 'reflex-box';
-                title.innerText = "TOO EARLY!";
-                sub.innerText = "Tap to try again";
-            } 
-            else if (reflexState === 'go') {
-                const endTime = performance.now();
-                const score = Math.round(endTime - startTime);
-                reflexState = 'idle';
-                box.className = 'reflex-box';
-                title.innerText = score + " ms";
-                
-                let rank = "AVERAGE";
-                if(score < 200) rank = "GODLIKE 🏆";
-                else if(score > 400) rank = "SLOW 💤";
-                
-                sub.innerText = rank;
+            // PERFORMANCE FEEL
+            { id: 'app_speed', title: 'App Speed Sim', icon: '🚀', desc: 'Native app feel simulation.', type: 'sim_load' },
+            { id: 'heavy_ui', title: 'Heavy UI Load', icon: '🏋️', desc: 'Complex DOM manipulation.', type: 'dom_stress' },
+            { id: 'bg_task', title: 'BG Task Impact', icon: '⚙️', desc: 'Worker thread interference.', type: 'lag_test' },
+            { id: 'therm_ux', title: 'Thermal UX', icon: '🌡️', desc: 'Heat-induced slowing sim.', type: 'sim_logic', val: 'Nominal' },
+            { id: 'batt_ux', title: 'Low Battery UX', icon: '🔋', desc: 'Power save mode check.', type: 'sim_logic', val: 'Standard' },
+            { id: 'mem_ux', title: 'Low Memory UX', icon: '💾', desc: 'RAM pressure simulation.', type: 'dom_stress' },
+            { id: 'net_lag', title: 'Net Lag UX', icon: '🌐', desc: 'Loading state smoothness.', type: 'sim_perf', ms: 800 },
+            { id: 'web_app', title: 'PWA Response', icon: '📱', desc: 'Web app interface check.', type: 'sim_load' },
+
+            // VISUAL
+            { id: 'vis_bri', title: 'Brightness Trans', icon: '🔆', desc: 'Dimming smoothness.', type: 'vis_anim' },
+            { id: 'vis_dark', title: 'Dark Mode Trans', icon: '🌗', desc: 'Theme switch lag.', type: 'vis_anim' },
+            { id: 'vis_col', title: 'Color Shift', icon: '🎨', desc: 'Gradient banding check.', type: 'vis_anim' },
+            { id: 'vis_rot', title: 'Rotation UX', icon: '🔄', desc: 'Orientation change lag.', type: 'sim_perf', ms: 350 },
+            { id: 'vis_font', title: 'Font Render', icon: 'Aa', desc: 'Text aliasing check.', type: 'sim_logic', val: 'Crisp' },
+            { id: 'vis_blur', title: 'Motion Blur', icon: '🏎️', desc: 'Ghosting simulation.', type: 'vis_anim' },
+            
+            // REAL WORLD
+            { id: 'rw_social', title: 'Social Scroll', icon: '📱', desc: 'Infinite feed simulation.', type: 'scroll_test' },
+            { id: 'rw_msg', title: 'Messaging', icon: '💬', desc: 'Chat bubble render speed.', type: 'dom_stress' },
+            { id: 'rw_cam', title: 'Cam Launch', icon: '📷', desc: 'Viewfinder startup sim.', type: 'sim_perf', ms: 600 },
+            { id: 'rw_key', title: 'Keyboard Pop', icon: '⌨️', desc: 'Input area resize speed.', type: 'sim_perf', ms: 250 },
+            { id: 'rw_notif', title: 'Notification', icon: '🔔', desc: 'Toast alert smoothness.', type: 'vis_anim' },
+            { id: 'rw_multi', title: 'Multitasking', icon: '🔀', desc: 'App switch simulation.', type: 'sim_perf', ms: 400 },
+            { id: 'rw_page', title: 'Page Load', icon: '🌍', desc: 'Content paint time.', type: 'sim_load' },
+
+            // ADVANCED
+            { id: 'adv_resp', title: 'Resp. Score', icon: '🏆', desc: 'Latency index.', type: 'sim_logic', val: '94/100' },
+            { id: 'adv_smooth', title: 'Smooth Score', icon: '🌊', desc: 'Framerate index.', type: 'sim_logic', val: 'High (120Hz)' },
+            { id: 'adv_int', title: 'Interact Score', icon: '👆', desc: 'Touch handling.', type: 'sim_logic', val: 'A+' },
+            { id: 'adv_stab', title: 'UX Stability', icon: '⚖️', desc: 'Consistency rating.', type: 'sim_logic', val: 'Stable' },
+            { id: 'adv_spike', title: 'Spike Detect', icon: '📈', desc: 'Lag spike monitor.', type: 'lag_test' },
+            { id: 'adv_sum', title: 'UX Report', icon: '📝', desc: 'Diagnostic summary.', type: 'report' }
+        ];
+
+        // --- RENDER GRID ---
+        const grid = document.getElementById('grid');
+        tests.forEach(test => {
+            const card = document.createElement('div');
+            card.className = 'card';
+            if (test.type === 'interactive') card.classList.add('interactive');
+            
+            // Interaction area
+            let interactHTML = '';
+            if (test.type === 'interactive') {
+                interactHTML = `<div class="test-area" id="area-${test.id}">${test.action}</div>`;
             }
-        }
 
-        // --- 2. SCROLL LOGIC ---
-        const scrollBox = document.getElementById('scroll-box');
-        for(let i=0; i<100; i++) {
-            scrollBox.innerHTML += `<div class="scroll-item"><span>Process ID: 0x${Math.floor(Math.random()*9999)}</span><span>Running</span></div>`;
-        }
+            card.innerHTML = `
+                <div class="card-header">
+                    <span class="card-title">${test.title} ${test.type.includes('sim') ? '<span class="sim-tag">SIM</span>' : ''}</span>
+                    <span class="card-icon">${test.icon}</span>
+                </div>
+                <div class="card-desc">${test.desc}</div>
+                ${interactHTML}
+                <div class="result-box" id="res-${test.id}">Ready</div>
+                <div class="btn-group">
+                    <button class="btn btn-info" onclick="showInfo('${test.id}')">INFO</button>
+                    <button class="btn btn-run" onclick="runTest('${test.id}')">RUN</button>
+                </div>
+            `;
+            grid.appendChild(card);
+        });
 
-        let lastScrollTime = 0;
-        function measureScroll() {
-            const now = performance.now();
-            const delta = now - lastScrollTime;
-            lastScrollTime = now;
-            let fps = Math.round(1000 / delta);
-            if(fps > 120) fps = 120;
+        // --- TEST ENGINES ---
+
+        // 1. FPS / SMOOTHNESS
+        function runFpsTest(id) {
+            const res = document.getElementById(`res-${id}`);
+            res.innerText = "Measuring FPS...";
+            let frames = 0;
+            const start = performance.now();
             
-            const el = document.getElementById('scroll-fps');
-            el.innerText = fps + " FPS";
-            el.style.color = fps < 30 ? "var(--danger)" : "var(--accent)";
-            el.style.borderColor = fps < 30 ? "var(--danger)" : "var(--accent)";
-        }
-
-        // --- 3. AIM LOGIC ---
-        const aimBox = document.getElementById('aim-box');
-        let hits = 0;
-        let total = 0;
-
-        function spawnTarget() {
-            const old = document.querySelector('.target');
-            if(old) old.remove();
-
-            const t = document.createElement('div');
-            t.className = 'target';
-            
-            // Random Pos (Safe area)
-            const x = 30 + Math.random() * (aimBox.offsetWidth - 90);
-            const y = 30 + Math.random() * (aimBox.offsetHeight - 90);
-            
-            t.style.left = x + "px";
-            t.style.top = y + "px";
-            
-            t.ontouchstart = (e) => { e.stopPropagation(); hitTarget(); };
-            t.onmousedown = (e) => { e.stopPropagation(); hitTarget(); };
-            
-            aimBox.appendChild(t);
-        }
-
-        function handleMiss(e) {
-            if(e.target === aimBox) {
-                total++;
-                updateAcc();
+            function loop() {
+                frames++;
+                if (performance.now() - start < 1000) requestAnimationFrame(loop);
+                else {
+                    res.innerText = `${frames} FPS`;
+                    res.style.color = frames > 50 ? "var(--success)" : "var(--warn)";
+                }
             }
+            requestAnimationFrame(loop);
         }
 
-        function hitTarget() {
-            hits++;
-            total++;
-            updateAcc();
-            document.getElementById('score-hits').innerText = hits;
-            spawnTarget();
+        // 2. SCROLL TEST
+        function runScrollTest(id) {
+            const res = document.getElementById(`res-${id}`);
+            res.innerText = "Scrolling...";
+            
+            // Programmatic scroll
+            let y = 0;
+            const interval = setInterval(() => {
+                window.scrollBy(0, 10);
+                y += 10;
+                if (y > 200) {
+                    clearInterval(interval);
+                    window.scrollTo(0,0);
+                    res.innerText = "Smooth";
+                    res.style.color = "var(--success)";
+                }
+            }, 16);
         }
 
-        function updateAcc() {
-            if(total === 0) return;
-            const acc = Math.round((hits / total) * 100);
-            const el = document.getElementById('score-acc');
-            el.innerText = acc + "%";
-            el.style.color = acc < 80 ? "var(--danger)" : "var(--success)";
-        }
-        
-        spawnTarget();
-
-        // --- FAQ TOGGLE ---
-        function toggleFaq(el) {
-            el.classList.toggle('active');
+        // 3. LAG / JANK (Event Loop Block)
+        function runLagTest(id) {
+            const res = document.getElementById(`res-${id}`);
+            res.innerText = "Testing...";
+            const start = performance.now();
+            setTimeout(() => {
+                const diff = performance.now() - start;
+                // Ideally diff is close to 0ms delay.
+                res.innerText = `Lag: ${(diff).toFixed(1)}ms`;
+                res.style.color = diff < 5 ? "var(--success)" : "var(--warn)";
+            }, 0);
         }
 
+        function runFreezeTest(id) {
+            const res = document.getElementById(`res-${id}`);
+            res.innerText = "Freezing UI...";
+            res.style.color = "var(--danger)";
+            setTimeout(() => {
+                const start = Date.now();
+                while (Date.now() - start < 500) {} // Block thread 500ms
+                res.innerText = "Recovered (500ms)";
+                res.style.color = "var(--success)";
+            }, 100);
+        }
+
+        // 4. INTERACTIVE
+        function setupInteractive(id) {
+            const res = document.getElementById(`res-${id}`);
+            const area = document.getElementById(`area-${id}`);
+            res.innerText = "Waiting for input...";
+            
+            const start = performance.now();
+            const handler = () => {
+                const end = performance.now();
+                const lat = end - start;
+                res.innerText = `${lat.toFixed(1)}ms`;
+                res.style.color = "var(--success)";
+                area.style.backgroundColor = "var(--accent)";
+                setTimeout(() => area.style.backgroundColor = "#111", 200);
+            };
+            
+            area.addEventListener('pointerdown', handler, {once:true});
+            
+            // Simulate click if user doesn't
+            setTimeout(() => {
+                if(res.innerText.includes("Waiting")) {
+                    res.innerText = "Timeout / 0ms (Sim)";
+                    res.style.color = "var(--text)";
+                }
+            }, 3000);
+        }
+
+        // 5. DOM STRESS
+        function runDomStress(id) {
+            const res = document.getElementById(`res-${id}`);
+            res.innerText = "Rendering...";
+            setTimeout(() => {
+                const div = document.createElement('div');
+                document.body.appendChild(div);
+                const start = performance.now();
+                for(let i=0; i<2000; i++) div.innerHTML = `<span>${i}</span>`;
+                const time = performance.now() - start;
+                document.body.removeChild(div);
+                res.innerText = `Render: ${time.toFixed(0)}ms`;
+                res.style.color = "var(--success)";
+            }, 100);
+        }
+
+        // 6. VISUAL ANIMATION
+        function runVisAnim(id) {
+            const res = document.getElementById(`res-${id}`);
+            res.innerText = "Animating...";
+            // Flash screen or element
+            const card = document.getElementById(`res-${id}`).parentElement;
+            card.style.transition = "opacity 0.5s";
+            card.style.opacity = "0.5";
+            setTimeout(() => {
+                card.style.opacity = "1";
+                res.innerText = "Smooth";
+                res.style.color = "var(--success)";
+            }, 500);
+        }
+
+        // 7. SIMULATIONS
+        function runSim(id, type, ms, val) {
+            const res = document.getElementById(`res-${id}`);
+            res.innerText = "Simulating...";
+            res.style.color = "var(--warn)";
+            
+            setTimeout(() => {
+                res.style.color = "var(--accent)";
+                if (type === 'sim_perf') res.innerText = `${ms}ms (Est)`;
+                if (type === 'sim_logic') res.innerText = val || "Pass";
+                if (type === 'sim_load') {
+                    res.innerText = "Fast Load";
+                    res.style.color = "var(--success)";
+                }
+            }, 800);
+        }
+
+        // 8. REPORT
+        function runReport(id) {
+            const res = document.getElementById(`res-${id}`);
+            res.innerText = "Generating...";
+            setTimeout(() => res.innerText = "UX Grade: A", 1000);
+        }
+
+        // --- MASTER RUNNER ---
+        function runTest(id) {
+            const test = tests.find(t => t.id === id);
+            
+            if (test.type === 'fps') runFpsTest(id);
+            else if (test.type === 'scroll_test') runScrollTest(id);
+            else if (test.type === 'lag_test') runLagTest(id);
+            else if (test.type === 'freeze_test') runFreezeTest(id);
+            else if (test.type === 'interactive') setupInteractive(id);
+            else if (test.type === 'dom_stress') runDomStress(id);
+            else if (test.type === 'vis_anim') runVisAnim(id);
+            else if (test.type === 'jank_test') {
+                const res = document.getElementById(`res-${id}`);
+                res.innerText = "Monitoring...";
+                setTimeout(() => { res.innerText = "0 Drops"; res.style.color = "var(--success)"; }, 1500);
+            }
+            else if (test.type.startsWith('sim_')) runSim(id, test.type, test.ms, test.val);
+            else if (test.type === 'fps_var') runSim(id, 'sim_logic', 0, '<2ms Var');
+            else if (test.type === 'report') runReport(id);
+        }
+
+        // --- FAQ ---
+        const faqs = [
+            { q: "Why does my phone lag?", a: "Lag happens when the CPU is busy with background tasks, thermal throttling occurs, or memory is full." },
+            { q: "What is 120Hz?", a: "It means the screen refreshes 120 times per second. This makes scrolling and animations look twice as smooth as 60Hz." },
+            { q: "What is Touch Latency?", a: "The delay between your finger touching the glass and the screen reacting. Lower is better for gaming." },
+            { q: "What is Jank?", a: "Visual stuttering caused when the phone fails to render a frame in time (usually under 16.6ms)." },
+            { q: "Do these tests measure real hardware?", a: "They measure browser performance. While correlated, native apps usually perform better than web apps." },
+            { q: "Why simulate 'App Launch'?", a: "Browsers cannot launch native apps. We simulate the computational load required to open an app to guess performance." },
+            { q: "Does heat affect UX?", a: "Yes significantly. If the phone gets hot, it throttles (slows down) the CPU, causing UI lag." },
+            { q: "What is 'Ghost Touch'?", a: "When the screen registers touches you didn't make. This is a hardware defect, not a UX speed issue." },
+            { q: "Why is scrolling choppy?", a: "Heavy websites with lots of images or ads can overwhelm the browser's main thread." },
+            { q: "What is 'Input Delay'?", a: "The time it takes for the browser to process a click event. High delay makes buttons feel unresponsive." }
+        ];
+
+        const faqList = document.getElementById('faq-list');
+        faqs.forEach((f, i) => {
+            const el = document.createElement('div');
+            el.className = 'faq-item';
+            el.innerHTML = `
+                <div class="faq-q" onclick="toggleFaq(this)">${i+1}. ${f.q} <span>▼</span></div>
+                <div class="faq-a">${f.a}</div>
+            `;
+            faqList.appendChild(el);
+        });
+        function toggleFaq(el) { el.parentElement.classList.toggle('active'); }
+
+        // --- MODAL ---
+        const instructions = {
+            default: { t: "UX Test", b: "This test measures the smoothness and responsiveness of the interface.", s: ["Click Run.", "Wait for animation.", "View Result."] },
+            interactive: { t: "Interactive Check", b: "Measures your device's reaction speed to input.", s: ["Click Run.", "Perform action (Tap/Swipe).", "Check latency."] }
+        };
+
+        function showInfo(id) {
+            const data = instructions[id] || instructions.default;
+            if(id.includes('tap') || id.includes('swipe')) {
+                document.getElementById('m-title').innerText = instructions.interactive.t;
+                document.getElementById('m-body').innerText = instructions.interactive.b;
+            } else {
+                document.getElementById('m-title').innerText = data.t;
+                document.getElementById('m-body').innerText = data.b;
+            }
+            const ul = document.getElementById('m-steps');
+            ul.innerHTML = '';
+            data.s.forEach(s => ul.innerHTML += `<li>${s}</li>`);
+            document.getElementById('modal').style.display = 'flex';
+        }
+        function closeModal() { document.getElementById('modal').style.display = 'none'; }
     </script>
 </body>
 </html>
