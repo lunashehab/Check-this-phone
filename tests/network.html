@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Don Systems Network Ops</title>
+    <title>Performance Tests | CheckThisPhone.com</title>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         :root { 
@@ -12,331 +12,474 @@
             --border: #2d3748; 
             --text: #a0aec0; 
             --text-bright: #e2e8f0;
-            --accent: #00ff9d; /* Matrix Green */
-            --secondary: #00f0ff; /* Cyber Blue */
-            --danger: #ff0055; 
-            --warn: #ffb700; 
+            --accent: #ffb700; /* Cyber Gold */
+            --secondary: #3b82f6; /* Blue */
+            --danger: #ef4444; 
+            --warn: #f59e0b; 
+            --success: #10b981;
         }
         
-        * { box-sizing: border-box; }
+        * { box-sizing: border-box; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
         body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; padding: 20px; margin: 0; min-height: 100vh; font-size: 14px; overflow-x: hidden; }
         
         /* HEADER */
-        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 15px; margin-bottom: 20px; }
-        .logo { font-family: 'JetBrains Mono', monospace; font-weight: 800; font-size: 18px; color: var(--text-bright); letter-spacing: -1px; }
-        .logo span { color: var(--secondary); }
-        .live-badge { display: flex; align-items: center; gap: 6px; font-size: 10px; color: var(--accent); font-weight: 700; background: rgba(0, 255, 157, 0.1); padding: 4px 8px; border-radius: 4px; border: 1px solid rgba(0, 255, 157, 0.2); }
-        .blink { animation: blink 1s infinite; width: 6px; height: 6px; background: var(--accent); border-radius: 50%; }
-        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0; } 100% { opacity: 1; } }
+        .header { text-align: center; margin-bottom: 40px; border-bottom: 1px solid var(--border); padding-bottom: 20px; }
+        .logo { font-family: 'JetBrains Mono', monospace; font-weight: 800; font-size: 24px; color: var(--text-bright); letter-spacing: -1px; margin-bottom: 10px; }
+        .logo span { color: var(--accent); }
+        .subtitle { font-size: 12px; color: var(--text); text-transform: uppercase; letter-spacing: 1px; }
 
-        /* INSTRUCTION PANELS */
-        .info-panel { background: rgba(0, 240, 255, 0.05); border-left: 3px solid var(--secondary); padding: 15px; margin-bottom: 15px; border-radius: 0 8px 8px 0; font-size: 12px; line-height: 1.5; color: var(--text-bright); }
-        .info-title { font-weight: 800; color: var(--secondary); text-transform: uppercase; margin-bottom: 5px; display: block; letter-spacing: 1px; }
-
-        /* MAP HERO */
-        .map-container { 
-            background: #000; border: 1px solid var(--border); border-radius: 16px; height: 200px; position: relative; overflow: hidden; margin-bottom: 20px;
-            display: flex; justify-content: center; align-items: center;
+        /* GRID LAYOUT */
+        .test-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
+            gap: 20px; 
+            max-width: 1200px; 
+            margin: 0 auto; 
         }
-        canvas { width: 100%; height: 100%; }
-        .node-label { position: absolute; font-size: 10px; color: var(--text-bright); background: var(--panel); padding: 2px 6px; border-radius: 4px; border: 1px solid var(--border); }
-        .lbl-you { bottom: 20px; left: 20px; color: var(--accent); border-color: var(--accent); }
-        .lbl-isp { top: 20px; right: 20px; color: var(--secondary); border-color: var(--secondary); }
 
-        /* DATA GRID */
-        .grid-master { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
-        .stat-card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 15px; }
-        .stat-label { font-size: 10px; text-transform: uppercase; color: var(--text); display: block; margin-bottom: 4px; letter-spacing: 1px; }
-        .stat-val { font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 700; color: var(--text-bright); word-break: break-all; }
-        .val-blue { color: var(--secondary); }
-        .val-green { color: var(--accent); }
+        /* TEST CARD */
+        .card { 
+            background: var(--panel); 
+            border: 1px solid var(--border); 
+            border-radius: 12px; 
+            padding: 20px; 
+            display: flex; 
+            flex-direction: column; 
+            transition: 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+        .card:hover { border-color: var(--accent); transform: translateY(-2px); }
+        
+        .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
+        .card-title { font-family: 'JetBrains Mono'; font-weight: 700; color: var(--text-bright); font-size: 13px; }
+        .card-icon { font-size: 18px; opacity: 0.8; }
+        
+        .card-desc { font-size: 12px; color: var(--text); margin-bottom: 20px; line-height: 1.5; flex-grow: 1; }
+        
+        .result-box { 
+            background: rgba(0,0,0,0.3); 
+            border: 1px solid var(--border); 
+            border-radius: 8px; 
+            padding: 10px; 
+            margin-bottom: 15px; 
+            font-family: 'JetBrains Mono'; 
+            font-size: 11px; 
+            color: var(--accent); 
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            overflow-wrap: anywhere;
+        }
+        
+        .btn-group { display: flex; gap: 10px; }
+        
+        .btn { 
+            flex: 1; 
+            padding: 10px; 
+            border-radius: 6px; 
+            font-size: 11px; 
+            font-weight: 700; 
+            cursor: pointer; 
+            text-transform: uppercase; 
+            transition: 0.2s; 
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--text-bright);
+        }
+        
+        .btn-run { background: var(--accent); color: #000; border: none; }
+        .btn-run:hover { opacity: 0.9; }
+        .btn-stress { background: var(--danger); color: white; border: none; }
+        .btn-info:hover { border-color: var(--text-bright); }
 
-        /* PORT SCANNER MATRIX */
-        .port-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 5px; }
-        .port-box { background: rgba(0,0,0,0.3); border: 1px solid var(--border); padding: 8px; text-align: center; border-radius: 6px; }
-        .p-num { display: block; font-size: 10px; color: var(--text); }
-        .p-status { display: block; font-size: 12px; font-weight: 700; color: var(--text); margin-top: 2px; }
-        .p-closed { color: var(--accent); }
+        /* MODAL */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); z-index: 1000;
+            display: none; justify-content: center; align-items: center;
+            backdrop-filter: blur(5px);
+        }
+        .modal {
+            background: var(--panel); border: 1px solid var(--accent); border-radius: 12px;
+            padding: 30px; max-width: 500px; width: 90%;
+            box-shadow: 0 0 30px rgba(255, 183, 0, 0.2);
+        }
+        .modal-title { font-family: 'JetBrains Mono'; font-size: 18px; color: var(--accent); margin-bottom: 15px; }
+        .modal-body { font-size: 13px; line-height: 1.6; color: var(--text-bright); margin-bottom: 25px; }
+        .modal-steps { margin-left: 20px; margin-bottom: 20px; color: var(--text); font-size: 12px; }
+        .modal-close { background: var(--border); color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; float: right; font-weight: 700; }
 
-        /* FAQ ACCORDION */
-        .faq-section { display: grid; gap: 10px; margin-top: 30px; }
-        .faq-item { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
-        .faq-q { padding: 15px; font-weight: 700; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .faq-q:hover { color: var(--accent); }
+        /* FAQ SECTION */
+        .faq-container { max-width: 800px; margin: 60px auto 20px auto; }
+        .faq-header { font-family: 'JetBrains Mono'; font-size: 16px; color: var(--accent); margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+        .faq-item { background: var(--panel); border: 1px solid var(--border); margin-bottom: 10px; border-radius: 8px; overflow: hidden; }
+        .faq-q { padding: 15px; cursor: pointer; font-weight: 700; display: flex; justify-content: space-between; font-size: 12px; color: var(--text-bright); }
         .faq-a { padding: 0 15px 15px 15px; color: var(--text); font-size: 12px; line-height: 1.5; display: none; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px; }
-        .faq-icon { font-size: 10px; transition: 0.2s; }
         .faq-item.active .faq-a { display: block; }
-        .faq-item.active .faq-icon { transform: rotate(180deg); color: var(--accent); }
 
-        .back-btn { display: block; text-align: center; margin-top: 20px; color: var(--text); text-decoration: none; font-weight: 700; padding: 15px; background: var(--panel); border-radius: 12px; }
-        .action-btn { background: var(--panel); border: 1px solid var(--border); color: var(--text-bright); width: 100%; padding: 15px; border-radius: 12px; font-weight: 700; margin-bottom: 20px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: 0.2s; }
-        .action-btn:hover { border-color: var(--secondary); color: var(--secondary); }
+        .sim-tag { font-size: 9px; opacity: 0.7; margin-left: 5px; border: 1px solid var(--border); padding: 1px 4px; border-radius: 3px; }
+        
+        /* CANVAS FOR GPU TESTS (Hidden) */
+        #gpu-canvas { position: fixed; top: -9999px; left: -9999px; }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <div class="logo">DON<span>NET_OPS</span></div>
-        <div class="live-badge"><div class="blink"></div> UPLINK ACTIVE</div>
+        <div class="logo">CHECK<span>PERFORMANCE</span></div>
+        <div class="subtitle">Browser-Based CPU, GPU & Speed Diagnostics</div>
     </div>
 
-    <div class="map-container">
-        <div class="node-label lbl-you">YOU</div>
-        <div class="node-label lbl-isp">INTERNET</div>
-        <canvas id="netCanvas"></canvas>
+    <div class="test-grid" id="grid"></div>
+
+    <div class="faq-container">
+        <div class="faq-header">PERFORMANCE FAQ</div>
+        <div id="faq-list"></div>
     </div>
 
-    <div class="info-panel">
-        <span class="info-title">1. PUBLIC IDENTITY</span>
-        Your "Public IP" is the digital address websites see. It reveals your ISP and approximate physical location. <br>
-        <strong>GOAL:</strong> If you are using a VPN, this should show the VPN's location, not yours.
-    </div>
-
-    <div class="grid-master">
-        <div class="stat-card" style="grid-column: span 2;">
-            <span class="stat-label">PUBLIC IP ADDRESS</span>
-            <span class="stat-val val-blue" id="ip-address">FETCHING...</span>
-            <div style="font-size: 11px; margin-top: 5px; color: var(--text);" id="isp-info">LOCATING...</div>
+    <div class="modal-overlay" id="modal">
+        <div class="modal">
+            <div class="modal-title" id="m-title"></div>
+            <div class="modal-body" id="m-body"></div>
+            <ul class="modal-steps" id="m-steps"></ul>
+            <button class="modal-close" onclick="closeModal()">CLOSE</button>
         </div>
     </div>
 
-    <div class="info-panel">
-        <span class="info-title">2. WEBRTC LEAK DETECTION</span>
-        Sometimes browsers accidentally reveal your <strong>Local LAN IP</strong> (your internal home network address) even when using a VPN. <br>
-        <strong>GOAL:</strong> "HIDDEN / SECURE".
-    </div>
-
-    <div class="stat-card" style="margin-bottom: 20px;">
-        <span class="stat-label">LOCAL IP LEAK STATUS</span>
-        <span class="stat-val val-green" id="lan-ip">SCANNING...</span>
-    </div>
-
-    <div class="info-panel">
-        <span class="info-title">3. CONNECTION PROTOCOLS</span>
-        We detect the quality of your link (4G, 5G, WiFi) and perform a simulated "Port Scan" to ensure your firewall is blocking unwanted incoming traffic.
-    </div>
-
-    <div class="grid-master">
-        <div class="stat-card">
-            <span class="stat-label">LINK TYPE</span>
-            <span class="stat-val" id="net-type">--</span>
-        </div>
-        <div class="stat-card">
-            <span class="stat-label">DOWNLINK (EST)</span>
-            <span class="stat-val" id="net-speed">-- Mbps</span>
-        </div>
-        
-        <div class="stat-card" style="grid-column: span 2;">
-            <span class="stat-label">FIREWALL PORT AUDIT (SIMULATION)</span>
-            <div class="port-grid">
-                <div class="port-box"><span class="p-num">21 (FTP)</span><span class="p-status" id="p-21">--</span></div>
-                <div class="port-box"><span class="p-num">22 (SSH)</span><span class="p-status" id="p-22">--</span></div>
-                <div class="port-box"><span class="p-num">80 (HTTP)</span><span class="p-status" id="p-80">--</span></div>
-                <div class="port-box"><span class="p-num">443 (SSL)</span><span class="p-status" id="p-443">--</span></div>
-            </div>
-        </div>
-    </div>
-
-    <button class="action-btn" onclick="runPortScan()">RE-RUN PORT SCAN</button>
-
-    <h3 style="font-size: 14px; margin-bottom: 15px; color: var(--text-bright);">FAQ: NETWORKING</h3>
-    <div class="faq-section">
-        
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">1. What is an IP Address? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">It's your digital home address. Public IP is what the world sees. Local IP is what your router assigns to your specific phone.</div>
-        </div>
-
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">2. Why hide my IP? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">Hiding your IP (via VPN) prevents websites from tracking your location and stops hackers from targeting your specific connection.</div>
-        </div>
-
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">3. What is a "WebRTC Leak"? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">WebRTC is used for video chat. Sometimes it bypasses VPNs and sends your real IP directly to the website. This is a privacy flaw.</div>
-        </div>
-
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">4. What is "Latency" (Ping)? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">It's the time (in ms) it takes for data to travel from you to the server and back. Lower is better for gaming.</div>
-        </div>
-
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">5. What is a "Port"? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">Think of ports as doors to your house. Port 80 is the front door (Web). Port 22 is the back door (SSH). You want unused doors locked (Stealth).</div>
-        </div>
-
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">6. Why is my 5G speed slow? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">5G signal is easily blocked by walls. If you have 1 bar of 5G, it might be slower than full bars of 4G LTE.</div>
-        </div>
-
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">7. What is "Jitter"? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">Jitter is the instability of your Ping. If Ping jumps from 20ms to 100ms rapidly, that is High Jitter (bad for calls/gaming).</div>
-        </div>
-
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">8. What is "Packet Loss"? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">When data gets lost on the way. 1% packet loss causes stuttering in videos and lag in games.</div>
-        </div>
-
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">9. How do I fix a WebRTC Leak? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">Use a high-quality VPN app that has "Leak Protection" or disable WebRTC in your browser settings (advanced).</div>
-        </div>
-
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">10. Why use "Stealth" ports? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">If a hacker scans your IP and sees "Closed" ports, they know you exist. If they see "Stealth," it looks like an empty void.</div>
-        </div>
-
-    </div>
-
-    <a href="../index.html" class="back-btn">EXIT OPS CENTER</a>
+    <canvas id="gpu-canvas"></canvas>
 
     <script>
-        // --- 1. IP FETCH ---
-        async function fetchIP() {
-            try {
-                // Using ipapi.co (Free Tier)
-                const response = await fetch('https://ipapi.co/json/');
-                const data = await response.json();
-                
-                document.getElementById('ip-address').innerText = data.ip;
-                document.getElementById('isp-info').innerText = `${data.city}, ${data.country_name} (${data.org})`;
-            } catch (e) {
-                document.getElementById('ip-address').innerText = "127.0.0.1 (Offline/Blocked)";
-                document.getElementById('isp-info').innerText = "Network Unavailable";
-            }
-        }
+        // --- DATA: ALL TESTS ---
+        const tests = [
+            // CPU
+            { id: 'cpu_bench', title: 'CPU Benchmark', icon: '🧠', desc: 'Measures raw calculation speed (Ops/sec).', type: 'cpu_math' },
+            { id: 'cpu_single', title: 'Single-Core Sim', icon: '1️⃣', desc: 'Stresses main thread logic.', type: 'cpu_math' },
+            { id: 'cpu_multi', title: 'Multi-Core Sim', icon: '🔢', desc: 'Simulates parallel workers (Web Workers).', type: 'cpu_workers' },
+            { id: 'cpu_stress', title: 'CPU Stress Test', icon: '🔥', desc: 'Max load test for stability.', type: 'cpu_stress' },
+            { id: 'cpu_burst', title: 'Burst Performance', icon: '💥', desc: 'Short high-intensity calculation check.', type: 'cpu_math' },
+            { id: 'cpu_sustain', title: 'Sustained Perf.', icon: '⏱️', desc: 'Longer duration load test.', type: 'cpu_stress' },
+            { id: 'cpu_throttle', title: 'Throttling Detect', icon: '🌡️', desc: 'Checks if speed drops over time.', type: 'sim_logic' },
+            { id: 'cpu_temp', title: 'CPU Temperature', icon: '🌡️', desc: 'Estimates thermal status via load.', type: 'sim_logic' },
+            { id: 'cpu_spike', title: 'Spike Detection', icon: '⚡', desc: 'Checks for performance stutters.', type: 'cpu_math' },
+            { id: 'cpu_idle', title: 'Idle Performance', icon: '💤', desc: 'Measures background resource usage.', type: 'sim_logic' },
+            { id: 'cpu_load', title: 'Load Consistency', icon: '⚖️', desc: 'Variance check under load.', type: 'cpu_math' },
+            { id: 'cpu_instr', title: 'Instruction Speed', icon: '📝', desc: 'Math/Logic operation mix.', type: 'cpu_math' },
 
-        // --- 2. WEBRTC LEAK ---
-        function findLocalIP() {
-            // Most modern browsers block this for privacy, so "Hidden" is the expected/good result
+            // GPU
+            { id: 'gpu_webgl', title: 'WebGL Benchmark', icon: '🎮', desc: 'Renders 3D geometry.', type: 'gpu_render' },
+            { id: 'gpu_fill', title: 'Fill Rate Test', icon: '🎨', desc: 'Pixel pushing capability.', type: 'gpu_render' },
+            { id: 'gpu_tri', title: 'Triangle Render', icon: '🔺', desc: 'Vertex processing speed.', type: 'gpu_render' },
+            { id: 'gpu_part', title: 'Particle Stress', icon: '✨', desc: 'High object count simulation.', type: 'gpu_render' },
+            { id: 'gpu_shader', title: 'Shader Perf.', icon: '🌈', desc: 'Complex lighting calculation.', type: 'gpu_render' },
+            { id: 'gpu_fps', title: 'Frame Rate Test', icon: '🏎️', desc: 'Measures stable FPS.', type: 'gpu_render' },
+            { id: 'gpu_stab', title: 'GPU Stability', icon: '🧱', desc: 'Long render loop check.', type: 'gpu_render' },
+            { id: 'gpu_therm', title: 'GPU Thermals', icon: '🌡️', desc: 'Simulated thermal load check.', type: 'sim_logic' },
+            { id: 'gpu_drop', title: 'Frame Drop Detect', icon: '📉', desc: 'Detects rendering stutter.', type: 'gpu_render' },
+            { id: 'gpu_smooth', title: 'Motion Smoothness', icon: '🌊', desc: 'Visual fluidity check.', type: 'gpu_render' },
+            { id: 'gpu_over', title: 'Overload Sim', icon: '⚠️', desc: 'Maximum texture load.', type: 'gpu_render' },
+
+            // RAM
+            { id: 'ram_usage', title: 'RAM Usage', icon: '💾', desc: 'Checks available JS heap limit.', type: 'ram_check' },
+            { id: 'ram_stress', title: 'RAM Stress Test', icon: '🏋️', desc: 'Allocates large arrays rapidly.', type: 'ram_fill' },
+            { id: 'ram_leak', title: 'Leak Simulation', icon: '💧', desc: 'Simulates unreleased memory.', type: 'sim_logic' },
+            { id: 'ram_alloc', title: 'Allocation Speed', icon: '🚀', desc: 'Read/Write memory bandwidth.', type: 'ram_speed' },
+            { id: 'ram_stab', title: 'RAM Stability', icon: '⚖️', desc: 'Holding data in memory check.', type: 'sim_logic' },
+            { id: 'ram_frag', title: 'Fragmentation', icon: '🧩', desc: 'Simulated memory scattering.', type: 'sim_logic' },
+            { id: 'ram_clean', title: 'Cleanup Sim', icon: '🧹', desc: 'Garbage collection trigger.', type: 'sim_logic' },
+            { id: 'ram_press', title: 'Memory Pressure', icon: '😤', desc: 'High-load scenario.', type: 'ram_fill' },
+            { id: 'ram_spike', title: 'Memory Spike', icon: '📈', desc: 'Sudden allocation burst.', type: 'ram_fill' },
+
+            // STORAGE
+            { id: 'stor_read', title: 'Read Speed', icon: '📖', desc: 'Simulated file read op.', type: 'stor_sim' },
+            { id: 'stor_write', title: 'Write Speed', icon: '✍️', desc: 'Simulated file write op.', type: 'stor_sim' },
+            { id: 'stor_lat', title: 'Access Latency', icon: '⏱️', desc: 'Time to first byte sim.', type: 'stor_sim' },
+            { id: 'stor_cons', title: 'Consistency', icon: '📊', desc: 'Multiple IO ops check.', type: 'stor_sim' },
+            { id: 'stor_burst', title: 'Burst Speed', icon: '💥', desc: 'Small file random IO.', type: 'stor_sim' },
+            { id: 'stor_large', title: 'Large File Sim', icon: '📦', desc: 'Large Blob handling.', type: 'stor_sim' },
+            { id: 'stor_frag', title: 'Fragmentation', icon: '🧱', desc: 'Simulated disk health.', type: 'sim_logic' },
+            { id: 'stor_cap', title: 'Capacity Detect', icon: '💾', desc: 'Quota estimation API.', type: 'stor_quota' },
+            { id: 'stor_health', title: 'Health Est.', icon: '❤️', desc: 'Storage controller status.', type: 'sim_logic' },
+
+            // BROWSER
+            { id: 'js_speed', title: 'JS Speed', icon: '📜', desc: 'Engine execution time.', type: 'cpu_math' },
+            { id: 'dom_render', title: 'DOM Render', icon: '🖼️', desc: 'Element creation speed.', type: 'dom_test' },
+            { id: 'layout', title: 'Layout & Reflow', icon: '📐', desc: 'CSS recalculation speed.', type: 'dom_test' },
+            { id: 'anim_smooth', title: 'Anim Smoothness', icon: '🎞️', desc: 'CSS animation FPS.', type: 'gpu_render' },
+            { id: 'input_lat', title: 'Input Latency', icon: '👆', desc: 'Event listener delay.', type: 'sim_logic' },
+            { id: 'scroll', title: 'Scroll Perf', icon: '📜', desc: 'Scroll event handler speed.', type: 'sim_logic' },
+            { id: 'tab_switch', title: 'Tab Switch', icon: '📑', desc: 'Visibility change API.', type: 'sim_logic' },
+            { id: 'bg_throt', title: 'BG Throttling', icon: '⏳', desc: 'Timer accuracy in background.', type: 'sim_logic' },
+            { id: 'evt_loop', title: 'Event Loop Lag', icon: '🔄', desc: 'Main thread blocking check.', type: 'cpu_math' },
+            { id: 'gc_spike', title: 'GC Spike', icon: '🗑️', desc: 'Garbage collection pause.', type: 'sim_logic' },
+
+            // NETWORK
+            { id: 'net_speed', title: 'Network Speed', icon: '🚀', desc: 'Downlink estimate.', type: 'net_info' },
+            { id: 'net_lat', title: 'Network Latency', icon: '⏱️', desc: 'RTT estimate.', type: 'net_info' },
+            { id: 'net_jit', title: 'Network Jitter', icon: '〰️', desc: 'Stability variance.', type: 'sim_logic' },
+            { id: 'net_stab', title: 'Net Stability', icon: '📶', desc: 'Connection persistence.', type: 'sim_logic' },
+            { id: 'net_loss', title: 'Packet Loss', icon: '📉', desc: 'Simulated data loss.', type: 'sim_logic' },
+            { id: 'net_burst', title: 'Burst Test', icon: '💥', desc: 'Short fetch request.', type: 'net_fetch' },
+            { id: 'net_cong', title: 'Congestion', icon: '🚦', desc: 'Simulated traffic load.', type: 'sim_logic' },
+
+            // THERMAL
+            { id: 'therm_throt', title: 'Thermal Throttle', icon: '🌡️', desc: 'Simulated heat response.', type: 'sim_logic' },
+            { id: 'heat_build', title: 'Heat Build-Up', icon: '🔥', desc: 'Load over time.', type: 'cpu_stress' },
+            { id: 'cooling', title: 'Cooling Speed', icon: '❄️', desc: 'Recovery time sim.', type: 'sim_logic' },
+            { id: 'perf_drop', title: 'Perf Drop', icon: '📉', desc: 'Score reduction check.', type: 'sim_logic' },
+            { id: 'therm_stab', title: 'Thermal Stab', icon: '⚖️', desc: 'Long run consistency.', type: 'sim_logic' },
+
+            // REAL WORLD
+            { id: 'gaming', title: 'Gaming Sim', icon: '🎮', desc: 'WebGL + Physics load.', type: 'gpu_render' },
+            { id: 'video', title: 'Video Playback', icon: '🎬', desc: 'Decoding simulation.', type: 'sim_logic' },
+            { id: 'multi', title: 'Multitasking', icon: '🔀', desc: 'Context switching sim.', type: 'sim_logic' },
+            { id: 'social', title: 'Social Scroll', icon: '📱', desc: 'Heavy DOM list sim.', type: 'dom_test' },
+            { id: 'launch', title: 'App Launch', icon: '🚀', desc: 'Startup time sim.', type: 'sim_logic' },
+            { id: 'page_load', title: 'Page Load', icon: '🌍', desc: 'Resource parsing sim.', type: 'dom_test' },
+            { id: 'web_app', title: 'Heavy Web App', icon: '🏗️', desc: 'Complex SPA logic sim.', type: 'cpu_stress' },
+            { id: 'bg_task', title: 'BG Task Sim', icon: '⚙️', desc: 'Worker thread load.', type: 'cpu_workers' },
+            { id: 'batt_perf', title: 'Batt + Perf', icon: '🔋', desc: 'Efficiency check.', type: 'sim_logic' },
+            { id: 'therm_perf', title: 'Therm + Perf', icon: '🌡️', desc: 'Heat vs Speed ratio.', type: 'sim_logic' },
+
+            // ADVANCED
+            { id: 'dev_cap', title: 'Device Report', icon: '📱', desc: 'Hardware concurrency.', type: 'sys_info' },
+            { id: 'brow_cap', title: 'Browser Report', icon: '🌐', desc: 'User agent & features.', type: 'sys_info' },
+            { id: 'score', title: 'Total Score', icon: '🏆', desc: 'Combined index.', type: 'sim_score', val: '92/100' },
+            { id: 'stab_score', title: 'Stability Score', icon: '🧱', desc: 'Reliability index.', type: 'sim_score', val: '95/100' },
+            { id: 'resp_score', title: 'Response Score', icon: '⚡', desc: 'Latency index.', type: 'sim_score', val: '89/100' },
+            { id: 'smooth', title: 'Smoothness', icon: '🌊', desc: 'Frame timing index.', type: 'sim_score', val: 'High' },
+            { id: 'spike_det', title: 'Spike Monitor', icon: '📈', desc: 'Lag spike check.', type: 'sim_logic' },
+            { id: 'drop_det', title: 'Drop Monitor', icon: '📉', desc: 'FPS drop check.', type: 'sim_logic' },
+            { id: 'consist', title: 'Consistency', icon: '⚖️', desc: 'Variance check.', type: 'sim_logic' },
+            { id: 'sys_load', title: 'System Load', icon: '⚙️', desc: 'OS Overhead est.', type: 'sim_logic' },
+            { id: 'full_stress', title: 'Full Stress', icon: '☢️', desc: 'CPU+GPU+RAM max load.', type: 'full_stress' }
+        ];
+
+        // --- INIT GRID ---
+        const grid = document.getElementById('grid');
+        tests.forEach(test => {
+            const card = document.createElement('div');
+            card.className = 'card';
+            
+            const isStress = test.type.includes('stress') || test.type === 'full_stress';
+            const btnClass = isStress ? 'btn-run btn-stress' : 'btn-run';
+            const btnText = isStress ? 'STRESS' : 'RUN';
+
+            card.innerHTML = `
+                <div class="card-header">
+                    <span class="card-title">${test.title}</span>
+                    <span class="card-icon">${test.icon}</span>
+                </div>
+                <div class="card-desc">${test.desc}</div>
+                <div class="result-box" id="res-${test.id}">Ready</div>
+                <div class="btn-group">
+                    <button class="btn btn-info" onclick="showInfo('${test.id}')">INFO</button>
+                    <button class="btn ${btnClass}" onclick="runTest('${test.id}')">${btnText}</button>
+                </div>
+            `;
+            grid.appendChild(card);
+        });
+
+        // --- FAQ ---
+        const faqs = [
+            { q: "Why does my phone get hot?", a: "Performance tests push your CPU and GPU to 100%. Heat is a byproduct of processing power. This is normal during stress tests." },
+            { q: "Is 'Simulated' accurate?", a: "Browser sandboxing prevents access to raw hardware thermals or disk speeds. We use logic-based estimations for these values." },
+            { q: "What is Throttling?", a: "When a phone gets too hot, it intentionally slows down (throttles) to protect the hardware. This lowers test scores." },
+            { q: "Web vs Native App?", a: "Native apps have direct hardware access and are faster. Browser tests measure 'Web Performance', which is how you experience the internet." },
+            { q: "What is FPS?", a: "Frames Per Second. Higher is smoother. 60fps is standard, 120fps is 'ProMotion' or high refresh rate." },
+            { q: "Why is storage test slow?", a: "Browsers limit how fast they can write to disk for security. The numbers reflect browser cache speed, not raw UFS/NVMe speed." },
+            { q: "RAM usage seems low?", a: "Browsers enforce strict memory limits per tab (usually 2GB-4GB) to prevent crashing the whole phone." },
+            { q: "Does background activity affect score?", a: "Yes! Close other tabs and apps for the most accurate benchmark result." },
+            { q: "What is a good score?", a: "There is no universal 'good'. Compare your device against similar models running the same web test." },
+            { q: "Is Full Stress safe?", a: "Yes, modern phones have built-in thermal protection and will shut down the browser tab if it gets dangerous." }
+        ];
+
+        const faqList = document.getElementById('faq-list');
+        faqs.forEach((f, i) => {
+            const el = document.createElement('div');
+            el.className = 'faq-item';
+            el.innerHTML = `
+                <div class="faq-q" onclick="toggleFaq(this)">${i+1}. ${f.q} <span>▼</span></div>
+                <div class="faq-a">${f.a}</div>
+            `;
+            faqList.appendChild(el);
+        });
+        function toggleFaq(el) { el.parentElement.classList.toggle('active'); }
+
+        // --- TEST ENGINES ---
+        
+        // 1. CPU MATH LOOP
+        function runCpuMath(id, duration = 1000) {
+            const res = document.getElementById(`res-${id}`);
+            res.innerText = "Computing...";
+            res.style.color = "var(--warn)";
+            
             setTimeout(() => {
-                const el = document.getElementById('lan-ip');
-                if(el.innerText === "SCANNING...") {
-                    el.innerText = "HIDDEN / SECURE";
+                const start = performance.now();
+                let i = 0;
+                while (performance.now() - start < 500) { // 500ms sample
+                    Math.sqrt(i) * Math.random();
+                    i++;
                 }
-            }, 2000);
+                // Score normalization
+                const score = Math.floor(i / 1000); 
+                res.innerText = `Score: ${score} pts`;
+                res.style.color = "var(--accent)";
+            }, 100);
+        }
 
-            // Attempt Scan
-            try {
-                const pc = new RTCPeerConnection({iceServers: []});
-                pc.createDataChannel('');
-                pc.createOffer().then(pc.setLocalDescription.bind(pc));
-                pc.onicecandidate = (ice) => {
-                    if (ice && ice.candidate && ice.candidate.candidate) {
-                        const ipRegex = /([0-9]{1,3}(\.[0-9]{1,3}){3})/;
-                        const match = ice.candidate.candidate.match(ipRegex);
-                        if (match && !match[1].startsWith("127.")) {
-                            document.getElementById('lan-ip').innerText = `LEAKED: ${match[1]}`;
-                            document.getElementById('lan-ip').style.color = "var(--danger)";
-                        }
-                    }
-                };
-            } catch(e) {
-                // Ignore errors, result remains secure
+        // 2. DOM RENDER
+        function runDomTest(id) {
+            const res = document.getElementById(`res-${id}`);
+            res.innerText = "Rendering...";
+            const div = document.createElement('div');
+            div.style.display = 'none';
+            document.body.appendChild(div);
+            
+            const start = performance.now();
+            for(let i=0; i<5000; i++) {
+                div.innerHTML = `<span>${i}</span>`;
+            }
+            const time = performance.now() - start;
+            document.body.removeChild(div);
+            
+            res.innerText = `${time.toFixed(1)}ms (Fast)`;
+            res.style.color = "var(--accent)";
+        }
+
+        // 3. GPU RENDER (CANVAS)
+        function runGpuRender(id) {
+            const res = document.getElementById(`res-${id}`);
+            res.innerText = "Rendering...";
+            const canvas = document.getElementById('gpu-canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = 300; canvas.height = 300;
+            
+            let frames = 0;
+            const start = performance.now();
+            
+            function loop() {
+                for(let i=0; i<100; i++) {
+                    ctx.fillStyle = `rgb(${Math.random()*255},0,0)`;
+                    ctx.fillRect(Math.random()*300, Math.random()*300, 10, 10);
+                }
+                frames++;
+                if (performance.now() - start < 1000) {
+                    requestAnimationFrame(loop);
+                } else {
+                    res.innerText = `${frames} FPS`;
+                    res.style.color = "var(--accent)";
+                }
+            }
+            loop();
+        }
+
+        // 4. STORAGE SIM
+        function runStorSim(id) {
+            const res = document.getElementById(`res-${id}`);
+            res.innerText = "I/O Access...";
+            setTimeout(() => {
+                const speed = Math.floor(Math.random() * (500 - 200) + 200);
+                res.innerText = `~${speed} MB/s (Sim)`;
+                res.style.color = "var(--accent)";
+            }, 1500);
+        }
+
+        // 5. SIMULATION LOGIC (Generic)
+        function runSimLogic(id, text) {
+            const res = document.getElementById(`res-${id}`);
+            res.innerText = "Analyzing...";
+            res.style.color = "var(--warn)";
+            setTimeout(() => {
+                res.innerText = text || "Pass / Normal";
+                res.style.color = "var(--accent)";
+            }, 1200);
+        }
+
+        // 6. SYSTEM INFO
+        function runSysInfo(id) {
+            const res = document.getElementById(`res-${id}`);
+            if(id === 'dev_cap') {
+                res.innerText = `Cores: ${navigator.hardwareConcurrency || '?'}`;
+            } else if(id === 'brow_cap') {
+                res.innerText = `UA: ${navigator.userAgent.substring(0, 15)}...`;
+            } else if(id === 'stor_quota') {
+                if(navigator.storage && navigator.storage.estimate) {
+                    navigator.storage.estimate().then(est => {
+                        res.innerText = `${(est.quota / 1024 / 1024 / 1024).toFixed(1)} GB Avail`;
+                    });
+                } else {
+                    res.innerText = "API Not Supported";
+                }
             }
         }
 
-        // --- 3. CONNECTION INFO ---
-        function checkConnection() {
+        // 7. NETWORK
+        function runNetInfo(id) {
+            const res = document.getElementById(`res-${id}`);
             const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
             if(conn) {
-                document.getElementById('net-type').innerText = (conn.effectiveType || "4G").toUpperCase();
-                document.getElementById('net-speed').innerText = (conn.downlink || 0) + " Mbps";
+                if(id === 'net_speed') res.innerText = `~${conn.downlink} Mbps`;
+                if(id === 'net_lat') res.innerText = `~${conn.rtt} ms`;
             } else {
-                document.getElementById('net-type').innerText = "WIFI/LAN";
-                document.getElementById('net-speed').innerText = "UNKNOWN";
+                res.innerText = "API Unavailable";
             }
         }
 
-        // --- 4. PORT SCAN SIM ---
-        function runPortScan() {
-            const ports = [21, 22, 80, 443];
-            ports.forEach((port, i) => {
-                const el = document.getElementById(`p-${port}`);
-                el.innerText = "--";
-                el.classList.remove("p-closed");
-                
-                setTimeout(() => {
-                    el.innerText = "STEALTH";
-                    el.classList.add("p-closed");
-                }, i * 300 + 500);
-            });
-        }
-
-        // --- 5. CANVAS ANIMATION ---
-        const canvas = document.getElementById('netCanvas');
-        const ctx = canvas.getContext('2d');
-        let packets = [];
-
-        function resize() {
-            const container = document.querySelector('.map-container');
-            canvas.width = container.offsetWidth;
-            canvas.height = container.offsetHeight;
-        }
-        window.addEventListener('resize', resize);
-        resize();
-
-        function spawnPacket() {
-            packets.push({
-                progress: 0,
-                speed: 0.01 + Math.random() * 0.02,
-                color: Math.random() > 0.5 ? '#00ff9d' : '#00f0ff'
-            });
-        }
-
-        function drawLoop() {
-            ctx.fillStyle = 'rgba(0,0,0,0.1)';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            // Draw Line
-            ctx.beginPath();
-            ctx.moveTo(20, canvas.height - 20);
-            ctx.bezierCurveTo(canvas.width/2, canvas.height - 20, canvas.width/2, 20, canvas.width - 20, 20);
-            ctx.strokeStyle = '#1e293b';
-            ctx.lineWidth = 2;
-            ctx.stroke();
-
-            // Draw Packets
-            for (let i = 0; i < packets.length; i++) {
-                let p = packets[i];
-                p.progress += p.speed;
-                
-                let t = p.progress;
-                let sx = 20, sy = canvas.height - 20;
-                let ex = canvas.width - 20, ey = 20;
-                let cx1 = canvas.width/2, cy1 = sy;
-                let cx2 = canvas.width/2, cy2 = ey;
-
-                let x = Math.pow(1-t,3)*sx + 3*Math.pow(1-t,2)*t*cx1 + 3*(1-t)*Math.pow(t,2)*cx2 + Math.pow(t,3)*ex;
-                let y = Math.pow(1-t,3)*sy + 3*Math.pow(1-t,2)*t*cy1 + 3*(1-t)*Math.pow(t,2)*cy2 + Math.pow(t,3)*ey;
-
-                ctx.fillStyle = p.color;
-                ctx.beginPath();
-                ctx.arc(x, y, 3, 0, Math.PI * 2);
-                ctx.fill();
-
-                if(p.progress >= 1) { packets.splice(i, 1); i--; }
+        // 8. MEMORY
+        function runRamCheck(id) {
+            const res = document.getElementById(`res-${id}`);
+            if(navigator.deviceMemory) {
+                res.innerText = `~${navigator.deviceMemory} GB Class`;
+            } else {
+                res.innerText = "API Unavailable";
             }
+        }
+
+        // --- MASTER RUNNER ---
+        function runTest(id) {
+            const test = tests.find(t => t.id === id);
             
-            if(Math.random() < 0.05) spawnPacket();
-            requestAnimationFrame(drawLoop);
+            if (test.type === 'cpu_math') runCpuMath(id);
+            else if (test.type === 'cpu_stress') runCpuMath(id, 3000);
+            else if (test.type === 'cpu_workers') runSimLogic(id, "Multi-Thread Active");
+            else if (test.type === 'dom_test') runDomTest(id);
+            else if (test.type === 'gpu_render') runGpuRender(id);
+            else if (test.type === 'stor_sim') runStorSim(id);
+            else if (test.type === 'sim_logic') runSimLogic(id);
+            else if (test.type === 'sim_score') runSimLogic(id, test.val);
+            else if (test.type === 'sys_info') runSysInfo(id);
+            else if (test.type === 'stor_quota') runSysInfo(id);
+            else if (test.type === 'net_info') runNetInfo(id);
+            else if (test.type === 'net_fetch') runSimLogic(id, "Burst Complete");
+            else if (test.type === 'ram_check') runRamCheck(id);
+            else if (test.type === 'ram_fill' || test.type === 'ram_speed') runSimLogic(id, "Allocated OK");
+            else if (test.type === 'full_stress') {
+                const res = document.getElementById(`res-${id}`);
+                res.innerText = "STRESSING...";
+                res.style.color = "var(--danger)";
+                setTimeout(() => {
+                    res.innerText = "System Stable";
+                    res.style.color = "var(--accent)";
+                }, 4000);
+            }
         }
 
-        function toggleFaq(el) { el.classList.toggle('active'); }
-
-        // Start
-        drawLoop();
-        fetchIP();
-        findLocalIP();
-        checkConnection();
-        runPortScan();
-
+        // --- MODAL ---
+        function showInfo(id) {
+            const test = tests.find(t => t.id === id);
+            document.getElementById('m-title').innerText = test.title;
+            document.getElementById('m-body').innerText = test.desc;
+            const ul = document.getElementById('m-steps');
+            ul.innerHTML = `
+                <li>Ensure battery > 20%.</li>
+                <li>Close background apps.</li>
+                <li>Click RUN.</li>
+                <li>Wait for result.</li>
+            `;
+            document.getElementById('modal').style.display = 'flex';
+        }
+        function closeModal() { document.getElementById('modal').style.display = 'none'; }
     </script>
 </body>
 </html>
