@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Don Systems Visual Command</title>
+    <title>Display Tests | CheckThisPhone.com</title>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         :root { 
@@ -12,266 +12,425 @@
             --border: #2d3748; 
             --text: #a0aec0; 
             --text-bright: #e2e8f0;
-            --accent: #22d3ee; /* Cyan */
-            --secondary: #a855f7; /* Purple */
-            --success: #00ff9d; 
-            --danger: #ff0055; 
-            --warn: #ffb700; 
+            --accent: #10b981; /* Emerald */
+            --secondary: #3b82f6; /* Blue */
+            --danger: #ef4444; 
+            --warn: #f59e0b; 
         }
         
-        * { box-sizing: border-box; touch-action: none; -webkit-tap-highlight-color: transparent; user-select: none; }
+        * { box-sizing: border-box; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
         body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; padding: 20px; margin: 0; min-height: 100vh; font-size: 14px; overflow-x: hidden; }
         
         /* HEADER */
-        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 15px; margin-bottom: 20px; }
-        .logo { font-family: 'JetBrains Mono', monospace; font-weight: 800; font-size: 18px; color: var(--text-bright); letter-spacing: -1px; }
-        .logo span { color: var(--accent); }
-        .live-badge { display: flex; align-items: center; gap: 6px; font-size: 10px; color: var(--accent); font-weight: 700; background: rgba(34, 211, 238, 0.1); padding: 4px 8px; border-radius: 4px; border: 1px solid rgba(34, 211, 238, 0.2); }
-        .blink { animation: blink 1s infinite; width: 6px; height: 6px; background: var(--accent); border-radius: 50%; }
-        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0; } 100% { opacity: 1; } }
+        .header { text-align: center; margin-bottom: 40px; border-bottom: 1px solid var(--border); padding-bottom: 20px; }
+        .logo { font-family: 'JetBrains Mono', monospace; font-weight: 800; font-size: 24px; color: var(--text-bright); letter-spacing: -1px; margin-bottom: 10px; }
+        .logo span { color: var(--secondary); }
+        .subtitle { font-size: 12px; color: var(--text); text-transform: uppercase; letter-spacing: 1px; }
 
-        /* HERO REFRESH RATE */
-        .hz-container { 
-            background: radial-gradient(circle at center, #0f1820 0%, #000 70%); 
-            border: 1px solid var(--border); border-radius: 16px; padding: 30px; margin-bottom: 20px; position: relative; overflow: hidden;
-            display: flex; flex-direction: column; align-items: center; justify-content: center; height: 180px;
+        /* GRID LAYOUT */
+        .test-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
+            gap: 20px; 
+            max-width: 1200px; 
+            margin: 0 auto; 
         }
-        .hz-val { font-family: 'JetBrains Mono'; font-size: 48px; font-weight: 800; color: white; text-shadow: 0 0 20px var(--accent); line-height: 1; }
-        .hz-label { font-size: 12px; color: var(--accent); margin-top: 5px; text-transform: uppercase; letter-spacing: 2px; }
 
-        /* INSTRUCTION PANELS */
-        .info-panel { background: rgba(34, 211, 238, 0.05); border-left: 3px solid var(--accent); padding: 15px; margin-bottom: 15px; border-radius: 0 8px 8px 0; font-size: 12px; line-height: 1.5; color: var(--text-bright); }
-        .info-title { font-weight: 800; color: var(--accent); text-transform: uppercase; margin-bottom: 5px; display: block; letter-spacing: 1px; }
+        /* TEST CARD */
+        .card { 
+            background: var(--panel); 
+            border: 1px solid var(--border); 
+            border-radius: 12px; 
+            padding: 20px; 
+            display: flex; 
+            flex-direction: column; 
+            transition: 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+        .card:hover { border-color: var(--secondary); transform: translateY(-2px); }
+        
+        .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
+        .card-title { font-family: 'JetBrains Mono'; font-weight: 700; color: var(--text-bright); font-size: 13px; }
+        .card-icon { font-size: 18px; opacity: 0.8; }
+        
+        .card-desc { font-size: 12px; color: var(--text); margin-bottom: 20px; line-height: 1.5; flex-grow: 1; }
+        
+        .result-box { 
+            background: rgba(0,0,0,0.3); 
+            border: 1px solid var(--border); 
+            border-radius: 8px; 
+            padding: 10px; 
+            margin-bottom: 15px; 
+            font-family: 'JetBrains Mono'; 
+            font-size: 11px; 
+            color: var(--secondary); 
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .btn-group { display: flex; gap: 10px; }
+        
+        .btn { 
+            flex: 1; 
+            padding: 10px; 
+            border-radius: 6px; 
+            font-size: 11px; 
+            font-weight: 700; 
+            cursor: pointer; 
+            text-transform: uppercase; 
+            transition: 0.2s; 
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--text-bright);
+        }
+        
+        .btn-run { background: var(--secondary); color: white; border: none; }
+        .btn-run:hover { opacity: 0.9; }
+        .btn-info:hover { border-color: var(--text-bright); }
 
-        /* COLOR GRID */
-        .color-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 20px; }
-        .color-btn { height: 50px; border-radius: 8px; border: 2px solid var(--border); cursor: pointer; transition: 0.1s; }
-        .color-btn:active { transform: scale(0.9); }
-        .c-red { background: #ff0000; }
-        .c-green { background: #00ff00; }
-        .c-blue { background: #0000ff; }
-        .c-white { background: #ffffff; }
-        .c-black { background: #000000; border-color: #333; }
-
-        /* FULLSCREEN OVERLAY */
-        #pixel-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 9999;
-            display: none; cursor: pointer;
+        /* FULLSCREEN OVERLAY SYSTEM */
+        .fs-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; z-index: 9999; display: none;
+            flex-direction: column; justify-content: center; align-items: center;
+            cursor: pointer;
+        }
+        .fs-content { width: 100%; height: 100%; position: relative; }
+        .fs-msg { 
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+            color: rgba(255,255,255,0.5); font-family: 'JetBrains Mono'; font-size: 12px; pointer-events: none;
+            background: rgba(0,0,0,0.5); padding: 10px; border-radius: 8px;
+        }
+        .fs-close-hint {
+            position: absolute; bottom: 20px; left: 0; width: 100%; text-align: center;
+            color: rgba(255,255,255,0.3); font-size: 10px; pointer-events: none;
         }
 
         /* TOUCH CANVAS */
-        .touch-zone {
-            width: 100%; height: 250px; background: #111; border: 1px dashed var(--border); border-radius: 12px;
-            position: relative; overflow: hidden; cursor: crosshair; touch-action: none;
+        canvas { touch-action: none; width: 100%; height: 100%; display: block; }
+        
+        /* MOVING OBJECTS FOR MOTION TESTS */
+        .mover { 
+            position: absolute; width: 50px; height: 50px; background: white; 
+            animation: moveX 2s linear infinite alternate; 
         }
-        canvas { width: 100%; height: 100%; }
-        .clear-btn { position: absolute; bottom: 10px; right: 10px; background: var(--panel); border: 1px solid var(--border); color: var(--text); padding: 5px 10px; border-radius: 6px; font-size: 10px; cursor: pointer; }
+        @keyframes moveX { from { left: 0; } to { left: calc(100% - 50px); } }
 
-        /* FAQ ACCORDION */
-        .faq-section { display: grid; gap: 10px; margin-top: 30px; }
-        .faq-item { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
-        .faq-q { padding: 15px; font-weight: 700; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .faq-q:hover { color: var(--accent); }
+        /* INSTRUCTION MODAL */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); z-index: 1000;
+            display: none; justify-content: center; align-items: center;
+            backdrop-filter: blur(5px);
+        }
+        .modal {
+            background: var(--panel); border: 1px solid var(--secondary); border-radius: 12px;
+            padding: 30px; max-width: 500px; width: 90%;
+            box-shadow: 0 0 30px rgba(59, 130, 246, 0.2);
+        }
+        .modal-title { font-family: 'JetBrains Mono'; font-size: 18px; color: var(--secondary); margin-bottom: 15px; }
+        .modal-body { font-size: 13px; line-height: 1.6; color: var(--text-bright); margin-bottom: 25px; }
+        .modal-steps { margin-left: 20px; margin-bottom: 20px; color: var(--text); font-size: 12px; }
+        .modal-close { background: var(--border); color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; float: right; font-weight: 700; }
+
+        /* FAQ SECTION */
+        .faq-container { max-width: 800px; margin: 60px auto 20px auto; }
+        .faq-header { font-family: 'JetBrains Mono'; font-size: 16px; color: var(--secondary); margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+        .faq-item { background: var(--panel); border: 1px solid var(--border); margin-bottom: 10px; border-radius: 8px; overflow: hidden; }
+        .faq-q { padding: 15px; cursor: pointer; font-weight: 700; display: flex; justify-content: space-between; font-size: 12px; color: var(--text-bright); }
         .faq-a { padding: 0 15px 15px 15px; color: var(--text); font-size: 12px; line-height: 1.5; display: none; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px; }
-        .faq-icon { font-size: 10px; transition: 0.2s; }
         .faq-item.active .faq-a { display: block; }
-        .faq-item.active .faq-icon { transform: rotate(180deg); color: var(--accent); }
-
-        .back-btn { display: block; text-align: center; margin-top: 20px; color: var(--text); text-decoration: none; font-weight: 700; padding: 15px; background: var(--panel); border-radius: 12px; }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <div class="logo">DON<span>DISPLAY</span></div>
-        <div class="live-badge"><div class="blink"></div> PANEL ACTIVE</div>
+        <div class="logo">CHECK<span>DISPLAY</span></div>
+        <div class="subtitle">Browser-Based Screen Diagnostics</div>
     </div>
 
-    <div class="hz-container">
-        <div class="hz-val" id="hz-val">--</div>
-        <div class="hz-label">REFRESH RATE (FPS)</div>
+    <div class="test-grid" id="grid"></div>
+
+    <div class="faq-container">
+        <div class="faq-header">DISPLAY FAQ</div>
+        <div id="faq-list"></div>
     </div>
 
-    <div class="info-panel">
-        <span class="info-title">1. DEAD PIXEL CHECK</span>
-        Tap a color below to fill the screen. Look closely for any tiny dots that *don't* change color.
-        
-        <br><strong>Stuck:</strong> Red/Green/Blue dot. <br><strong>Dead:</strong> Black dot.
+    <div class="modal-overlay" id="modal">
+        <div class="modal">
+            <div class="modal-title" id="m-title"></div>
+            <div class="modal-body" id="m-body"></div>
+            <ul class="modal-steps" id="m-steps"></ul>
+            <button class="modal-close" onclick="closeModal()">CLOSE</button>
+        </div>
     </div>
 
-    <div class="color-grid">
-        <div class="color-btn c-red" onclick="openOverlay('red')"></div>
-        <div class="color-btn c-green" onclick="openOverlay('green')"></div>
-        <div class="color-btn c-blue" onclick="openOverlay('blue')"></div>
-        <div class="color-btn c-white" onclick="openOverlay('white')"></div>
-        <div class="color-btn c-black" onclick="openOverlay('black')"></div>
+    <div class="fs-overlay" id="fs-overlay" onclick="closeFullscreen()">
+        <div class="fs-content" id="fs-content"></div>
+        <div class="fs-msg" id="fs-msg">Tap to Exit</div>
+        <div class="fs-close-hint">Touch screen to close test</div>
     </div>
-
-    <div id="pixel-overlay" onclick="closeOverlay()"></div>
-
-    <div class="info-panel">
-        <span class="info-title">2. DIGITIZER HEALTH</span>
-        Draw lines across the entire box below. If a line breaks or jumps, you have a "Dead Zone" in your touchscreen.
-    </div>
-
-    <div class="touch-zone">
-        <canvas id="touchCanvas"></canvas>
-        <button class="clear-btn" onclick="clearCanvas()">RESET</button>
-    </div>
-
-    <h3 style="font-size: 14px; margin-bottom: 15px; color: var(--text-bright);">FAQ: SCREENS & DISPLAY</h3>
-    <div class="faq-section">
-        
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">1. What is "Burn-In"? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">On OLED screens, displaying the same image (like a status bar) for hours can permanently "burn" a ghost image into the pixels.</div>
-        </div>
-
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">2. 60Hz vs 120Hz? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">60Hz updates 60 times a second. 120Hz is twice as fast, making scrolling and animations look incredibly smooth.</div>
-        </div>
-
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">3. What is a "Dead Pixel"? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">A pixel that receives no power and stays black. It cannot be fixed.</div>
-        </div>
-
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">4. What is a "Stuck Pixel"? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">A pixel stuck displaying one color (usually Red, Green, or Blue). Sometimes, flashing colors rapidly can "unstuck" it.</div>
-        </div>
-
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">5. Why does Black look Gray? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">You have an LCD screen (backlit). OLED screens (like iPhone Pro/Samsung S) turn off black pixels completely for "True Black."</div>
-        </div>
-
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">6. What is "Ghost Touch"? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">When the screen registers a tap you didn't make. This is often caused by a cheap charger or a damaged digitizer.</div>
-        </div>
-
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">7. Does brightness affect battery? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">Yes, massively. The screen is the #1 battery drain. Lowering brightness to 50% can double your battery life.</div>
-        </div>
-
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">8. What is "PPI"? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">Pixels Per Inch. Higher PPI means sharper text. Anything above 400 PPI is considered "Retina" quality (invisible pixels).</div>
-        </div>
-
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">9. What is "HDR"? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">High Dynamic Range. It allows the screen to get much brighter for highlights (sun/explosions) while keeping shadows dark.</div>
-        </div>
-
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">10. Can I fix a cracked screen? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">No software can fix hardware damage. You must replace the glass digitizer assembly.</div>
-        </div>
-
-    </div>
-
-    <a href="../index.html" class="back-btn">EXIT VISUAL COMMAND</a>
 
     <script>
-        // --- 1. HZ COUNTER ---
-        let lastTime = performance.now();
-        let frames = 0;
-        
-        function countHz() {
-            const now = performance.now();
-            frames++;
+        // --- 1. DATA: ALL TESTS ---
+        const tests = [
+            // PIXEL & UNIFORMITY CHECKS
+            { id: 'dead', title: 'Dead Pixel Test', icon: '⬛', desc: 'Cycles RGB colors to spot dead (black) pixels.', type: 'visual' },
+            { id: 'stuck', title: 'Stuck Pixel Test', icon: '🟦', desc: 'Flashes colors to identify stuck (colored) pixels.', type: 'visual' },
+            { id: 'white', title: 'White Screen', icon: '⬜', desc: 'Checks brightness uniformity and yellow tints.', type: 'visual' },
+            { id: 'black', title: 'Black Screen', icon: '🌑', desc: 'Checks for backlight bleed (LCD) or true black (OLED).', type: 'visual' },
+            { id: 'red', title: 'Red Screen', icon: '🟥', desc: 'Checks red sub-pixels.', type: 'visual' },
+            { id: 'green', title: 'Green Screen', icon: '🟩', desc: 'Checks green sub-pixels.', type: 'visual' },
+            { id: 'blue', title: 'Blue Screen', icon: '🟦', desc: 'Checks blue sub-pixels.', type: 'visual' },
             
-            if (now - lastTime >= 1000) {
-                document.getElementById('hz-val').innerText = frames;
-                frames = 0;
-                lastTime = now;
+            // GRADIENTS & COLOR
+            { id: 'banding', title: 'Gradient Banding', icon: '🌈', desc: 'Tests color depth. Look for smooth transitions vs distinct lines.', type: 'visual' },
+            { id: 'contrast', title: 'Contrast Test', icon: '🌗', desc: 'Displays grey bars to check black-level distinction.', type: 'visual' },
+            { id: 'saturation', title: 'Saturation Test', icon: '🎨', desc: 'Checks color vibrancy.', type: 'visual' },
+            { id: 'gamma', title: 'Gamma Test', icon: '📊', desc: 'Visual pattern to check gamma calibration.', type: 'visual' },
+            { id: 'invert', title: 'Color Inversion', icon: '🔄', desc: 'Inverts screen colors logic check.', type: 'visual' },
+
+            // TOUCH & RESPONSE
+            { id: 'touch', title: 'Touchscreen Test', icon: '👆', desc: 'Draw on screen to find dead zones.', type: 'touch' },
+            { id: 'multi', title: 'Multi-Touch Test', icon: '🖐️', desc: 'Detects how many fingers your screen supports.', type: 'touch' },
+            { id: 'ghost', title: 'Ghost Touch', icon: '👻', desc: 'Leave screen idle to see if it registers fake taps.', type: 'touch' },
+            { id: 'refresh', title: 'Refresh Rate', icon: '🔄', desc: 'Measures Hz (60vs120) via FPS counter.', type: 'logic' },
+            { id: 'motion', title: 'Motion Blur', icon: '🏎️', desc: 'Fast moving object to check for trails/ghosting.', type: 'visual' },
+            
+            // BRIGHTNESS & FLICKER
+            { id: 'flicker', title: 'Flicker Test', icon: '⚡', desc: 'Pattern to detect PWM flickering at low brightness.', type: 'visual' },
+            { id: 'pwm', title: 'PWM Detection', icon: '📷', desc: 'Use another camera to see banding lines.', type: 'manual' },
+            { id: 'burn', title: 'Burn-In Check', icon: '🔥', desc: 'Grey background to reveal OLED ghost images.', type: 'visual' },
+            
+            // SPECS & LOGIC
+            { id: 'res', title: 'Resolution', icon: '📏', desc: 'Detects logical viewport resolution.', type: 'logic' },
+            { id: 'dpr', title: 'Pixel Ratio', icon: '📱', desc: 'Detects Device Pixel Ratio (Retina/High-DPI).', type: 'logic' },
+            { id: 'hdr', title: 'HDR Capability', icon: '🔆', desc: 'Checks if browser reports HDR support.', type: 'logic' },
+            { id: 'gamut', title: 'Color Gamut', icon: '🎨', desc: 'Checks for P3 wide color support.', type: 'logic' },
+            
+            // PATTERNS
+            { id: 'grid', title: 'Grid Alignment', icon: 'fff', desc: 'Checks screen geometry and distortion.', type: 'visual' },
+            { id: 'sharpness', title: 'Sharpness Test', icon: '✏️', desc: 'Fine text and lines to check rendering clarity.', type: 'visual' },
+            { id: 'moire', title: 'Moiré Pattern', icon: '🌀', desc: 'Interference pattern to check resolution limits.', type: 'visual' },
+            { id: 'checker', title: 'Checkerboard', icon: '🏁', desc: 'Contrast and sharpness check.', type: 'visual' }
+        ];
+
+        // --- 2. RENDER GRID ---
+        const grid = document.getElementById('grid');
+        tests.forEach(test => {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.innerHTML = `
+                <div class="card-header">
+                    <span class="card-title">${test.title}</span>
+                    <span class="card-icon">${test.icon}</span>
+                </div>
+                <div class="card-desc">${test.desc}</div>
+                <div class="result-box" id="res-${test.id}">Ready</div>
+                <div class="btn-group">
+                    <button class="btn btn-info" onclick="showInfo('${test.id}')">INFO</button>
+                    <button class="btn btn-run" onclick="runTest('${test.id}')">RUN</button>
+                </div>
+            `;
+            grid.appendChild(card);
+        });
+
+        // --- 3. FAQ SECTION ---
+        const faqs = [
+            { q: "What is a dead pixel?", a: "A pixel that doesn't light up (stays black). It is a hardware defect and usually cannot be fixed." },
+            { q: "What is a stuck pixel?", a: "A pixel stuck on one color (Red, Green, or Blue). Sometimes rapid color flashing can unstuck it." },
+            { q: "What is Burn-In?", a: "Permanent discoloration on OLED screens caused by static images (like status bars) displayed for too long." },
+            { q: "60Hz vs 120Hz?", a: "120Hz refreshes the image twice as fast, resulting in smoother scrolling and animations." },
+            { q: "What is PWM Flicker?", a: "Pulse Width Modulation. Screens flash on/off rapidly to lower brightness. Some people are sensitive to this and get headaches." },
+            { q: "What is Backlight Bleed?", a: "On LCD screens, light leaking from the edges of the bezel, visible on dark screens." },
+            { q: "Ghost Touch?", a: "When the phone registers touches you didn't make. Often caused by bad chargers or damaged digitizers." },
+            { q: "IPS vs OLED?", a: "OLED has perfect blacks and infinite contrast. IPS (LCD) has no burn-in risk but greyer blacks." },
+            { q: "What is HDR?", a: "High Dynamic Range. Brighter whites and deeper blacks for more realistic video playback." },
+            { q: "Are these tests accurate?", a: "Yes, they use standard web technologies to display patterns. Hardware defects will be visible to your eye." }
+        ];
+
+        const faqList = document.getElementById('faq-list');
+        faqs.forEach((f, i) => {
+            const el = document.createElement('div');
+            el.className = 'faq-item';
+            el.innerHTML = `
+                <div class="faq-q" onclick="toggleFaq(this)">${i+1}. ${f.q} <span>▼</span></div>
+                <div class="faq-a">${f.a}</div>
+            `;
+            faqList.appendChild(el);
+        });
+
+        function toggleFaq(el) { el.parentElement.classList.toggle('active'); }
+
+        // --- 4. TEST RUNNER ---
+        function runTest(id) {
+            const overlay = document.getElementById('fs-overlay');
+            const content = document.getElementById('fs-content');
+            const res = document.getElementById(`res-${id}`);
+
+            // Reset Overlay
+            content.innerHTML = '';
+            content.style.background = '';
+            content.className = 'fs-content';
+            
+            // --- LOGIC TESTS (No Overlay) ---
+            if(id === 'res') {
+                res.innerText = `${window.screen.width} x ${window.screen.height}`;
+                return;
+            }
+            if(id === 'dpr') {
+                res.innerText = `Ratio: ${window.devicePixelRatio.toFixed(2)}`;
+                return;
+            }
+            if(id === 'hdr') {
+                const hdr = window.matchMedia('(dynamic-range: high)').matches;
+                res.innerText = hdr ? "HDR Supported" : "SDR Only";
+                return;
+            }
+            if(id === 'gamut') {
+                const p3 = window.matchMedia('(color-gamut: p3)').matches;
+                res.innerText = p3 ? "Wide P3 Gamut" : "sRGB Standard";
+                return;
+            }
+            if(id === 'refresh') {
+                res.innerText = "Measuring...";
+                measureFPS(res);
+                return;
+            }
+
+            // --- VISUAL TESTS (Fullscreen Overlay) ---
+            overlay.style.display = 'flex';
+            requestFullScreen(overlay);
+
+            if(id === 'white') content.style.background = '#ffffff';
+            if(id === 'black' || id === 'dead') content.style.background = '#000000';
+            if(id === 'red') content.style.background = '#ff0000';
+            if(id === 'green') content.style.background = '#00ff00';
+            if(id === 'blue') content.style.background = '#0000ff';
+            
+            if(id === 'stuck') {
+                content.style.animation = "stuckFlash 0.5s infinite";
+                let style = document.createElement('style');
+                style.innerHTML = `@keyframes stuckFlash { 0% {background:red;} 33% {background:green;} 66% {background:blue;} }`;
+                content.appendChild(style);
+            }
+
+            if(id === 'banding') content.style.background = 'linear-gradient(to right, #000, #fff)';
+            if(id === 'contrast') {
+                content.style.background = '#000';
+                content.innerHTML = `<div style="display:flex; height:100%;"><div style="flex:1; background:#111;"></div><div style="flex:1; background:#222;"></div><div style="flex:1; background:#333;"></div></div>`;
+            }
+            if(id === 'saturation') {
+                content.style.background = 'linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet)';
+            }
+            if(id === 'checker') {
+                content.style.background = 'conic-gradient(#000 0.25turn, #fff 0.25turn 0.5turn, #000 0.5turn 0.75turn, #fff 0.75turn)';
+                content.style.backgroundSize = '50px 50px';
             }
             
-            requestAnimationFrame(countHz);
-        }
-        requestAnimationFrame(countHz);
+            // MOTION
+            if(id === 'motion') {
+                content.style.background = '#333';
+                content.innerHTML = `<div class="mover"></div>`;
+            }
 
-        // --- 2. DEAD PIXEL OVERLAY ---
-        function openOverlay(color) {
-            const ol = document.getElementById('pixel-overlay');
-            ol.style.display = 'block';
-            ol.style.backgroundColor = color === 'black' ? '#000' : 
-                                     color === 'white' ? '#fff' : 
-                                     color === 'red' ? '#f00' : 
-                                     color === 'green' ? '#0f0' : '#00f';
-            
-            // Enter Fullscreen for better check
-            if (document.documentElement.requestFullscreen) {
-                document.documentElement.requestFullscreen();
+            // TOUCH CANVAS
+            if(id === 'touch' || id === 'multi') {
+                content.innerHTML = '<canvas id="touchCanvas"></canvas>';
+                initTouchCanvas(id, res);
+                document.getElementById('fs-msg').innerText = "Draw / Tap";
             }
         }
 
-        function closeOverlay() {
-            document.getElementById('pixel-overlay').style.display = 'none';
-            if (document.exitFullscreen) {
-                document.exitFullscreen();
-            }
+        // --- 5. HELPERS ---
+        function requestFullScreen(el) {
+            if(el.requestFullscreen) el.requestFullscreen();
+            else if(el.webkitRequestFullscreen) el.webkitRequestFullscreen();
         }
 
-        // --- 3. TOUCH CANVAS ---
-        const canvas = document.getElementById('touchCanvas');
-        const ctx = canvas.getContext('2d');
-        let drawing = false;
+        function closeFullscreen() {
+            document.getElementById('fs-overlay').style.display = 'none';
+            if(document.exitFullscreen) document.exitFullscreen();
+        }
 
-        function resizeCanvas() {
-            const rect = canvas.parentElement.getBoundingClientRect();
-            canvas.width = rect.width;
-            canvas.height = rect.height;
-            
-            // Style setup
-            ctx.lineWidth = 4;
+        function measureFPS(output) {
+            let frames = 0;
+            let start = performance.now();
+            function loop() {
+                frames++;
+                if(performance.now() - start >= 1000) {
+                    output.innerText = `${frames} Hz`;
+                } else {
+                    requestAnimationFrame(loop);
+                }
+            }
+            loop();
+        }
+
+        function initTouchCanvas(mode, resBox) {
+            const canvas = document.getElementById('touchCanvas');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            const ctx = canvas.getContext('2d');
+            ctx.strokeStyle = '#3b82f6';
+            ctx.lineWidth = 3;
             ctx.lineCap = 'round';
-            ctx.strokeStyle = '#22d3ee'; // Cyan
-        }
-        window.addEventListener('resize', resizeCanvas);
-        resizeCanvas();
 
-        function startDraw(e) {
-            drawing = true;
-            draw(e);
-        }
-        function endDraw() {
-            drawing = false;
-            ctx.beginPath(); // Reset path
-        }
-        function draw(e) {
-            if (!drawing) return;
-            
-            e.preventDefault(); // Stop scrolling
-            
-            const rect = canvas.getBoundingClientRect();
-            const x = (e.clientX || e.touches[0].clientX) - rect.left;
-            const y = (e.clientY || e.touches[0].clientY) - rect.top;
+            // Prevent closing on draw
+            canvas.onclick = (e) => e.stopPropagation();
 
-            ctx.lineTo(x, y);
-            ctx.stroke();
-            ctx.beginPath();
-            ctx.moveTo(x, y);
+            let fingers = 0;
+
+            canvas.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                fingers = e.touches.length;
+                if(mode === 'multi') resBox.innerText = `${fingers} Fingers`;
+                draw(e, ctx);
+            }, {passive: false});
+
+            canvas.addEventListener('touchmove', (e) => {
+                e.preventDefault();
+                draw(e, ctx);
+            }, {passive: false});
+
+            canvas.addEventListener('touchend', (e) => {
+                fingers = e.touches.length;
+                if(mode === 'multi') resBox.innerText = fingers > 0 ? `${fingers} Fingers` : "Lifted";
+            });
         }
 
-        canvas.addEventListener('mousedown', startDraw);
-        canvas.addEventListener('mouseup', endDraw);
-        canvas.addEventListener('mousemove', draw);
-        
-        canvas.addEventListener('touchstart', startDraw);
-        canvas.addEventListener('touchend', endDraw);
-        canvas.addEventListener('touchmove', draw);
-
-        function clearCanvas() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        function draw(e, ctx) {
+            for(let i=0; i<e.touches.length; i++) {
+                const t = e.touches[i];
+                ctx.beginPath();
+                ctx.arc(t.clientX, t.clientY, 10, 0, Math.PI*2);
+                ctx.fillStyle = `hsl(${i * 60}, 100%, 50%)`;
+                ctx.fill();
+            }
         }
 
-        function toggleFaq(el) { el.classList.toggle('active'); }
+        // --- 6. MODAL ---
+        const instructions = {
+            dead: { t: "Dead Pixel Test", b: "This test displays solid colors. Look closely for tiny black dots that do not light up.", s: ["Clean screen.", "Run test.", "Scan for black dots."] },
+            touch: { t: "Touch Test", b: "Draw lines across the entire screen. If lines break or don't appear in certain spots, you have a dead zone.", s: ["Run test.", "Drag finger everywhere.", "Check for gaps."] },
+            refresh: { t: "Refresh Rate", b: "Calculates how many frames per second your browser can render.", s: ["Click Run.", "Wait 1 second.", "Read value (60/90/120)."] },
+            // Default
+            default: { t: "Visual Check", b: "This displays a pattern or color to help you spot hardware defects.", s: ["Click Run.", "Observe screen.", "Tap to exit."] }
+        };
 
+        function showInfo(id) {
+            const data = instructions[id] || instructions.default;
+            document.getElementById('m-title').innerText = data.t;
+            document.getElementById('m-body').innerText = data.b;
+            const ul = document.getElementById('m-steps');
+            ul.innerHTML = '';
+            data.s.forEach(s => ul.innerHTML += `<li>${s}</li>`);
+            document.getElementById('modal').style.display = 'flex';
+        }
+
+        function closeModal() { document.getElementById('modal').style.display = 'none'; }
     </script>
 </body>
 </html>
