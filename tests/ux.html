@@ -2,280 +2,281 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UX Diagnostics | CheckThisPhone</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Don Systems UX Lab</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --bg-dark: #0f172a;
-            --surface-dark: #1e293b;
-            --accent: #e11d48; /* Rose/Red for UX */
-            --accent-dim: rgba(225, 29, 72, 0.2);
-            --text-main: #f8fafc;
-            --text-dim: #94a3b8;
-            --success: #10b981;
-            --danger: #ef4444;
-            --warning: #f59e0b;
+        :root { 
+            --bg: #050505; 
+            --panel: #0f1218; 
+            --border: #2d3748; 
+            --text: #a0aec0; 
+            --text-bright: #e2e8f0;
+            --accent: #fcd34d; /* Cyber Yellow */
+            --secondary: #3b82f6; /* Electric Blue */
+            --success: #00ff9d; 
+            --danger: #ff0055; 
         }
-
-        body {
-            background-color: var(--bg-dark);
-            color: var(--text-main);
-            font-family: 'Inter', sans-serif;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-        }
-
-        .container {
-            width: 100%;
-            max-width: 600px;
-        }
-
-        /* HEADER */
-        .header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 25px;
-        }
-        .back-btn {
-            background: none;
-            border: none;
-            color: var(--text-dim);
-            font-size: 24px;
-            cursor: pointer;
-            padding: 0;
-            margin-right: 15px;
-        }
-        .page-title { font-size: 20px; font-weight: 700; margin: 0; }
-
-        /* FPS HERO */
-        .fps-box {
-            background: var(--surface-dark);
-            border: 1px solid #334155;
-            border-radius: 12px;
-            padding: 20px;
-            text-align: center;
-            margin-bottom: 20px;
-            position: relative;
-            overflow: hidden;
-        }
-        .fps-val { font-size: 42px; font-weight: 800; color: var(--success); }
-        .fps-label { font-size: 12px; color: var(--text-dim); text-transform: uppercase; }
         
-        .spinner {
-            width: 30px; height: 30px;
-            border: 3px solid var(--accent);
-            border-top-color: transparent;
-            border-radius: 50%;
-            margin: 10px auto;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        * { box-sizing: border-box; touch-action: manipulation; }
+        body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; padding: 20px; margin: 0; min-height: 100vh; font-size: 14px; overflow-x: hidden; }
+        
+        /* HEADER */
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 15px; margin-bottom: 20px; }
+        .logo { font-family: 'JetBrains Mono', monospace; font-weight: 800; font-size: 18px; color: var(--text-bright); letter-spacing: -1px; }
+        .logo span { color: var(--accent); }
+        .live-badge { display: flex; align-items: center; gap: 6px; font-size: 10px; color: var(--secondary); font-weight: 700; background: rgba(59, 130, 246, 0.1); padding: 4px 8px; border-radius: 4px; border: 1px solid rgba(59, 130, 246, 0.2); }
+        .blink { animation: blink 1s infinite; width: 6px; height: 6px; background: var(--secondary); border-radius: 50%; }
+        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0; } 100% { opacity: 1; } }
 
-        /* LATENCY TAPPER */
-        .latency-area {
-            background: #0f172a;
-            border: 2px dashed #475569;
-            border-radius: 12px;
-            height: 120px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            margin-bottom: 25px;
-            user-select: none;
-            transition: background 0.05s;
+        /* REFLEX HERO */
+        .reflex-box { 
+            background: #1a1a2e; border: 2px dashed var(--border); border-radius: 16px; height: 200px; margin-bottom: 20px; 
+            display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; transition: 0.1s; position: relative; overflow: hidden;
         }
-        .latency-area:active { background: #334155; border-color: var(--accent); }
-        .ms-display { font-size: 24px; font-weight: 700; }
+        .reflex-box.ready { background: var(--danger); border-color: var(--danger); }
+        .reflex-box.go { background: var(--success); border-color: var(--success); }
+        
+        .reflex-title { font-size: 24px; font-weight: 800; color: white; pointer-events: none; }
+        .reflex-sub { font-size: 12px; color: rgba(255,255,255,0.7); pointer-events: none; margin-top: 5px; }
 
-        /* KEYBOARD TEST */
-        .keyboard-box {
-            background: var(--surface-dark);
-            padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-        }
-        input.test-input {
-            width: 100%;
-            background: #0f172a;
-            border: 1px solid #334155;
-            color: white;
-            padding: 12px;
-            border-radius: 8px;
-            margin-top: 10px;
-            font-size: 16px;
-        }
+        /* DATA GRID */
+        .grid-master { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+        
+        .stat-card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 15px; }
+        .stat-label { font-size: 10px; text-transform: uppercase; color: var(--text); display: block; margin-bottom: 4px; letter-spacing: 1px; }
+        .stat-val { font-family: 'JetBrains Mono', monospace; font-size: 18px; font-weight: 700; color: var(--text-bright); }
+        .unit { font-size: 12px; color: var(--text); font-weight: 400; }
 
         /* SCROLL JANK TEST */
-        .scroll-test {
-            height: 100px;
-            overflow-y: scroll;
-            background: #0f172a;
-            border: 1px solid #334155;
-            border-radius: 8px;
-            padding: 10px;
-            margin-bottom: 20px;
+        .scroll-container { 
+            height: 150px; overflow-y: scroll; background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 10px; margin-bottom: 20px; position: relative;
         }
-        .scroll-item { padding: 10px; border-bottom: 1px solid #1e293b; font-size: 12px; }
+        .scroll-item { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); color: var(--text); font-size: 12px; display: flex; justify-content: space-between; }
+        .fps-overlay { position: absolute; top: 10px; right: 20px; background: #000; padding: 4px 8px; border-radius: 6px; font-family: 'JetBrains Mono'; font-size: 12px; color: var(--accent); border: 1px solid var(--accent); pointer-events: none; }
 
-        /* STATUS BADGE */
-        .badge {
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 10px;
-            font-weight: 700;
+        /* TARGET PRACTICE */
+        .target-zone { 
+            height: 200px; background: #000; border: 1px solid var(--border); border-radius: 12px; position: relative; margin-bottom: 20px; overflow: hidden; cursor: crosshair;
         }
-        .badge.pass { background: rgba(16, 185, 129, 0.2); color: var(--success); }
-        .badge.fail { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
+        .target { 
+            position: absolute; width: 40px; height: 40px; background: var(--secondary); border-radius: 50%; 
+            display: flex; justify-content: center; align-items: center; box-shadow: 0 0 15px var(--secondary);
+            transition: transform 0.1s;
+        }
+        .target::after { content: ""; width: 10px; height: 10px; background: white; border-radius: 50%; }
+        .target:active { transform: scale(0.9); background: white; }
 
+        /* TERMINAL */
+        .terminal { background: #000; border: 1px solid var(--border); border-radius: 8px; padding: 10px; height: 120px; overflow: hidden; font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--accent); position: relative; }
+        .log-line { margin-bottom: 2px; opacity: 0.8; }
+        .terminal::after { content: ""; position: absolute; bottom: 0; left: 0; width: 100%; height: 20px; background: linear-gradient(to top, #000, transparent); }
+
+        .back-btn { display: block; text-align: center; margin-top: 20px; color: var(--text); text-decoration: none; font-weight: 700; padding: 15px; background: var(--panel); border-radius: 12px; }
+        
+        .action-btn { background: var(--panel); border: 1px solid var(--border); color: var(--text-bright); width: 100%; padding: 15px; border-radius: 12px; font-weight: 700; margin-bottom: 10px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: 0.2s; }
+        .action-btn:hover { border-color: var(--accent); color: var(--accent); }
     </style>
 </head>
 <body>
 
-<div class="container">
     <div class="header">
-        <button class="back-btn" onclick="window.location.href='index.html'">←</button>
-        <h1 class="page-title">User Experience</h1>
+        <div class="logo">DON<span>UX_LAB</span></div>
+        <div class="live-badge"><div class="blink"></div> INPUT READY</div>
     </div>
 
-    <div class="fps-box">
-        <div class="spinner"></div>
-        <div class="fps-val" id="fps-display">--</div>
-        <div class="fps-label">Real-time Frame Rate</div>
-        <div style="font-size: 11px; color: var(--text-dim); margin-top: 5px;">
-            Target: 60Hz or 120Hz
+    <div class="reflex-box" id="reflex-btn" onclick="handleReflex()">
+        <div class="reflex-title">TAP TO START</div>
+        <div class="reflex-sub">Reflex Speed Test</div>
+    </div>
+
+    <div class="grid-master">
+        <div class="stat-card">
+            <span class="stat-label">REACTION TIME</span>
+            <span class="stat-val" id="score-reflex">--<span class="unit">ms</span></span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-label">INPUT LATENCY</span>
+            <span class="stat-val" id="score-lag">--<span class="unit">ms</span></span>
         </div>
     </div>
 
-    <div style="margin-bottom: 5px; font-size: 12px; color: var(--text-dim);">TOUCH RESPONSIVENESS</div>
-    <div class="latency-area" id="tap-zone" onpointerdown="inputStart()" onpointerup="inputEnd()">
-        <span class="ms-display" id="latency-val">Tap Me</span>
-        <span style="font-size: 11px; color: #94a3b8;">Tap quickly to measure input lag</span>
-    </div>
-
-    <div class="keyboard-box">
-        <div style="display:flex; justify-content:space-between;">
-            <span style="font-size:14px; font-weight:600;">⌨️ Keyboard Ghosting</span>
-            <span class="badge pass" id="key-status">READY</span>
-        </div>
-        <input type="text" class="test-input" placeholder="Type here quickly..." oninput="checkTyping(this)">
-    </div>
-
-    <div style="margin-bottom: 5px; font-size: 12px; color: var(--text-dim);">SCROLL SMOOTHNESS</div>
-    <div class="scroll-test" id="scroll-box">
+    <h3 style="font-size: 12px; color: var(--text); margin-bottom: 10px;">SCROLL SMOOTHNESS TEST</h3>
+    <div class="scroll-container" id="scroll-box" onscroll="measureScroll()">
+        <div class="fps-overlay" id="scroll-fps">0 FPS</div>
         </div>
 
-    <div class="keyboard-box" style="text-align: center;">
-        <div style="font-size:14px; font-weight:600; margin-bottom: 10px;">📺 4K Playback Stress</div>
-        <button onclick="startVideoTest()" style="background:var(--accent); border:none; color:white; padding:10px 20px; border-radius:6px; font-weight:700; cursor:pointer;">
-            TEST DECODER
-        </button>
-        <div id="vid-res" style="margin-top:10px; font-size:12px; color:var(--text-dim);"></div>
+    <h3 style="font-size: 12px; color: var(--text); margin-bottom: 10px;">ACCURACY CALIBRATION</h3>
+    <div class="target-zone" id="aim-box">
+        <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); color: var(--text); font-size: 10px; pointer-events: none;">TAP DOTS TO TEST</div>
     </div>
 
-</div>
+    <div class="grid-master">
+        <div class="stat-card">
+            <span class="stat-label">ACCURACY</span>
+            <span class="stat-val" id="score-acc">100<span class="unit">%</span></span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-label">HITS</span>
+            <span class="stat-val" id="score-hits">0</span>
+        </div>
+    </div>
 
-<script>
-    // --- 1. FPS METER ---
-    let frameCount = 0;
-    let lastTime = performance.now();
-    const fpsDisplay = document.getElementById('fps-display');
+    <div class="terminal" id="console-output">
+        <div class="log-line">> UX MODULE INIT...</div>
+        <div class="log-line">> WAITING FOR INPUT...</div>
+    </div>
 
-    function countFPS(now) {
-        frameCount++;
-        if (now - lastTime >= 1000) {
-            const fps = Math.round(frameCount * 1000 / (now - lastTime));
-            fpsDisplay.innerText = fps;
-            
-            // Color logic
-            if(fps > 55) fpsDisplay.style.color = "var(--success)";
-            else if(fps > 30) fpsDisplay.style.color = "var(--warning)";
-            else fpsDisplay.style.color = "var(--danger)";
+    <a href="../index.html" class="back-btn">EXIT UX LAB</a>
 
-            frameCount = 0;
-            lastTime = now;
+    <script>
+        // --- LOGGING ---
+        function log(msg) {
+            const term = document.getElementById('console-output');
+            const line = document.createElement('div');
+            line.className = 'log-line';
+            line.innerHTML = `<span style="color:#64748b">[UX]</span> ${msg}`;
+            term.appendChild(line);
+            if(term.children.length > 6) term.removeChild(term.children[0]);
+            term.scrollTop = term.scrollHeight;
         }
-        requestAnimationFrame(countFPS);
-    }
-    requestAnimationFrame(countFPS);
 
+        // --- 1. REFLEX TEST ---
+        let reflexState = 'idle'; // idle, wait, go
+        let startTime = 0;
+        let timeoutId;
+        const box = document.getElementById('reflex-btn');
+        const title = document.querySelector('.reflex-title');
+        const sub = document.querySelector('.reflex-sub');
 
-    // --- 2. LATENCY TESTER ---
-    let tStart = 0;
-    
-    function inputStart() {
-        tStart = performance.now();
-        document.getElementById('tap-zone').style.borderColor = "var(--accent)";
-    }
-    
-    function inputEnd() {
-        const tEnd = performance.now();
-        const diff = (tEnd - tStart).toFixed(1);
-        
-        const el = document.getElementById('latency-val');
-        el.innerText = diff + " ms";
-        
-        // Typical OS overhead is 5-20ms in browser
-        if(diff < 50) el.style.color = "var(--success)";
-        else el.style.color = "var(--warning)";
-
-        document.getElementById('tap-zone').style.borderColor = "#475569";
-    }
-
-
-    // --- 3. SCROLL GENERATOR ---
-    const scrollBox = document.getElementById('scroll-box');
-    for(let i=1; i<=50; i++) {
-        const div = document.createElement('div');
-        div.className = 'scroll-item';
-        div.innerText = `List Item #${i} - Scroll rapidly to check for stutter`;
-        scrollBox.appendChild(div);
-    }
-
-
-    // --- 4. TYPING TEST ---
-    let lastLen = 0;
-    function checkTyping(el) {
-        const currentLen = el.value.length;
-        const status = document.getElementById('key-status');
-        
-        if (currentLen > lastLen + 1) {
-            // Paste or super fast input
-            status.innerText = "FAST INPUT";
-        } else {
-            status.innerText = "TYPING...";
-        }
-        
-        setTimeout(() => {
-            status.innerText = "READY";
-        }, 500);
-        
-        lastLen = currentLen;
-    }
-
-    // --- 5. VIDEO STRESS (Simulated) ---
-    function startVideoTest() {
-        const res = document.getElementById('vid-res');
-        res.innerText = "Allocating Video Decoder...";
-        
-        // We create a video element in memory to test codec support
-        const video = document.createElement('video');
-        const canPlay = video.canPlayType('video/mp4; codecs="avc1.42E01E"');
-        
-        setTimeout(() => {
-            if(canPlay === "probably" || canPlay === "maybe") {
-                res.innerHTML = "<span style='color:var(--success)'>PASS: H.264 Hardware Acceleration Available</span>";
-            } else {
-                res.innerHTML = "<span style='color:var(--danger)'>FAIL: Software Decoding Only</span>";
+        function handleReflex() {
+            if (reflexState === 'idle') {
+                reflexState = 'wait';
+                box.className = 'reflex-box ready';
+                title.innerText = "WAIT FOR GREEN...";
+                sub.innerText = "Don't tap yet!";
+                
+                const delay = 2000 + Math.random() * 3000; // 2-5s random
+                timeoutId = setTimeout(() => {
+                    reflexState = 'go';
+                    box.className = 'reflex-box go';
+                    title.innerText = "TAP NOW!";
+                    startTime = performance.now();
+                }, delay);
+            } 
+            else if (reflexState === 'wait') {
+                clearTimeout(timeoutId);
+                reflexState = 'idle';
+                box.className = 'reflex-box';
+                title.innerText = "TOO EARLY!";
+                sub.innerText = "Tap to try again";
+                log("> FALSE START DETECTED");
+            } 
+            else if (reflexState === 'go') {
+                const endTime = performance.now();
+                const score = Math.round(endTime - startTime);
+                
+                reflexState = 'idle';
+                box.className = 'reflex-box';
+                title.innerText = score + " ms";
+                sub.innerText = getRank(score);
+                
+                document.getElementById('score-reflex').innerHTML = score + '<span class="unit">ms</span>';
+                log(`> REACTION TIME: ${score}ms`);
+                
+                // Input Latency Estimate (Heuristic)
+                // We assume ~15ms of that is system processing
+                document.getElementById('score-lag').innerHTML = "~15<span class="unit">ms</span>";
             }
-        }, 800);
-    }
+        }
 
-</script>
+        function getRank(ms) {
+            if(ms < 180) return "GODLIKE 🏆";
+            if(ms < 250) return "PRO GAMER 🎮";
+            if(ms < 350) return "AVERAGE HUMAN 👤";
+            return "SLEEPY... 💤";
+        }
 
+        // --- 2. SCROLL JANK ---
+        const scrollBox = document.getElementById('scroll-box');
+        // Fill scroll box
+        for(let i=0; i<50; i++) {
+            scrollBox.innerHTML += `<div class="scroll-item"><span>System Process ID: 0x${Math.floor(Math.random()*9999)}</span><span>Running</span></div>`;
+        }
+
+        let lastScrollTime = 0;
+        function measureScroll() {
+            const now = performance.now();
+            const delta = now - lastScrollTime;
+            lastScrollTime = now;
+            
+            // FPS = 1000 / frame time
+            let fps = Math.round(1000 / delta);
+            if(fps > 120) fps = 60; // Cap visual glitch
+            
+            document.getElementById('scroll-fps').innerText = fps + " FPS";
+            
+            if(fps < 30) {
+                document.getElementById('scroll-fps').style.color = "var(--danger)";
+                document.getElementById('scroll-fps').style.borderColor = "var(--danger)";
+            } else {
+                document.getElementById('scroll-fps').style.color = "var(--accent)";
+                document.getElementById('scroll-fps').style.borderColor = "var(--accent)";
+            }
+        }
+
+        // --- 3. TARGET PRACTICE ---
+        const aimBox = document.getElementById('aim-box');
+        let hits = 0;
+        let total = 0;
+
+        function spawnTarget() {
+            // Remove old
+            const old = document.querySelector('.target');
+            if(old) old.remove();
+
+            const t = document.createElement('div');
+            t.className = 'target';
+            
+            // Random Pos (keep inside box)
+            const x = Math.random() * (aimBox.offsetWidth - 50);
+            const y = Math.random() * (aimBox.offsetHeight - 50);
+            
+            t.style.left = x + "px";
+            t.style.top = y + "px";
+            
+            t.onclick = (e) => {
+                e.stopPropagation(); // Don't trigger miss
+                hitTarget();
+            };
+            
+            aimBox.appendChild(t);
+        }
+
+        aimBox.onclick = () => {
+            // Clicked box but missed target
+            log("> MISS!");
+            total++;
+            updateAcc();
+        };
+
+        function hitTarget() {
+            hits++;
+            total++;
+            updateAcc();
+            document.getElementById('score-hits').innerText = hits;
+            log("> DIRECT HIT");
+            spawnTarget();
+        }
+
+        function updateAcc() {
+            const acc = Math.round((hits / total) * 100);
+            document.getElementById('score-acc').innerHTML = acc + '<span class="unit">%</span>';
+        }
+
+        // Start Aim Game
+        spawnTarget();
+
+    </script>
 </body>
 </html>
