@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Titanium Display Lab</title>
+    <title>Titanium Display Lab 3.0</title>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         :root { 
@@ -29,28 +29,32 @@
         .blink { animation: blink 1s infinite; width: 6px; height: 6px; background: var(--success); border-radius: 50%; }
         @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0; } 100% { opacity: 1; } }
 
-        /* HERO CARD (Refresh Rate) */
+        /* REFRESH RATE HERO */
         .hero-card { background: radial-gradient(circle at top right, #1a202c, #0f1218); border: 1px solid var(--border); border-radius: 16px; padding: 25px; display: flex; justify-content: space-between; align-items: center; position: relative; overflow: hidden; margin-bottom: 20px; }
-        .hero-left h3 { margin: 0; font-size: 12px; color: var(--text); text-transform: uppercase; letter-spacing: 1px; }
         .hero-left .big-val { font-family: 'JetBrains Mono', monospace; font-size: 48px; font-weight: 700; color: var(--text-bright); display: block; margin: 5px 0; }
-        .hero-left .sub-val { font-size: 12px; color: var(--accent); font-weight: 700; display: flex; align-items: center; gap: 5px; }
+        .hero-left .sub-val { font-size: 12px; color: var(--accent); font-weight: 700; }
 
-        /* TOUCH CANVAS CONTAINER */
+        /* TOUCH ZONE */
         .touch-zone { 
             background: #000; border: 2px dashed var(--border); border-radius: 12px; height: 250px; position: relative; overflow: hidden; margin-bottom: 20px;
             display: flex; justify-content: center; align-items: center;
+        }
+        .touch-grid-bg {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; opacity: 0.2; display: none;
+            background-image: linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px);
+            background-size: 40px 40px;
         }
         .touch-instruction { position: absolute; pointer-events: none; color: var(--text); font-size: 12px; text-transform: uppercase; letter-spacing: 1px; text-align: center; z-index: 2; }
         .touch-count { position: absolute; top: 10px; right: 15px; font-family: 'JetBrains Mono', monospace; font-size: 24px; color: var(--success); font-weight: 800; z-index: 2; display: none; }
         canvas { width: 100%; height: 100%; touch-action: none; position: absolute; top: 0; left: 0; z-index: 1; }
 
-        /* COLOR GRID CONTROLS */
-        .control-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
-        .btn-test { background: var(--panel); border: 1px solid var(--border); color: var(--text-bright); padding: 15px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 10px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 5px; transition: 0.2s; }
+        /* CONTROL GRID */
+        .control-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 20px; }
+        .btn-test { background: var(--panel); border: 1px solid var(--border); color: var(--text-bright); padding: 12px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 10px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 5px; transition: 0.2s; }
         .btn-test:active { transform: scale(0.95); background: var(--border); }
-        .btn-icon { font-size: 18px; margin-bottom: 5px; }
+        .btn-icon { font-size: 16px; margin-bottom: 2px; }
 
-        /* FULLSCREEN COLOR MODAL */
+        /* OVERLAYS */
         #fullscreen-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: black; z-index: 9999; display: none; cursor: pointer;
@@ -58,27 +62,37 @@
         .overlay-hint {
             position: absolute; bottom: 50px; left: 50%; transform: translateX(-50%);
             color: rgba(255,255,255,0.5); font-size: 12px; pointer-events: none;
-            text-transform: uppercase; letter-spacing: 2px; text-align: center; width: 100%;
+            text-transform: uppercase; letter-spacing: 2px; text-align: center; width: 100%; z-index: 10001;
         }
-        
-        /* CONTRAST BARS */
-        .contrast-container { display: none; width: 100%; height: 100%; flex-direction: column; justify-content: center; align-items: center; }
-        .contrast-row { display: flex; width: 90%; height: 100px; border: 1px solid white; }
-        .contrast-block { flex: 1; height: 100%; }
 
-        /* SHARPNESS GRID */
-        .sharpness-pattern {
+        /* 1. MOTION TEST */
+        .motion-track { position: absolute; top: 50%; left: 0; width: 100%; height: 60px; transform: translateY(-50%); border-top: 1px solid white; border-bottom: 1px solid white; display: none; }
+        .motion-block { width: 40px; height: 40px; background: var(--accent); position: absolute; top: 10px; animation: moveRight 1s linear infinite; box-shadow: 0 0 10px var(--accent); }
+        @keyframes moveRight { 0% { left: -50px; } 100% { left: 100%; } }
+
+        /* 2. GAMMA TEST */
+        .gamma-pattern {
             display: none; width: 100%; height: 100%;
-            background-image: repeating-linear-gradient(0deg, transparent, transparent 1px, #fff 1px, #fff 2px),
-                              repeating-linear-gradient(90deg, transparent, transparent 1px, #fff 1px, #fff 2px);
-            background-size: 4px 4px;
-            background-color: black;
+            background: repeating-linear-gradient(90deg, #000, #000 2px, #fff 2px, #fff 4px);
+            justify-content: center; align-items: center;
         }
+        .gamma-circle { width: 200px; height: 200px; background: #808080; border-radius: 50%; } /* 50% Grey */
 
-        /* TERMINAL LOG */
-        .terminal { background: #000; border: 1px solid var(--border); border-radius: 8px; padding: 10px; height: 120px; overflow: hidden; font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--success); position: relative; }
+        /* 3. TEXT TEST */
+        .text-chart { display: none; color: white; padding: 40px; text-align: center; flex-direction: column; gap: 20px; width: 100%; }
+        
+        /* 4. VIEWING ANGLE */
+        .view-pattern { display: none; width: 100%; height: 100%; background: conic-gradient(red, yellow, lime, aqua, blue, magenta, red); }
+
+        /* 5. CONTRAST BARS */
+        .contrast-container { display: none; width: 100%; height: 100%; flex-direction: column; justify-content: center; align-items: center; padding: 20px; }
+        .contrast-row { display: flex; width: 100%; height: 100px; margin-bottom: 20px; }
+        .contrast-block { flex: 1; height: 100%; border-right: 1px solid #333; }
+
+        /* TERMINAL */
+        .terminal { background: #000; border: 1px solid var(--border); border-radius: 8px; padding: 10px; height: 100px; overflow: hidden; font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--success); position: relative; }
         .log-line { margin-bottom: 2px; opacity: 0.8; }
-        .terminal::after { content: ""; position: absolute; bottom: 0; left: 0; width: 100%; height: 30px; background: linear-gradient(to top, #000, transparent); }
+        .terminal::after { content: ""; position: absolute; bottom: 0; left: 0; width: 100%; height: 20px; background: linear-gradient(to top, #000, transparent); }
 
         .back-btn { display: block; text-align: center; margin-top: 20px; color: var(--text); text-decoration: none; font-weight: 700; padding: 15px; background: var(--panel); border-radius: 12px; }
     </style>
@@ -92,103 +106,118 @@
 
     <div class="hero-card">
         <div class="hero-left">
-            <h3>Refresh Rate</h3>
             <span class="big-val" id="fps-counter">-- Hz</span>
-            <span class="sub-val" id="fps-status">CALIBRATING SYNC...</span>
+            <span class="sub-val" id="fps-status">CALIBRATING...</span>
         </div>
         <div style="text-align: right; font-size: 10px; color: var(--text);">
-            VSYNC: LOCKED<br>
-            RENDER: GPU<br>
-            BIT-DEPTH: 24-BIT
+            FRAME TIME: <span id="frame-time">--ms</span><br>
+            RENDER: HARDWARE
         </div>
     </div>
 
     <div class="touch-zone" id="touch-container">
-        <div class="touch-instruction" id="touch-text">USE MULTIPLE FINGERS<br>TO TEST DIGITIZER</div>
+        <div class="touch-grid-bg" id="touch-grid"></div>
+        <div class="touch-instruction" id="touch-text">DRAG FINGER TO TEST</div>
         <div class="touch-count" id="touch-counter">0 POINTS</div>
         <canvas id="touchCanvas"></canvas>
     </div>
 
     <div class="control-grid">
-        <button class="btn-test" onclick="startColorTest('red')"><span class="btn-icon">🔴</span> DEAD PIXEL RED</button>
-        <button class="btn-test" onclick="startColorTest('green')"><span class="btn-icon">🟢</span> DEAD PIXEL GREEN</button>
-        <button class="btn-test" onclick="startColorTest('blue')"><span class="btn-icon">🔵</span> DEAD PIXEL BLUE</button>
+        <button class="btn-test" onclick="startColorTest('red')"><span class="btn-icon">🔴</span> RED PIXEL</button>
+        <button class="btn-test" onclick="startColorTest('green')"><span class="btn-icon">🟢</span> GREEN PIXEL</button>
+        <button class="btn-test" onclick="startColorTest('blue')"><span class="btn-icon">🔵</span> BLUE PIXEL</button>
         
-        <button class="btn-test" onclick="startColorTest('white')"><span class="btn-icon">⚪</span> MAX BRIGHTNESS</button>
-        <button class="btn-test" onclick="startColorTest('black')"><span class="btn-icon">⚫</span> OLED BLACK LEVEL</button>
+        <button class="btn-test" onclick="startColorTest('white')"><span class="btn-icon">⚪</span> MAX BRIGHT</button>
+        <button class="btn-test" onclick="startColorTest('black')"><span class="btn-icon">⚫</span> PURE BLACK</button>
+        <button class="btn-test" onclick="startContrastTest()"><span class="btn-icon">🌗</span> CONTRAST</button>
         
-        <button class="btn-test" onclick="startColorTest('gradient')"><span class="btn-icon">🌈</span> COLOR BANDING</button>
-        <button class="btn-test" onclick="startContrastTest()"><span class="btn-icon">🌗</span> CONTRAST / GAMMA</button>
-        <button class="btn-test" onclick="startSharpnessTest()"><span class="btn-icon">📏</span> TEXT SHARPNESS</button>
-        <button class="btn-test" onclick="startColorTest('burnin')"><span class="btn-icon">⚠️</span> BURN-IN CHECK</button>
+        <button class="btn-test" onclick="startMotionTest()"><span class="btn-icon">🏃</span> GHOSTING</button>
+        <button class="btn-test" onclick="toggleTouchGrid()"><span class="btn-icon">📐</span> LINEARITY</button>
+        <button class="btn-test" onclick="startColorTest('gradient')"><span class="btn-icon">🌈</span> BANDING</button>
+        
+        <button class="btn-test" onclick="startGammaTest()"><span class="btn-icon">👁️</span> GAMMA 2.2</button>
+        <button class="btn-test" onclick="startTextTest()"><span class="btn-icon">🔡</span> TEXT SHARP</button>
+        <button class="btn-test" onclick="startViewTest()"><span class="btn-icon">👀</span> ANGLE TEST</button>
     </div>
 
     <div class="terminal" id="console-output">
         <div class="log-line">> DISPLAY DRIVER INIT... OK</div>
-        <div class="log-line">> DETECTING RESOLUTION... </div>
-        <div class="log-line">> WAITING FOR INPUT...</div>
+        <div class="log-line">> DETECTING SUB-PIXEL LAYOUT... OK</div>
     </div>
 
     <a href="../index.html" class="back-btn">EXIT LABORATORY</a>
 
     <div id="fullscreen-overlay" onclick="closeOverlay()">
-        <div class="overlay-hint" id="overlay-msg">TAP ANYWHERE TO CLOSE</div>
+        <div class="overlay-hint" id="overlay-msg">TAP TO CLOSE</div>
         
-        <div id="contrast-chart" class="contrast-container">
+        <div id="motion-box" class="motion-track"><div class="motion-block"></div></div>
+
+        <div id="gamma-box" class="gamma-pattern"><div class="gamma-circle"></div></div>
+
+        <div id="view-box" class="view-pattern"></div>
+
+        <div id="contrast-box" class="contrast-container">
             <div class="contrast-row">
                 <div class="contrast-block" style="background:#000"></div>
                 <div class="contrast-block" style="background:#111"></div>
                 <div class="contrast-block" style="background:#222"></div>
                 <div class="contrast-block" style="background:#333"></div>
                 <div class="contrast-block" style="background:#444"></div>
-                <div class="contrast-block" style="background:#555"></div>
                 <div class="contrast-block" style="background:#666"></div>
                 <div class="contrast-block" style="background:#777"></div>
                 <div class="contrast-block" style="background:#888"></div>
                 <div class="contrast-block" style="background:#999"></div>
+                <div class="contrast-block" style="background:#fff"></div>
             </div>
-            <div style="color:white; margin-top:20px; font-family:monospace;">CAN YOU SEE ALL 10 BLOCKS?</div>
+            <div style="color:white; font-family:monospace;">BLACK LEVEL TEST (0% - 100%)</div>
         </div>
 
-        <div id="sharpness-grid" class="sharpness-pattern"></div>
+        <div id="text-box" class="text-chart">
+            <div style="font-size: 32px; font-weight: 800;">Titanium Display Lab</div>
+            <div style="font-size: 24px;">Sharpness Render Test</div>
+            <div style="font-size: 18px;">Check for fringing on edges</div>
+            <div style="font-size: 14px;">The quick brown fox jumps over the lazy dog.</div>
+            <div style="font-size: 10px;">The quick brown fox jumps over the lazy dog.</div>
+            <div style="font-size: 6px;">The quick brown fox jumps over the lazy dog.</div>
+        </div>
     </div>
 
     <script>
-        // --- 1. SYSTEM LOGGING ---
+        // --- LOGGING ---
         function log(msg) {
             const term = document.getElementById('console-output');
-            const time = new Date().toLocaleTimeString().split(' ')[0];
             const line = document.createElement('div');
             line.className = 'log-line';
-            line.innerHTML = `<span style="color:#64748b">[${time}]</span> ${msg}`;
+            line.innerHTML = `<span style="color:#64748b">[SYS]</span> ${msg}`;
             term.appendChild(line);
-            if(term.children.length > 8) term.removeChild(term.children[0]);
+            if(term.children.length > 6) term.removeChild(term.children[0]);
             term.scrollTop = term.scrollHeight;
         }
 
-        // --- 2. REFRESH RATE COUNTER (Real Hz) ---
+        // --- HZ METER ---
         let lastLoop = new Date();
         let frameCount = 0;
         let fpsBuffer = [];
 
         function fpsLoop() { 
             let thisLoop = new Date();
-            let fps = 1000 / (thisLoop - lastLoop);
+            let frameTime = thisLoop - lastLoop;
+            let fps = 1000 / frameTime;
             lastLoop = thisLoop;
             
-            // Smooth out readings
             fpsBuffer.push(fps);
-            if(fpsBuffer.length > 10) fpsBuffer.shift();
+            if(fpsBuffer.length > 20) fpsBuffer.shift();
             let avgFps = Math.round(fpsBuffer.reduce((a,b)=>a+b)/fpsBuffer.length);
 
             frameCount++;
-            if(frameCount % 10 === 0) {
+            if(frameCount % 15 === 0) {
                 document.getElementById('fps-counter').innerText = avgFps + " Hz";
-                let status = "STANDARD MOTION";
-                let color = "#a0aec0";
+                document.getElementById('frame-time').innerText = frameTime.toFixed(1) + "ms";
                 
-                if(avgFps > 85) { status = "HIGH REFRESH (PRO MOTION)"; color = "#00ff9d"; }
-                if(avgFps > 115) { status = "ULTRA SMOOTH (120HZ+)"; color = "#f000ff"; }
+                let status = "STANDARD";
+                let color = "#a0aec0";
+                if(avgFps > 85) { status = "PRO MOTION"; color = "#00ff9d"; }
+                if(avgFps > 115) { status = "ULTRA FLUID"; color = "#f000ff"; }
                 
                 const statusEl = document.getElementById('fps-status');
                 statusEl.innerText = status;
@@ -197,13 +226,13 @@
             requestAnimationFrame(fpsLoop);
         }
         requestAnimationFrame(fpsLoop);
-        log("> FPS MONITOR STARTED");
 
-        // --- 3. MULTI-TOUCH VISUALIZER ---
+        // --- TOUCH SYSTEM ---
         const canvas = document.getElementById('touchCanvas');
         const ctx = canvas.getContext('2d');
         const container = document.getElementById('touch-container');
         const countDisplay = document.getElementById('touch-counter');
+        const touchGrid = document.getElementById('touch-grid');
 
         function resizeCanvas() {
             canvas.width = container.offsetWidth;
@@ -212,12 +241,11 @@
         resizeCanvas();
         window.addEventListener('resize', resizeCanvas);
 
-        // Map touch points to colors
         const touchColors = ['#f000ff', '#00ff9d', '#ff0055', '#ffb700', '#00f0ff'];
 
         function handleTouch(e) {
             e.preventDefault();
-            ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear previous frame
+            ctx.clearRect(0, 0, canvas.width, canvas.height); 
             
             const touches = e.touches;
             const count = touches.length;
@@ -227,27 +255,28 @@
                 countDisplay.style.display = 'block';
                 countDisplay.innerText = count + (count === 1 ? " POINT" : " POINTS");
                 
-                // Draw each finger
                 for(let i=0; i<count; i++) {
                     const touch = touches[i];
                     const rect = canvas.getBoundingClientRect();
                     const x = touch.clientX - rect.left;
                     const y = touch.clientY - rect.top;
                     
-                    // Draw Circle
                     ctx.beginPath();
-                    ctx.arc(x, y, 20, 0, 2 * Math.PI);
+                    ctx.arc(x, y, 25, 0, 2 * Math.PI);
                     ctx.fillStyle = touchColors[i % touchColors.length];
                     ctx.fill();
-                    
-                    // Draw Glow
-                    ctx.shadowBlur = 15;
-                    ctx.shadowColor = ctx.fillStyle;
+                    ctx.strokeStyle = "white";
+                    ctx.lineWidth = 2;
                     ctx.stroke();
-                    ctx.shadowBlur = 0; // Reset
+                    
+                    // Crosshair
+                    ctx.beginPath();
+                    ctx.moveTo(x-40, y); ctx.lineTo(x+40, y);
+                    ctx.moveTo(x, y-40); ctx.lineTo(x, y+40);
+                    ctx.strokeStyle = "rgba(255,255,255,0.3)";
+                    ctx.stroke();
                 }
             } else {
-                // Reset if no touch
                 countDisplay.style.display = 'none';
                 document.getElementById('touch-text').style.display = 'block';
             }
@@ -258,58 +287,73 @@
         canvas.addEventListener('touchend', handleTouch);
         canvas.addEventListener('touchcancel', handleTouch);
 
-        // --- 4. COLOR & PATTERN TESTS ---
+        function toggleTouchGrid() {
+            log("> TOGGLING LINEARITY GRID");
+            touchGrid.style.display = (touchGrid.style.display === 'block') ? 'none' : 'block';
+            window.scrollTo(0, document.getElementById('touch-container').offsetTop - 20);
+        }
+
+        // --- TEST RUNNERS ---
         const overlay = document.getElementById('fullscreen-overlay');
-        const contrastBox = document.getElementById('contrast-chart');
-        const sharpnessBox = document.getElementById('sharpness-grid');
-        const hint = document.getElementById('overlay-msg');
-        
-        function resetOverlay() {
-            overlay.style.display = 'block';
-            overlay.style.background = '';
-            overlay.style.backgroundImage = '';
-            contrastBox.style.display = 'none';
-            sharpnessBox.style.display = 'none';
-            hint.style.color = "rgba(255,255,255,0.5)";
+        const elements = ['motion-box', 'gamma-box', 'view-box', 'contrast-box', 'text-box'];
+
+        function clearOverlay() {
+            elements.forEach(id => document.getElementById(id).style.display = 'none');
+            overlay.style.background = ''; 
+            document.getElementById('overlay-msg').style.color = 'rgba(255,255,255,0.5)';
         }
 
         function startColorTest(type) {
-            log(`> TEST PATTERN: ${type.toUpperCase()}`);
-            resetOverlay();
-
+            log(`> PIXEL TEST: ${type.toUpperCase()}`);
+            clearOverlay();
+            overlay.style.display = 'block';
+            
             if(type === 'red') overlay.style.background = '#ff0000';
             if(type === 'green') overlay.style.background = '#00ff00';
             if(type === 'blue') overlay.style.background = '#0000ff';
-            if(type === 'white') { overlay.style.background = '#ffffff'; hint.style.color = "rgba(0,0,0,0.5)"; }
             if(type === 'black') overlay.style.background = '#000000';
-            
-            if(type === 'gradient') {
-                overlay.style.background = 'linear-gradient(to right, black, white)';
-                log("> CHECK FOR BANDING ARTIFACTS");
-            }
-            if(type === 'burnin') {
-                overlay.style.background = '#808080';
-                hint.innerText = "CHECK FOR GHOST IMAGES (GREY 50%)";
-            } else {
-                hint.innerText = "TAP ANYWHERE TO CLOSE";
-            }
+            if(type === 'white') { overlay.style.background = '#ffffff'; document.getElementById('overlay-msg').style.color = '#000'; }
+            if(type === 'gradient') overlay.style.background = 'linear-gradient(to right, black, white)';
+        }
+
+        function startMotionTest() {
+            log("> MOTION BLUR TEST");
+            clearOverlay();
+            overlay.style.display = 'block';
+            document.getElementById('motion-box').style.display = 'block';
+        }
+
+        function startGammaTest() {
+            log("> GAMMA CALIBRATION CHECK");
+            clearOverlay();
+            overlay.style.display = 'block';
+            document.getElementById('gamma-box').style.display = 'flex';
+        }
+
+        function startViewTest() {
+            log("> VIEWING ANGLE CHECK");
+            clearOverlay();
+            overlay.style.display = 'block';
+            document.getElementById('view-box').style.display = 'block';
         }
 
         function startContrastTest() {
-            log("> CONTRAST CHART LOADED");
-            resetOverlay();
-            contrastBox.style.display = 'flex';
+            log("> BLACK LEVEL CHECK");
+            clearOverlay();
+            overlay.style.display = 'block';
+            document.getElementById('contrast-box').style.display = 'flex';
         }
 
-        function startSharpnessTest() {
-            log("> SUB-PIXEL GRID LOADED");
-            resetOverlay();
-            sharpnessBox.style.display = 'block';
+        function startTextTest() {
+            log("> TEXT RENDERING CHECK");
+            clearOverlay();
+            overlay.style.display = 'block';
+            document.getElementById('text-box').style.display = 'flex';
         }
 
         function closeOverlay() {
             overlay.style.display = 'none';
-            log("> TEST PATTERN CLOSED");
+            log("> TEST COMPLETE. RETURNING.");
         }
 
     </script>
