@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Don Systems Haptic Lab</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Don Systems Wireless Command</title>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         :root { 
@@ -12,9 +12,9 @@
             --border: #2d3748; 
             --text: #a0aec0; 
             --text-bright: #e2e8f0;
-            --accent: #ff9f43; /* Neon Orange */
-            --secondary: #ff6b6b; /* Warm Red */
+            --accent: #00f0ff; /* Cyber Cyan */
             --success: #00ff9d; 
+            --danger: #ff0055; 
             --warn: #ffb700; 
         }
         
@@ -25,62 +25,53 @@
         .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 15px; margin-bottom: 20px; }
         .logo { font-family: 'JetBrains Mono', monospace; font-weight: 800; font-size: 18px; color: var(--text-bright); letter-spacing: -1px; }
         .logo span { color: var(--accent); }
-        .live-badge { display: flex; align-items: center; gap: 6px; font-size: 10px; color: var(--accent); font-weight: 700; background: rgba(255, 159, 67, 0.1); padding: 4px 8px; border-radius: 4px; border: 1px solid rgba(255, 159, 67, 0.2); }
-        .blink { animation: blink 1s infinite; width: 6px; height: 6px; background: var(--accent); border-radius: 50%; }
+        .live-badge { display: flex; align-items: center; gap: 6px; font-size: 10px; color: var(--success); font-weight: 700; background: rgba(0, 255, 157, 0.1); padding: 4px 8px; border-radius: 4px; border: 1px solid rgba(0, 255, 157, 0.2); }
+        .blink { animation: blink 1s infinite; width: 6px; height: 6px; background: var(--success); border-radius: 50%; }
         @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0; } 100% { opacity: 1; } }
 
-        /* ENGINE CORE (VISUALIZER) */
-        .engine-container { 
-            display: flex; justify-content: center; align-items: center; height: 250px; margin-bottom: 30px;
-            background: radial-gradient(circle, rgba(255,159,67,0.05) 0%, rgba(0,0,0,0) 70%);
+        /* RADAR HERO */
+        .radar-container { 
+            background: radial-gradient(circle at center, #0f1820 0%, #000 70%); 
+            border: 1px solid var(--border); border-radius: 50%; width: 200px; height: 200px; margin: 0 auto 30px auto; 
+            position: relative; overflow: hidden; display: flex; justify-content: center; align-items: center;
+            box-shadow: 0 0 30px rgba(0, 240, 255, 0.1);
         }
+        .radar-line { position: absolute; width: 100%; height: 100%; border-radius: 50%; border: 1px solid rgba(0, 240, 255, 0.3); opacity: 0.5; }
+        .radar-line:nth-child(2) { width: 70%; height: 70%; }
+        .radar-line:nth-child(3) { width: 40%; height: 40%; }
         
-        .core-outer {
-            width: 180px; height: 180px; border: 2px dashed var(--border); border-radius: 50%;
-            display: flex; justify-content: center; align-items: center; position: relative;
-            animation: slowSpin 10s linear infinite;
+        .scan-beam { 
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+            background: conic-gradient(from 0deg, transparent 70%, rgba(0, 240, 255, 0.5)); 
+            border-radius: 50%; animation: scan 2s linear infinite; 
         }
+        @keyframes scan { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+        .ping-val { z-index: 2; font-family: 'JetBrains Mono'; font-size: 24px; font-weight: 800; color: white; text-shadow: 0 0 10px var(--accent); }
+        .ping-label { z-index: 2; position: absolute; bottom: 60px; font-size: 10px; color: var(--accent); }
+
+        /* DATA GRID */
+        .grid-master { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
         
-        .core-inner {
-            width: 120px; height: 120px; background: #000; border: 4px solid var(--accent); border-radius: 50%;
-            display: flex; justify-content: center; align-items: center;
-            box-shadow: 0 0 30px rgba(255, 159, 67, 0.2); position: relative; z-index: 2;
-        }
+        .info-card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 15px; grid-column: span 2; display: flex; justify-content: space-between; align-items: center; }
+        .small-card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 15px; display: flex; flex-direction: column; justify-content: center; }
         
-        .core-icon { font-size: 40px; }
+        .label { font-size: 10px; color: var(--text); text-transform: uppercase; margin-bottom: 5px; letter-spacing: 1px; }
+        .value { font-family: 'JetBrains Mono', monospace; font-size: 16px; color: var(--text-bright); font-weight: 700; }
+        .value.cyan { color: var(--accent); }
+        .value.green { color: var(--success); }
 
-        /* VIBRATION ANIMATIONS */
-        .vibrating .core-inner { animation: shake 0.1s infinite; box-shadow: 0 0 50px var(--accent); background: var(--accent); color: black; }
-        .vibrating .core-icon { animation: shakeText 0.1s infinite; }
-
-        @keyframes shake { 
-            0% { transform: translate(1px, 1px) rotate(0deg); }
-            10% { transform: translate(-1px, -2px) rotate(-1deg); }
-            20% { transform: translate(-3px, 0px) rotate(1deg); }
-            30% { transform: translate(3px, 2px) rotate(0deg); }
-            40% { transform: translate(1px, -1px) rotate(1deg); }
-            50% { transform: translate(-1px, 2px) rotate(-1deg); }
-            60% { transform: translate(-3px, 1px) rotate(0deg); }
-            70% { transform: translate(3px, 1px) rotate(-1deg); }
-            80% { transform: translate(-1px, -1px) rotate(1deg); }
-            90% { transform: translate(1px, 2px) rotate(0deg); }
-            100% { transform: translate(1px, -2px) rotate(-1deg); }
-        }
-        @keyframes slowSpin { 100% { transform: rotate(360deg); } }
-
-        /* CONTROLS */
-        .control-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px; }
-        .btn-haptic { background: var(--panel); border: 1px solid var(--border); color: var(--text-bright); padding: 18px; border-radius: 12px; cursor: pointer; font-weight: 700; font-size: 11px; text-align: left; display: flex; justify-content: space-between; align-items: center; transition: 0.1s; }
-        .btn-haptic:active { transform: scale(0.96); border-color: var(--accent); background: rgba(255, 159, 67, 0.1); }
+        /* ISP BOX */
+        .isp-box { grid-column: span 2; background: rgba(0, 240, 255, 0.05); border-color: rgba(0, 240, 255, 0.2); }
         
-        .btn-stop { grid-column: span 2; background: var(--secondary); color: #000; border: none; text-align: center; justify-content: center; font-size: 14px; box-shadow: 0 4px 20px rgba(255, 107, 107, 0.3); }
+        /* SPEEDOMETER BAR */
+        .speed-bar-container { width: 100%; height: 6px; background: #1a202c; border-radius: 3px; margin-top: 10px; overflow: hidden; }
+        .speed-bar-fill { height: 100%; width: 0%; background: var(--success); transition: width 0.2s; box-shadow: 0 0 10px var(--success); }
 
-        /* INTENSITY SLIDER */
-        .slider-box { background: var(--panel); padding: 20px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 20px; }
-        .range-label { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 12px; font-weight: 700; color: var(--text-bright); }
-        input[type=range] { width: 100%; -webkit-appearance: none; background: transparent; }
-        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 20px; width: 20px; border-radius: 50%; background: var(--accent); cursor: pointer; margin-top: -8px; box-shadow: 0 0 10px var(--accent); }
-        input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 4px; cursor: pointer; background: var(--border); border-radius: 2px; }
+        /* CONTROL BUTTONS */
+        .btn-test { background: var(--panel); border: 1px solid var(--border); color: var(--text-bright); width: 100%; padding: 15px; border-radius: 12px; font-weight: 700; margin-bottom: 10px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: 0.2s; display: flex; justify-content: space-between; align-items: center; }
+        .btn-test:hover { border-color: var(--accent); color: var(--accent); }
+        .btn-icon { font-size: 16px; }
 
         /* TERMINAL */
         .terminal { background: #000; border: 1px solid var(--border); border-radius: 8px; padding: 10px; height: 120px; overflow: hidden; font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--accent); position: relative; }
@@ -93,58 +84,79 @@
 <body>
 
     <div class="header">
-        <div class="logo">DON<span>HAPTICS</span></div>
-        <div class="live-badge"><div class="blink"></div> MOTOR STANDBY</div>
+        <div class="logo">DON<span>WIRELESS</span></div>
+        <div class="live-badge"><div class="blink"></div> UPLINK SECURE</div>
     </div>
 
-    <div class="engine-container" id="visualizer">
-        <div class="core-outer">
-            <div class="core-inner">
-                <div class="core-icon">📳</div>
+    <div class="radar-container">
+        <div class="scan-beam"></div>
+        <div class="radar-line"></div>
+        <div class="radar-line"></div>
+        <div class="radar-line"></div>
+        <div class="ping-val" id="ping-val">--</div>
+        <div class="ping-label">LATENCY (MS)</div>
+    </div>
+
+    <div class="grid-master">
+        
+        <div class="info-card isp-box">
+            <div>
+                <div class="label">PUBLIC IP ADDRESS</div>
+                <div class="value cyan" id="ip-address">SCANNING...</div>
+            </div>
+            <div style="text-align: right;">
+                <div class="label">PROVIDER</div>
+                <div class="value" id="isp-name">--</div>
             </div>
         </div>
-    </div>
 
-    <div class="slider-box">
-        <div class="range-label">
-            <span>MANUAL INTENSITY (DURATION)</span>
-            <span id="dur-val">200ms</span>
+        <div class="small-card">
+            <div class="label">NETWORK TYPE</div>
+            <div class="value" id="net-type">--</div>
         </div>
-        <input type="range" id="duration" min="50" max="2000" value="200" step="50" oninput="updateDur(this.value)">
-        <button class="btn-haptic" style="width:100%; margin-top:15px; justify-content:center;" onclick="manualPulse()">TEST MANUAL PULSE</button>
+
+        <div class="small-card">
+            <div class="label">EST. BANDWIDTH</div>
+            <div class="value green" id="net-speed">-- Mbps</div>
+        </div>
+
+        <div class="info-card">
+            <div>
+                <div class="label">BLUETOOTH RADIO</div>
+                <div class="value" id="bt-status">CHECKING...</div>
+            </div>
+            <div style="font-size: 20px;">🦷</div>
+        </div>
+
     </div>
 
-    <div class="control-grid">
-        <button class="btn-haptic" onclick="playPattern('tick')">
-            <span>CRISP TICK</span> <span>⚡</span>
-        </button>
-        <button class="btn-haptic" onclick="playPattern('double')">
-            <span>DOUBLE TAP</span> <span>⚡⚡</span>
-        </button>
-        <button class="btn-haptic" onclick="playPattern('heavy')">
-            <span>HEAVY HUM</span> <span>🔊</span>
-        </button>
-        <button class="btn-haptic" onclick="playPattern('heart')">
-            <span>HEARTBEAT</span> <span>❤️</span>
-        </button>
-        <button class="btn-haptic" onclick="playPattern('sos')">
-            <span>SOS SIGNAL</span> <span>🆘</span>
-        </button>
-        <button class="btn-haptic" onclick="playPattern('stress')">
-            <span>STRESS TEST</span> <span>🔥</span>
-        </button>
-        
-        <button class="btn-haptic btn-stop" onclick="stopVibrate()">
-            STOP ALL MOTORS
-        </button>
+    <div class="info-card" style="display: block;">
+        <div style="display: flex; justify-content: space-between;">
+            <div class="label">DOWNLOAD SPEED TEST</div>
+            <div class="value green" id="speed-val">0.0 Mbps</div>
+        </div>
+        <div class="speed-bar-container">
+            <div class="speed-bar-fill" id="speed-bar"></div>
+        </div>
     </div>
+    <br>
+
+    <button class="btn-test" onclick="runSpeedTest()">
+        <span>RUN SPEED TEST</span> <span class="btn-icon">🚀</span>
+    </button>
+    <button class="btn-test" onclick="checkBluetooth()">
+        <span>SCAN BLUETOOTH</span> <span class="btn-icon">📡</span>
+    </button>
+    <button class="btn-test" onclick="fetchIP()">
+        <span>REFRESH IP DATA</span> <span class="btn-icon">🌐</span>
+    </button>
 
     <div class="terminal" id="console-output">
-        <div class="log-line">> HAPTIC ENGINE INIT...</div>
-        <div class="log-line">> CHECKING API SUPPORT...</div>
+        <div class="log-line">> NETWORK MODULE INIT...</div>
+        <div class="log-line">> WAITING FOR HANDSHAKE...</div>
     </div>
 
-    <a href="../index.html" class="back-btn">EXIT HAPTIC LAB</a>
+    <a href="../index.html" class="back-btn">EXIT COMMAND</a>
 
     <script>
         // --- LOGGING ---
@@ -152,103 +164,115 @@
             const term = document.getElementById('console-output');
             const line = document.createElement('div');
             line.className = 'log-line';
-            line.innerHTML = `<span style="color:#64748b">[MOT]</span> ${msg}`;
+            line.innerHTML = `<span style="color:#64748b">[NET]</span> ${msg}`;
             term.appendChild(line);
             if(term.children.length > 6) term.removeChild(term.children[0]);
             term.scrollTop = term.scrollHeight;
         }
 
-        // --- CHECK SUPPORT ---
-        const canVibrate = "vibrate" in navigator;
-        if(canVibrate) {
-            log("> NAVIGATOR.VIBRATE: SUPPORTED");
-        } else {
-            log("> NAVIGATOR.VIBRATE: UNSUPPORTED (iOS?)");
-            alert("NOTE: Apple iOS blocks web vibration. This test works best on Android.");
-        }
-
-        // --- VISUALIZER ---
-        function triggerVisual(duration) {
-            const viz = document.getElementById('visualizer');
-            viz.classList.add('vibrating');
+        // --- 1. IP & ISP FETCH ---
+        async function fetchIP() {
+            log("> CONTACTING GEO-SATELLITE...");
+            document.getElementById('ip-address').innerText = "FETCHING...";
             
-            // Remove class after duration
-            setTimeout(() => {
-                viz.classList.remove('vibrating');
-            }, duration);
+            try {
+                // Using ipapi.co (Free JSON API)
+                const response = await fetch('https://ipapi.co/json/');
+                const data = await response.json();
+                
+                document.getElementById('ip-address').innerText = data.ip || "UNKNOWN";
+                document.getElementById('isp-name').innerText = (data.org || data.isp || "Private").toUpperCase();
+                
+                log(`> IP ACQUIRED: ${data.ip}`);
+                log(`> LOCATION: ${data.city}, ${data.country_code}`);
+            } catch (e) {
+                log("> ERROR: API TIMEOUT. USING LOCAL.");
+                document.getElementById('ip-address').innerText = "127.0.0.1";
+                document.getElementById('isp-name').innerText = "LOCAL_HOST";
+            }
         }
 
-        // --- MANUAL ---
-        function updateDur(val) {
-            document.getElementById('dur-val').innerText = val + "ms";
-        }
-
-        function manualPulse() {
-            const dur = parseInt(document.getElementById('duration').value);
-            log(`> MANUAL PULSE: ${dur}ms`);
+        // --- 2. NETWORK INFO API ---
+        function checkConnection() {
+            const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
             
-            if(canVibrate) navigator.vibrate(dur);
-            triggerVisual(dur);
+            if(conn) {
+                const type = conn.effectiveType ? conn.effectiveType.toUpperCase() : "WIFI/LAN";
+                const speed = conn.downlink ? conn.downlink + "+" : "Unknown";
+                
+                document.getElementById('net-type').innerText = type;
+                document.getElementById('net-speed').innerText = speed + " Mbps";
+                log(`> LINK TYPE DETECTED: ${type}`);
+            } else {
+                document.getElementById('net-type').innerText = "UNKNOWN";
+                document.getElementById('net-speed').innerText = "--";
+                log("> NETWORK API NOT SUPPORTED");
+            }
         }
 
-        // --- PATTERNS ---
-        function playPattern(type) {
-            let pattern = [];
-            let name = "";
-            let vizDur = 500;
+        // --- 3. PING SIMULATION ---
+        function startPing() {
+            setInterval(() => {
+                // Simulate realistic ping jitter
+                const ping = Math.floor(Math.random() * (45 - 15 + 1) + 15);
+                document.getElementById('ping-val').innerText = ping;
+            }, 1000);
+        }
 
-            if(type === 'tick') {
-                pattern = [30];
-                name = "CRISP TICK";
-                vizDur = 100;
-            }
-            if(type === 'double') {
-                pattern = [50, 50, 50]; // Vib, Pause, Vib
-                name = "DOUBLE TAP";
-                vizDur = 200;
-            }
-            if(type === 'heavy') {
-                pattern = [1000];
-                name = "HEAVY HUM";
-                vizDur = 1000;
-            }
-            if(type === 'heart') {
-                pattern = [100, 100, 100, 500]; // Dum-Dum... Dum-Dum...
-                name = "HEARTBEAT RHYTHM";
-                vizDur = 800;
-            }
-            if(type === 'sos') {
-                // ... --- ...
-                pattern = [
-                    100,50,100,50,100, // S
-                    200, 
-                    300,100,300,100,300, // O
-                    200, 
-                    100,50,100,50,100 // S
-                ]; 
-                name = "SOS DISTRESS SIGNAL";
-                vizDur = 2000;
-            }
-            if(type === 'stress') {
-                pattern = [50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50]; // Machine gun
-                name = "STRESS TEST (RAPID)";
-                vizDur = 1500;
-            }
-
-            log(`> PATTERN: ${name}`);
+        // --- 4. BLUETOOTH CHECK ---
+        function checkBluetooth() {
+            log("> SCANNING BLUETOOTH RADIO...");
             
-            if(canVibrate) navigator.vibrate(pattern);
-            
-            // Visualizer needs to pulse differently for patterns
-            // We just trigger a long shake for complex patterns for simplicity
-            triggerVisual(vizDur);
+            if(navigator.bluetooth) {
+                navigator.bluetooth.getAvailability().then(available => {
+                    if(available) {
+                        document.getElementById('bt-status').innerText = "ACTIVE & READY";
+                        document.getElementById('bt-status').style.color = "var(--success)";
+                        log("> BLUETOOTH ADAPTER FOUND");
+                    } else {
+                        document.getElementById('bt-status').innerText = "DISABLED";
+                        document.getElementById('bt-status').style.color = "var(--danger)";
+                        log("> BLUETOOTH OFF");
+                    }
+                });
+            } else {
+                document.getElementById('bt-status').innerText = "UNSUPPORTED";
+                log("> WEB BLUETOOTH API MISSING");
+            }
         }
 
-        function stopVibrate() {
-            if(canVibrate) navigator.vibrate(0);
-            log("> EMERGENCY STOP TRIGGERED");
-            document.getElementById('visualizer').classList.remove('vibrating');
+        // --- 5. SPEED TEST ANIMATION ---
+        function runSpeedTest() {
+            log("> INITIATING SPEED TEST PACKETS...");
+            const bar = document.getElementById('speed-bar');
+            const val = document.getElementById('speed-val');
+            let progress = 0;
+            let speed = 0;
+            
+            const interval = setInterval(() => {
+                progress += 2;
+                // Simulate speed curve (ramp up then stabilize)
+                if(progress < 50) speed += Math.random() * 5;
+                else speed += (Math.random() - 0.5) * 2;
+                
+                if(speed < 0) speed = 0;
+                
+                bar.style.width = progress + "%";
+                val.innerText = speed.toFixed(1) + " Mbps";
+                
+                if(progress >= 100) {
+                    clearInterval(interval);
+                    bar.style.width = "100%";
+                    val.innerText = speed.toFixed(1) + " Mbps (AVG)";
+                    log(`> DOWNLOAD TEST COMPLETE: ${speed.toFixed(1)} Mbps`);
+                }
+            }, 50);
         }
+
+        // --- AUTO START ---
+        fetchIP();
+        checkConnection();
+        startPing();
 
     </script>
 </body>
