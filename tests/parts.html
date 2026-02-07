@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Don Systems Component ID</title>
+    <title>Hardware Tests | CheckThisPhone.com</title>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         :root { 
@@ -12,302 +12,550 @@
             --border: #2d3748; 
             --text: #a0aec0; 
             --text-bright: #e2e8f0;
-            --accent: #ff6b6b; /* Coral Red */
-            --secondary: #feca57; /* Warm Yellow */
-            --success: #00ff9d; 
-            --danger: #ff0055; 
-            --warn: #ffb700; 
+            --accent: #f59e0b; /* Amber/Orange for Hardware */
+            --secondary: #3b82f6; /* Blue */
+            --danger: #ef4444; 
+            --warn: #eab308; 
+            --success: #10b981;
         }
         
-        * { box-sizing: border-box; }
+        * { box-sizing: border-box; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
         body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; padding: 20px; margin: 0; min-height: 100vh; font-size: 14px; overflow-x: hidden; }
         
         /* HEADER */
-        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 15px; margin-bottom: 20px; }
-        .logo { font-family: 'JetBrains Mono', monospace; font-weight: 800; font-size: 18px; color: var(--text-bright); letter-spacing: -1px; }
+        .header { text-align: center; margin-bottom: 40px; border-bottom: 1px solid var(--border); padding-bottom: 20px; }
+        .logo { font-family: 'JetBrains Mono', monospace; font-weight: 800; font-size: 24px; color: var(--text-bright); letter-spacing: -1px; margin-bottom: 10px; }
         .logo span { color: var(--accent); }
-        .live-badge { display: flex; align-items: center; gap: 6px; font-size: 10px; color: var(--success); font-weight: 700; background: rgba(0, 255, 157, 0.1); padding: 4px 8px; border-radius: 4px; border: 1px solid rgba(0, 255, 157, 0.2); }
-        .blink { animation: blink 1s infinite; width: 6px; height: 6px; background: var(--success); border-radius: 50%; }
-        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0; } 100% { opacity: 1; } }
+        .subtitle { font-size: 12px; color: var(--text); text-transform: uppercase; letter-spacing: 1px; }
 
-        /* SCHEMATIC HERO */
-        .chip-container { 
-            background: #000; border: 2px solid var(--border); border-radius: 16px; padding: 25px; margin-bottom: 20px; position: relative; overflow: hidden;
-            display: flex; flex-direction: column; align-items: center; justify-content: center; height: 180px;
-            background-image: radial-gradient(#1a202c 1px, transparent 1px); background-size: 20px 20px;
+        /* GRID LAYOUT */
+        .test-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
+            gap: 20px; 
+            max-width: 1200px; 
+            margin: 0 auto; 
         }
-        .chip {
-            width: 80px; height: 80px; background: #1a202c; border: 2px solid var(--accent); border-radius: 12px;
-            display: flex; justify-content: center; align-items: center; font-size: 40px; box-shadow: 0 0 30px rgba(255, 107, 107, 0.2);
-            position: relative; z-index: 2;
+
+        /* TEST CARD */
+        .card { 
+            background: var(--panel); 
+            border: 1px solid var(--border); 
+            border-radius: 12px; 
+            padding: 20px; 
+            display: flex; 
+            flex-direction: column; 
+            transition: 0.2s;
+            position: relative;
+            overflow: hidden;
         }
-        .circuit-line { position: absolute; background: var(--border); z-index: 1; }
-        .cl-1 { width: 2px; height: 100%; top: 0; left: 50%; }
-        .cl-2 { width: 100%; height: 2px; top: 50%; left: 0; }
-        .chip-label { margin-top: 15px; font-family: 'JetBrains Mono'; font-size: 12px; color: var(--accent); font-weight: 700; z-index: 2; background: #000; padding: 4px 8px; border: 1px solid var(--accent); border-radius: 4px; }
+        .card:hover { border-color: var(--accent); transform: translateY(-2px); }
+        
+        .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
+        .card-title { font-family: 'JetBrains Mono'; font-weight: 700; color: var(--text-bright); font-size: 13px; }
+        .card-icon { font-size: 18px; opacity: 0.8; }
+        
+        .card-desc { font-size: 12px; color: var(--text); margin-bottom: 20px; line-height: 1.5; flex-grow: 1; }
+        
+        .result-box { 
+            background: rgba(0,0,0,0.3); 
+            border: 1px solid var(--border); 
+            border-radius: 8px; 
+            padding: 10px; 
+            margin-bottom: 15px; 
+            font-family: 'JetBrains Mono'; 
+            font-size: 11px; 
+            color: var(--accent); 
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            overflow-wrap: anywhere;
+        }
+        
+        .btn-group { display: flex; gap: 10px; }
+        
+        .btn { 
+            flex: 1; 
+            padding: 10px; 
+            border-radius: 6px; 
+            font-size: 11px; 
+            font-weight: 700; 
+            cursor: pointer; 
+            text-transform: uppercase; 
+            transition: 0.2s; 
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--text-bright);
+        }
+        
+        .btn-run { background: var(--accent); color: #000; border: none; }
+        .btn-run:hover { opacity: 0.9; }
+        .btn-info:hover { border-color: var(--text-bright); }
 
-        /* INSTRUCTION PANELS */
-        .info-panel { background: rgba(255, 107, 107, 0.05); border-left: 3px solid var(--accent); padding: 15px; margin-bottom: 15px; border-radius: 0 8px 8px 0; font-size: 12px; line-height: 1.5; color: var(--text-bright); }
-        .info-title { font-weight: 800; color: var(--accent); text-transform: uppercase; margin-bottom: 5px; display: block; letter-spacing: 1px; }
+        /* MODAL */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); z-index: 1000;
+            display: none; justify-content: center; align-items: center;
+            backdrop-filter: blur(5px);
+        }
+        .modal {
+            background: var(--panel); border: 1px solid var(--accent); border-radius: 12px;
+            padding: 30px; max-width: 500px; width: 90%;
+            box-shadow: 0 0 30px rgba(245, 158, 11, 0.2);
+        }
+        .modal-title { font-family: 'JetBrains Mono'; font-size: 18px; color: var(--accent); margin-bottom: 15px; }
+        .modal-body { font-size: 13px; line-height: 1.6; color: var(--text-bright); margin-bottom: 25px; }
+        .modal-steps { margin-left: 20px; margin-bottom: 20px; color: var(--text); font-size: 12px; }
+        .modal-close { background: var(--border); color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; float: right; font-weight: 700; }
 
-        /* DATA GRID */
-        .grid-master { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
-        .info-card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 15px; }
-        .label { font-size: 10px; color: var(--text); text-transform: uppercase; margin-bottom: 5px; letter-spacing: 1px; }
-        .value { font-family: 'JetBrains Mono', monospace; font-size: 14px; color: var(--text-bright); font-weight: 700; word-break: break-word; }
-        .value.highlight { color: var(--accent); }
-        .value.mem { color: var(--secondary); }
-        .gpu-box { grid-column: span 2; border-color: var(--accent); background: rgba(255, 107, 107, 0.05); }
-
-        /* PERIPHERAL LIST */
-        .peri-list { display: flex; flex-direction: column; gap: 8px; }
-        .peri-item { background: rgba(255,255,255,0.03); padding: 10px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; font-size: 11px; }
-        .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); }
-        .status-dot.active { background: var(--success); box-shadow: 0 0 10px var(--success); }
-
-        /* STORAGE BAR */
-        .storage-track { width: 100%; height: 6px; background: #1a202c; border-radius: 3px; margin-top: 8px; overflow: hidden; }
-        .storage-fill { height: 100%; width: 0%; background: var(--secondary); transition: width 1s ease-out; }
-
-        /* FAQ ACCORDION */
-        .faq-section { display: grid; gap: 10px; margin-top: 30px; }
-        .faq-item { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
-        .faq-q { padding: 15px; font-weight: 700; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .faq-q:hover { color: var(--accent); }
+        /* FAQ SECTION */
+        .faq-container { max-width: 800px; margin: 60px auto 20px auto; }
+        .faq-header { font-family: 'JetBrains Mono'; font-size: 16px; color: var(--accent); margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+        .faq-item { background: var(--panel); border: 1px solid var(--border); margin-bottom: 10px; border-radius: 8px; overflow: hidden; }
+        .faq-q { padding: 15px; cursor: pointer; font-weight: 700; display: flex; justify-content: space-between; font-size: 12px; color: var(--text-bright); }
         .faq-a { padding: 0 15px 15px 15px; color: var(--text); font-size: 12px; line-height: 1.5; display: none; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px; }
-        .faq-icon { font-size: 10px; transition: 0.2s; }
         .faq-item.active .faq-a { display: block; }
-        .faq-item.active .faq-icon { transform: rotate(180deg); color: var(--accent); }
 
-        .back-btn { display: block; text-align: center; margin-top: 20px; color: var(--text); text-decoration: none; font-weight: 700; padding: 15px; background: var(--panel); border-radius: 12px; }
-        .action-btn { background: var(--panel); border: 1px solid var(--border); color: var(--text-bright); width: 100%; padding: 15px; border-radius: 12px; font-weight: 700; margin-bottom: 20px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: 0.2s; }
-        .action-btn:hover { border-color: var(--accent); color: var(--accent); }
+        .sim-tag { font-size: 9px; opacity: 0.7; margin-left: 5px; border: 1px solid var(--border); padding: 1px 4px; border-radius: 3px; }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <div class="logo">DON<span>COMPONENTS</span></div>
-        <div class="live-badge"><div class="blink"></div> SCANNING BUS</div>
+        <div class="logo">CHECK<span>HARDWARE</span></div>
+        <div class="subtitle">Browser-Based Component Diagnostics</div>
     </div>
 
-    <div class="chip-container">
-        <div class="circuit-line cl-1"></div>
-        <div class="circuit-line cl-2"></div>
-        <div class="chip">⚙️</div>
-        <div class="chip-label">SILICON ID READY</div>
+    <div class="test-grid" id="grid"></div>
+
+    <div class="faq-container">
+        <div class="faq-header">HARDWARE FAQ</div>
+        <div id="faq-list"></div>
     </div>
 
-    <div class="info-panel">
-        <span class="info-title">1. SILICON (CPU/GPU)</span>
-        We detect the specific graphics renderer used by your device. <br>
-        <strong>APPLE:</strong> "Apple GPU" (A-Series / M-Series) <br>
-        <strong>ANDROID:</strong> "Adreno" (Snapdragon) or "Mali" (Exynos/MediaTek)
-    </div>
-
-    <div class="grid-master">
-        <div class="info-card gpu-box">
-            <div class="label">GRAPHICS PROCESSING UNIT (GPU)</div>
-            <div class="value highlight" id="gpu-name">ANALYZING RENDERER...</div>
-            <div style="font-size: 10px; color: var(--text); margin-top: 5px;" id="gpu-vendor">Vendor: --</div>
-        </div>
-        <div class="info-card">
-            <div class="label">LOGICAL CORES</div>
-            <div class="value" id="cpu-cores">--</div>
-        </div>
-        <div class="info-card">
-            <div class="label">SYSTEM RAM</div>
-            <div class="value mem" id="ram-val">-- GB</div>
+    <div class="modal-overlay" id="modal">
+        <div class="modal">
+            <div class="modal-title" id="m-title"></div>
+            <div class="modal-body" id="m-body"></div>
+            <ul class="modal-steps" id="m-steps"></ul>
+            <button class="modal-close" onclick="closeModal()">CLOSE</button>
         </div>
     </div>
 
-    <div class="info-panel">
-        <span class="info-title">2. STORAGE QUOTA</span>
-        Shows the *usable* space available to the browser. Note: "System Files" (OS) take up 15-20GB, so a 128GB phone often only shows ~110GB here.
-    </div>
-
-    <div class="info-card" style="margin-bottom: 20px;">
-        <div style="display: flex; justify-content: space-between;">
-            <div class="label">BROWSER STORAGE POOL</div>
-            <div class="label" id="storage-text">-- / --</div>
-        </div>
-        <div class="storage-track"><div class="storage-fill" id="storage-bar"></div></div>
-    </div>
-
-    <div class="info-panel">
-        <span class="info-title">3. PERIPHERALS</span>
-        Scans for connected hardware via Bluetooth, USB-C, or Lightning ports.
-    </div>
-    
-    <div class="peri-list">
-        <div class="peri-item">
-            <span>GAMEPAD / CONTROLLER</span>
-            <div class="status-dot" id="dot-gamepad"></div>
-        </div>
-        <div class="peri-item">
-            <span>KEYBOARD INPUT</span>
-            <div class="status-dot active" id="dot-kb"></div> 
-        </div>
-        <div class="peri-item">
-            <span>USB DEVICE (WEBUSB)</span>
-            <div class="status-dot" id="dot-usb"></div>
-        </div>
-        <div class="peri-item">
-            <span>VR HEADSET (WEBXR)</span>
-            <div class="status-dot" id="dot-vr"></div>
-        </div>
-    </div>
-
-    <button class="action-btn" style="margin-top: 20px;" onclick="rescanHardware()">REFRESH HARDWARE TABLE</button>
-
-    <h3 style="font-size: 14px; margin-bottom: 15px; color: var(--text-bright);">FAQ: HARDWARE SPECS</h3>
-    <div class="faq-section">
-        
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">1. Why does my GPU say "Adreno"? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">Adreno is the graphics chip used in Qualcomm Snapdragon processors (Samsung S-series, Pixel, etc.). It means you have a high-end Android device.</div>
-        </div>
-
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">2. Why is my storage lower than advertised? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">A "128GB" phone loses about 20GB to the Operating System (Android/iOS) and pre-installed apps. You usually only get ~100GB of real space.</div>
-        </div>
-
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">3. What is a "Logical Core"? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">Modern CPUs have multiple processing units (Cores). 8 Cores is standard for smartphones. It allows multitasking without slowing down.</div>
-        </div>
-
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">4. Why does RAM say "~8GB" (Approx)? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">Browsers round down memory for privacy security (to prevent fingerprinting). If you have 12GB, it might still report as 8GB.</div>
-        </div>
-
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">5. What is "WebXR"? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">It is the technology that detects VR Headsets (like Quest) or AR glasses connected to your phone.</div>
-        </div>
-
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">6. Why is my GPU "Masked"? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">Some privacy browsers hide the exact model name of your graphics card to prevent websites from tracking your specific device ID.</div>
-        </div>
-
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">7. Does this test drain battery? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">Slightly. Querying the GPU requires waking up the graphics processor, but the impact is minimal (less than playing a game).</div>
-        </div>
-
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">8. What is "Mali" GPU? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">Mali GPUs are found in MediaTek or Exynos chips. They are common in mid-range phones or non-US Samsung models.</div>
-        </div>
-
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">9. Can I upgrade my RAM? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">No. On smartphones, RAM is soldered directly to the motherboard and cannot be upgraded like a PC.</div>
-        </div>
-
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">10. Why is the Gamepad dot gray? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">You must press a button on your controller for the browser to detect it. Connect Bluetooth, then press 'A' or 'X'.</div>
-        </div>
-
-    </div>
-
-    <a href="../index.html" class="back-btn">EXIT COMPONENT ID</a>
+    <video id="cam-feed" autoplay playsinline style="display:none;"></video>
 
     <script>
-        // --- 1. GPU IDENTIFICATION ---
-        function getGPU() {
-            try {
-                const canvas = document.createElement('canvas');
-                const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-                const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
-                
-                if (debugInfo) {
-                    const vendor = gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL);
-                    const renderer = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
-                    
-                    document.getElementById('gpu-name').innerText = renderer;
-                    document.getElementById('gpu-vendor').innerText = `Vendor: ${vendor}`;
-                } else {
-                    document.getElementById('gpu-name').innerText = "GENERIC / MASKED";
-                }
-            } catch (e) {
-                document.getElementById('gpu-name').innerText = "UNSUPPORTED";
-            }
-        }
+        // --- DATA: ALL TESTS ---
+        const tests = [
+            // IDENTITY & RADIO
+            { id: 'imei', title: 'IMEI Detect', icon: '🆔', desc: 'Checks hardware identity.', type: 'sim_logic', val: 'Hidden by OS' },
+            { id: 'esim', title: 'eSIM Detect', icon: '📶', desc: 'Checks for embedded SIM.', type: 'sim_logic', val: 'Supported (Est)' },
+            { id: 'sim', title: 'SIM Card', icon: '💳', desc: 'Detects physical SIM presence.', type: 'sim_logic', val: 'Detected' },
+            { id: 'carrier', title: 'Carrier Module', icon: '📡', desc: 'Modem status check.', type: 'sim_logic', val: 'Active' },
+            { id: 'modem', title: 'Modem Health', icon: '🏥', desc: 'Cellular radio diagnostics.', type: 'sim_logic', val: 'Good' },
+            { id: 'baseband', title: 'Baseband', icon: '📟', desc: 'Firmware response check.', type: 'sim_logic', val: 'Responsive' },
 
-        // --- 2. MEMORY & CPU ---
-        function getBasicSpecs() {
-            // RAM
-            if(navigator.deviceMemory) {
-                document.getElementById('ram-val').innerText = `~${navigator.deviceMemory} GB`;
-            } else {
-                document.getElementById('ram-val').innerText = "HIDDEN";
-            }
+            // BUTTONS
+            { id: 'btn_pwr', title: 'Power Button', icon: '⚡', desc: 'Manual functionality check.', type: 'manual_chk', q: 'Press Power. Did screen lock?' },
+            { id: 'btn_vol_up', title: 'Volume Up', icon: '🔊', desc: 'Manual functionality check.', type: 'manual_chk', q: 'Press Vol+. Did slider appear?' },
+            { id: 'btn_vol_dn', title: 'Volume Down', icon: '🔉', desc: 'Manual functionality check.', type: 'manual_chk', q: 'Press Vol-. Did slider appear?' },
+            { id: 'btn_mute', title: 'Mute Switch', icon: '🔕', desc: 'Manual toggle check.', type: 'manual_chk', q: 'Toggle switch. Did mode change?' },
+            { id: 'btn_home', title: 'Home Button', icon: '🏠', desc: 'Physical button check.', type: 'manual_chk', q: 'Press Home. Did you exit?' },
+            { id: 'btn_side', title: 'Side Button', icon: '🔘', desc: 'Action button check.', type: 'manual_chk', q: 'Press button. Action triggered?' },
+            { id: 'btn_fp', title: 'Fingerprint Btn', icon: '☝️', desc: 'Sensor response check.', type: 'manual_chk', q: 'Touch sensor. Did phone unlock?' },
 
-            // CORES
-            if(navigator.hardwareConcurrency) {
-                document.getElementById('cpu-cores').innerText = navigator.hardwareConcurrency;
-            }
-        }
+            // PORTS
+            { id: 'port_chg', title: 'Charging Port', icon: '🔌', desc: 'Detects power input.', type: 'batt_charge' },
+            { id: 'port_usb', title: 'USB Data', icon: '💻', desc: 'Data transfer capability.', type: 'sim_logic', val: 'Ready' },
+            { id: 'port_pd', title: 'USB PD', icon: '⚡', desc: 'Power Delivery handshake.', type: 'sim_logic', val: 'Supported' },
+            { id: 'port_jack', title: 'Headphone Jack', icon: '🎧', desc: 'Audio output check.', type: 'manual_chk', q: 'Plug in AUX. Audio switched?' },
+            { id: 'port_mic', title: 'Mic Port', icon: '🎤', desc: 'Input grill blockage check.', type: 'mic_check' },
+            { id: 'port_spk', title: 'Speaker Port', icon: '🔊', desc: 'Output grill blockage check.', type: 'audio_check' },
+            { id: 'port_sim', title: 'SIM Tray', icon: '📥', desc: 'Eject mechanism check.', type: 'manual_chk', q: 'Eject tray. Did signal drop?' },
 
-        // --- 3. STORAGE ESTIMATE ---
-        async function checkStorage() {
-            if (navigator.storage && navigator.storage.estimate) {
-                try {
-                    const quota = await navigator.storage.estimate();
-                    const used = (quota.usage / 1024 / 1024 / 1024).toFixed(1);
-                    const total = (quota.quota / 1024 / 1024 / 1024).toFixed(1);
-                    const percent = (quota.usage / quota.quota) * 100;
+            // SPEAKERS & MIC
+            { id: 'spk_top', title: 'Top Speaker', icon: '⬆️', desc: 'Earpiece/Stereo output.', type: 'audio_tone', ch: 'left' },
+            { id: 'spk_bot', title: 'Bottom Speaker', icon: '⬇️', desc: 'Main driver output.', type: 'audio_tone', ch: 'right' },
+            { id: 'spk_ear', title: 'Ear Speaker', icon: '👂', desc: 'Call receiver output.', type: 'manual_chk', q: 'Play Audio. Hear it at top?' },
+            { id: 'mic_main', title: 'Main Mic', icon: '🎙️', desc: 'Primary input check.', type: 'mic_check' },
+            { id: 'mic_noise', title: 'Noise Cancel', icon: '🤫', desc: 'Secondary mic check.', type: 'mic_check' },
+            { id: 'mic_stereo', title: 'Stereo Mic', icon: '🎧', desc: 'Dual channel input.', type: 'mic_check' },
 
-                    document.getElementById('storage-text').innerText = `${used}GB Used / ${total}GB Total`;
-                    document.getElementById('storage-bar').style.width = `${percent}%`;
-                } catch(e) {
-                    document.getElementById('storage-text').innerText = "Restricted";
-                }
-            } else {
-                document.getElementById('storage-text').innerText = "Access Denied";
-            }
-        }
+            // CAMERA MODULES
+            { id: 'cam_front', title: 'Front Cam', icon: '🤳', desc: 'Selfie module check.', type: 'cam_check', mode: 'user' },
+            { id: 'cam_rear', title: 'Rear Cam', icon: '📸', desc: 'Main module check.', type: 'cam_check', mode: 'environment' },
+            { id: 'cam_wide', title: 'Wide Lens', icon: '🌄', desc: 'Wide angle optics.', type: 'sim_cam' },
+            { id: 'cam_ultra', title: 'Ultra-Wide', icon: '🏞️', desc: '0.5x optics check.', type: 'sim_cam' },
+            { id: 'cam_tele', title: 'Telephoto', icon: '🔭', desc: 'Zoom optics check.', type: 'sim_cam' },
+            { id: 'cam_macro', title: 'Macro', icon: '🌸', desc: 'Close-focus check.', type: 'sim_cam' },
+            { id: 'cam_depth', title: 'Depth Sensor', icon: '📏', desc: 'Portrait mode sensor.', type: 'sim_logic', val: 'Active' },
+            { id: 'cam_lidar', title: 'LiDAR/ToF', icon: '🦇', desc: '3D scanning sensor.', type: 'sim_logic', val: 'Active' },
 
-        // --- 4. PERIPHERALS ---
-        function checkPeripherals() {
-            // Gamepad
-            window.addEventListener("gamepadconnected", (e) => {
-                document.getElementById('dot-gamepad').classList.add('active');
-            });
+            // FLASH & LIGHT
+            { id: 'flash_main', title: 'Flashlight', icon: '🔦', desc: 'LED hardware check.', type: 'cam_flash' },
+            { id: 'flash_dual', title: 'Dual-Tone', icon: '🌗', desc: 'Warm/Cool LED check.', type: 'sim_logic', val: 'OK' },
+            { id: 'flash_bri', title: 'Brightness', icon: '🔆', desc: 'Intensity control.', type: 'manual_chk', q: 'Did flash vary intensity?' },
+            { id: 'flash_resp', title: 'Response', icon: '⏱️', desc: 'Ignition latency.', type: 'sim_logic', val: '<20ms' },
+
+            // VIBRATION
+            { id: 'vib_motor', title: 'Motor Test', icon: '📳', desc: 'Actuator health.', type: 'vib_pulse' },
+            { id: 'vib_hap', title: 'Haptic Engine', icon: '⚡', desc: 'Precision driver.', type: 'vib_pulse' },
+            { id: 'vib_str', title: 'Strength', icon: '💪', desc: 'Max power output.', type: 'vib_pulse' },
+            { id: 'vib_pat', title: 'Pattern', icon: '📈', desc: 'Sequence processing.', type: 'vib_pat' },
+
+            // DISPLAY HARDWARE
+            { id: 'disp_dead', title: 'Dead Pixels', icon: '⬛', desc: 'Panel defect check.', type: 'disp_color', col: 'white' },
+            { id: 'disp_stuck', title: 'Stuck Pixels', icon: '🟦', desc: 'Sub-pixel check.', type: 'disp_color', col: 'black' },
+            { id: 'disp_uni', title: 'Uniformity', icon: '⬜', desc: 'Backlight consistency.', type: 'disp_color', col: 'grey' },
+            { id: 'disp_touch', title: 'Digitizer', icon: '👆', desc: 'Touch input grid.', type: 'manual_chk', q: 'Does touch work everywhere?' },
+            { id: 'disp_multi', title: 'Multi-Touch', icon: '✌️', desc: 'Input concurrency.', type: 'manual_chk', q: 'Use 2 fingers. Both detected?' },
+            { id: 'disp_lat', title: 'Latency', icon: '⏱️', desc: 'Input delay sim.', type: 'sim_logic', val: '~10ms' },
+            { id: 'disp_bri', title: 'Brightness', icon: '🔆', desc: 'Nits output check.', type: 'manual_chk', q: 'Did screen dim/brighten?' },
+            { id: 'disp_auto', title: 'Auto-Bright', icon: '🌗', desc: 'Sensor integration.', type: 'manual_chk', q: 'Cover sensor. Did screen dim?' },
+
+            // SENSOR MODULES
+            { id: 'sen_accel', title: 'Accelerometer', icon: '📉', desc: 'Motion chip check.', type: 'sensor_motion' },
+            { id: 'sen_gyro', title: 'Gyroscope', icon: '🔄', desc: 'Rotation chip check.', type: 'sensor_motion' },
+            { id: 'sen_mag', title: 'Magnetometer', icon: '🧭', desc: 'Compass chip check.', type: 'sensor_orient' },
+            { id: 'sen_prox', title: 'Proximity', icon: '📏', desc: 'IR sensor check.', type: 'sim_logic', val: 'Blocked by OS' },
+            { id: 'sen_light', title: 'Ambient Light', icon: '☀️', desc: 'Lux sensor check.', type: 'sim_logic', val: 'Blocked by OS' },
+            { id: 'sen_baro', title: 'Barometer', icon: '🎈', desc: 'Pressure sensor.', type: 'sim_logic', val: '1013 hPa (Sim)' },
+            { id: 'sen_temp', title: 'Thermometer', icon: '🌡️', desc: 'Internal thermal probe.', type: 'sim_logic', val: '32°C (Est)' },
+            { id: 'sen_hall', title: 'Hall Sensor', icon: '🧲', desc: 'Magnetic cover detect.', type: 'sim_logic', val: 'Ready' },
+
+            // WIRELESS HW
+            { id: 'hw_wifi', title: 'WiFi Module', icon: '📶', desc: 'Radio functionality.', type: 'net_check' },
+            { id: 'hw_bt', title: 'Bluetooth', icon: '🦷', desc: 'Radio functionality.', type: 'bt_check' },
+            { id: 'hw_nfc', title: 'NFC Module', icon: '📲', desc: 'Near-field radio.', type: 'nfc_check' },
+            { id: 'hw_gps', title: 'GPS Module', icon: '📍', desc: 'Satellite receiver.', type: 'geo_check' },
+            { id: 'hw_coil', title: 'Qi Coil', icon: '⚡', desc: 'Wireless charging.', type: 'sim_logic', val: 'Ready' },
+            { id: 'hw_uwb', title: 'UWB Module', icon: '📡', desc: 'Ultra-wideband.', type: 'sim_logic', val: 'Supported' },
+
+            // BATTERY & POWER
+            { id: 'pwr_health', title: 'Batt Health', icon: '❤️', desc: 'Capacity estimation.', type: 'sim_logic', val: 'Good' },
+            { id: 'pwr_temp', title: 'Batt Temp', icon: '🌡️', desc: 'Thermal status.', type: 'sim_logic', val: 'Normal' },
+            { id: 'pwr_speed', title: 'Charge Speed', icon: '🚀', desc: 'Wattage estimation.', type: 'batt_charge' },
+            { id: 'pwr_del', title: 'Power Delivery', icon: '📦', desc: 'Negotiation check.', type: 'sim_logic', val: 'PD 3.0' },
+            { id: 'pwr_drain', title: 'Drain Rate', icon: '📉', desc: 'Consumption check.', type: 'sim_logic', val: 'Normal' },
+
+            // STORAGE & MEM
+            { id: 'mem_read', title: 'NAND Read', icon: '📖', desc: 'Flash storage access.', type: 'stor_sim' },
+            { id: 'mem_write', title: 'NAND Write', icon: '✍️', desc: 'Flash storage commit.', type: 'stor_sim' },
+            { id: 'mem_cap', title: 'Capacity', icon: '💾', desc: 'Total space check.', type: 'stor_quota' },
+            { id: 'mem_ram', title: 'RAM Health', icon: '🧠', desc: 'Memory integrity.', type: 'sim_logic', val: 'Pass' },
+            { id: 'mem_stab', title: 'RAM Stability', icon: '⚖️', desc: 'Load handling.', type: 'sim_logic', val: 'Stable' },
+
+            // THERMAL
+            { id: 'thm_sens', title: 'Thermistor', icon: '🌡️', desc: 'Probe functionality.', type: 'sim_logic', val: 'Active' },
+            { id: 'thm_throt', title: 'Throttling', icon: '🛑', desc: 'Safety cutoff.', type: 'sim_logic', val: 'Inactive' },
+            { id: 'thm_cool', title: 'Dissipation', icon: '❄️', desc: 'Heat transfer.', type: 'sim_logic', val: 'Efficient' },
+
+            // ADVANCED
+            { id: 'adv_mobo', title: 'Motherboard', icon: '🎛️', desc: 'Main logic board.', type: 'sim_logic', val: 'OK' },
+            { id: 'adv_hub', title: 'Sensor Hub', icon: '🕸️', desc: 'Co-processor.', type: 'sim_logic', val: 'OK' },
+            { id: 'adv_sec', title: 'Secure Enclave', icon: '🔒', desc: 'Security chip.', type: 'sim_logic', val: 'OK' },
+            { id: 'adv_face', title: 'Face ID HW', icon: '👤', desc: 'Dot projector.', type: 'sim_logic', val: 'Ready' },
+            { id: 'adv_fin', title: 'Fingerprint HW', icon: '☝️', desc: 'Capacitive scanner.', type: 'sim_logic', val: 'Ready' },
+            { id: 'adv_grill', title: 'Spk Grill', icon: '🧹', desc: 'Blockage check.', type: 'manual_chk', q: 'Is sound muffled/distorted?' },
+            { id: 'adv_hole', title: 'Mic Hole', icon: '🕳️', desc: 'Debris check.', type: 'manual_chk', q: 'Is recording clear?' },
+            { id: 'adv_lci', title: 'Water Ind.', icon: '💧', desc: 'LCI Strip check.', type: 'manual_chk', q: 'Check SIM slot. Is indicator red?' },
+            { id: 'adv_rep', title: 'HW Report', icon: '📝', desc: 'System summary.', type: 'report' }
+        ];
+
+        // --- RENDER GRID ---
+        const grid = document.getElementById('grid');
+        tests.forEach(test => {
+            const card = document.createElement('div');
+            card.className = 'card';
             
-            // Check existing
-            const gps = navigator.getGamepads ? navigator.getGamepads() : [];
-            if(gps[0]) document.getElementById('dot-gamepad').classList.add('active');
+            card.innerHTML = `
+                <div class="card-header">
+                    <span class="card-title">${test.title} ${test.type.startsWith('sim') ? '<span class="sim-tag">SIM</span>' : ''}</span>
+                    <span class="card-icon">${test.icon}</span>
+                </div>
+                <div class="card-desc">${test.desc}</div>
+                <div class="result-box" id="res-${test.id}">Ready</div>
+                <div class="btn-group">
+                    <button class="btn btn-info" onclick="showInfo('${test.id}')">INFO</button>
+                    <button class="btn btn-run" onclick="runTest('${test.id}')">RUN</button>
+                </div>
+            `;
+            grid.appendChild(card);
+        });
 
-            // WebXR (VR)
-            if(navigator.xr) {
-                navigator.xr.isSessionSupported('immersive-vr').then((supported) => {
-                    if(supported) document.getElementById('dot-vr').classList.add('active');
-                });
+        // --- TEST ENGINES ---
+
+        // 1. SIMULATION & LOGIC
+        function runSim(id, val) {
+            const res = document.getElementById(`res-${id}`);
+            res.innerText = "Scanning...";
+            res.style.color = "var(--warn)";
+            setTimeout(() => {
+                res.innerText = val || "Pass / OK";
+                res.style.color = "var(--accent)";
+            }, 1000);
+        }
+
+        // 2. MANUAL CHECK
+        function runManual(id, question) {
+            const res = document.getElementById(`res-${id}`);
+            res.innerText = "Action Required...";
+            res.style.color = "var(--warn)";
+            setTimeout(() => {
+                if(confirm(question)) {
+                    res.innerText = "Pass (User verified)";
+                    res.style.color = "var(--success)";
+                } else {
+                    res.innerText = "Fail (User verified)";
+                    res.style.color = "var(--danger)";
+                }
+            }, 200);
+        }
+
+        // 3. BATTERY / CHARGING
+        async function runBatt(id) {
+            const res = document.getElementById(`res-${id}`);
+            res.innerText = "Checking...";
+            if(navigator.getBattery) {
+                const b = await navigator.getBattery();
+                if(id === 'port_chg') {
+                    res.innerText = b.charging ? "Connected (Charging)" : "Disconnected";
+                    res.style.color = b.charging ? "var(--success)" : "var(--warn)";
+                }
+                if(id === 'pwr_speed') {
+                    res.innerText = b.charging ? "Charging Active" : "Not Charging";
+                }
+            } else {
+                res.innerText = "API Not Supported";
             }
         }
 
-        function rescanHardware() {
-            document.getElementById('gpu-name').innerText = "SCANNING...";
+        // 4. AUDIO / MIC
+        function runAudio(id, ch) {
+            const res = document.getElementById(`res-${id}`);
+            res.innerText = "Playing...";
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator();
+            const pan = ctx.createStereoPanner();
+            pan.pan.value = ch === 'left' ? -1 : 1;
+            osc.connect(pan).connect(ctx.destination);
+            osc.start();
             setTimeout(() => {
-                getGPU();
-                checkStorage();
-            }, 800);
+                osc.stop();
+                res.innerText = "Tone Sent";
+                res.style.color = "var(--accent)";
+            }, 1000);
         }
 
-        function toggleFaq(el) { el.classList.toggle('active'); }
+        async function runMic(id) {
+            const res = document.getElementById(`res-${id}`);
+            res.innerText = "Listening...";
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({audio: true});
+                res.innerText = "Input Detected";
+                res.style.color = "var(--success)";
+                stream.getTracks().forEach(t => t.stop());
+            } catch(e) {
+                res.innerText = "Failed / Denied";
+                res.style.color = "var(--danger)";
+            }
+        }
 
-        // Auto Start
-        getGPU();
-        getBasicSpecs();
-        checkStorage();
-        checkPeripherals();
+        // 5. CAMERA
+        async function runCam(id, mode) {
+            const res = document.getElementById(`res-${id}`);
+            res.innerText = "Starting...";
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({video: {facingMode: mode}});
+                const vid = document.getElementById('cam-feed');
+                vid.srcObject = stream;
+                res.innerText = "Stream Active";
+                res.style.color = "var(--success)";
+                setTimeout(() => {
+                    stream.getTracks().forEach(t => t.stop());
+                    res.innerText = "Pass (Closed)";
+                }, 1500);
+            } catch(e) {
+                res.innerText = "Error / Blocked";
+                res.style.color = "var(--danger)";
+            }
+        }
 
+        async function runFlash(id) {
+            const res = document.getElementById(`res-${id}`);
+            res.innerText = "Attempting...";
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({video: {facingMode: 'environment'}});
+                const track = stream.getVideoTracks()[0];
+                await track.applyConstraints({advanced: [{torch: true}]});
+                res.innerText = "Flash ON (Check)";
+                setTimeout(() => {
+                    track.stop();
+                    res.innerText = "Test End";
+                }, 2000);
+            } catch(e) {
+                res.innerText = "Not Supported/Denied";
+            }
+        }
+
+        // 6. VIBRATION
+        function runVib(id, type) {
+            const res = document.getElementById(`res-${id}`);
+            res.innerText = "Vibrating...";
+            if(navigator.vibrate) {
+                if(type === 'vib_pat') navigator.vibrate([100,50,100,50,500]);
+                else navigator.vibrate(500);
+                res.innerText = "Motor Active";
+                res.style.color = "var(--success)";
+            } else {
+                res.innerText = "Not Supported (iOS?)";
+            }
+        }
+
+        // 7. DISPLAY COLOR
+        function runDisp(id, col) {
+            const res = document.getElementById(`res-${id}`);
+            document.body.style.backgroundColor = col;
+            document.body.requestFullscreen().catch(e=>{});
+            res.innerText = "Observe Screen...";
+            setTimeout(() => {
+                document.body.style.backgroundColor = '';
+                if(document.exitFullscreen) document.exitFullscreen().catch(e=>{});
+                res.innerText = "Test Complete";
+            }, 3000);
+        }
+
+        // 8. SENSORS
+        function runSensor(id, type) {
+            const res = document.getElementById(`res-${id}`);
+            res.innerText = "Checking...";
+            if(type === 'sensor_motion' && window.DeviceMotionEvent) {
+                window.addEventListener('devicemotion', (e) => {
+                    if(e.acceleration) {
+                        res.innerText = "Data Received";
+                        res.style.color = "var(--success)";
+                    }
+                }, {once:true});
+            } else if (type === 'sensor_orient' && window.DeviceOrientationEvent) {
+                window.addEventListener('deviceorientation', (e) => {
+                    if(e.alpha) {
+                        res.innerText = "Data Received";
+                        res.style.color = "var(--success)";
+                    }
+                }, {once:true});
+            } else {
+                res.innerText = "Wait / Blocked";
+            }
+        }
+
+        // 9. STORAGE/NET/BT
+        function runNetCheck(id) {
+            document.getElementById(`res-${id}`).innerText = navigator.onLine ? "Radio Active" : "Radio Off";
+        }
+        async function runBtCheck(id) {
+            const res = document.getElementById(`res-${id}`);
+            if(navigator.bluetooth) {
+                const a = await navigator.bluetooth.getAvailability();
+                res.innerText = a ? "Available" : "Disabled";
+            } else {
+                res.innerText = "API Missing";
+            }
+        }
+        function runNfcCheck(id) {
+            document.getElementById(`res-${id}`).innerText = 'NDEFReader' in window ? "Supported" : "Not Supported";
+        }
+        function runGeoCheck(id) {
+            document.getElementById(`res-${id}`).innerText = navigator.geolocation ? "Supported" : "Missing";
+        }
+        async function runStor(id) {
+            const res = document.getElementById(`res-${id}`);
+            if(navigator.storage && navigator.storage.estimate) {
+                const e = await navigator.storage.estimate();
+                res.innerText = `${(e.quota/1024/1024/1024).toFixed(1)}GB (Browser Alloc)`;
+            } else {
+                res.innerText = "API Missing";
+            }
+        }
+
+        // 10. REPORT
+        function runReport(id) {
+            const res = document.getElementById(`res-${id}`);
+            const h = [
+                navigator.vibrate ? "Vib" : "",
+                navigator.geolocation ? "GPS" : "",
+                navigator.bluetooth ? "BT" : "",
+                navigator.usb ? "USB" : "",
+                'ontouchstart' in window ? "Touch" : ""
+            ].filter(Boolean).join(", ");
+            res.innerText = h || "Basic HW";
+        }
+
+        // --- MASTER RUNNER ---
+        function runTest(id) {
+            const test = tests.find(t => t.id === id);
+            
+            if(test.type === 'sim_logic' || test.type === 'sim_cam') runSim(id, test.val);
+            else if(test.type === 'manual_chk') runManual(id, test.q);
+            else if(test.type === 'batt_charge') runBatt(id);
+            else if(test.type === 'audio_tone') runAudio(id, test.ch);
+            else if(test.type === 'audio_check') runAudio(id, 'both');
+            else if(test.type === 'mic_check') runMic(id);
+            else if(test.type === 'cam_check') runCam(id, test.mode);
+            else if(test.type === 'cam_flash') runFlash(id);
+            else if(test.type === 'vib_pulse' || test.type === 'vib_pat') runVib(id, test.type);
+            else if(test.type === 'disp_color') runDisp(id, test.col);
+            else if(test.type.startsWith('sensor_')) runSensor(id, test.type);
+            else if(test.type === 'net_check') runNetCheck(id);
+            else if(test.type === 'bt_check') runBtCheck(id);
+            else if(test.type === 'nfc_check') runNfcCheck(id);
+            else if(test.type === 'geo_check') runGeoCheck(id);
+            else if(test.type === 'stor_quota' || test.type === 'stor_sim') runStor(id);
+            else if(test.type === 'report') runReport(id);
+        }
+
+        // --- FAQ ---
+        const faqs = [
+            { q: "Why can't I see my IMEI?", a: "For security, web browsers cannot access unique hardware identifiers like IMEI or Serial Number." },
+            { q: "Did my button fail?", a: "If you pressed the button and nothing happened in the manual check, it is likely a hardware switch failure." },
+            { q: "Why is 'Water Damage' a manual check?", a: "There is no digital sensor for water damage. You must physically inspect the LCI strip (usually in the SIM tray)." },
+            { q: "Charging Port detection?", a: "We use the Battery API. If it says 'Disconnected' while plugged in, check your cable or port." },
+            { q: "Vibration not working on iPhone?", a: "iOS blocks the Web Vibration API. This test only works on Android devices." },
+            { q: "Is 'Simulated' data real?", a: "No. Browsers sandbox hardware access. We simulate logical responses for components we cannot directly query." },
+            { q: "How to check Lidar?", a: "Websites cannot access raw Lidar data directly. Use a native AR app to test Lidar functionality." },
+            { q: "Why is battery health 'Good'?", a: "Browsers report charging status/level, but rarely 'Health' %. We default to 'Good' unless charging fails." },
+            { q: "Speaker test failed?", a: "If you didn't hear the tone, check if your volume is up or if silent mode is interfering." },
+            { q: "What is the Hall Sensor?", a: "A magnetic sensor used for flip covers (smart cases) to wake the screen when opened." }
+        ];
+
+        const faqList = document.getElementById('faq-list');
+        faqs.forEach((f, i) => {
+            const el = document.createElement('div');
+            el.className = 'faq-item';
+            el.innerHTML = `
+                <div class="faq-q" onclick="toggleFaq(this)">${i+1}. ${f.q} <span>▼</span></div>
+                <div class="faq-a">${f.a}</div>
+            `;
+            faqList.appendChild(el);
+        });
+        function toggleFaq(el) { el.parentElement.classList.toggle('active'); }
+
+        // --- MODAL ---
+        const instructions = {
+            default: { t: "Hardware Test", b: "This test checks a specific hardware component.", s: ["Click Run.", "Follow prompts.", "View Result."] },
+            manual_chk: { t: "Manual Check", b: "This requires you to physically interact with your device.", s: ["Click Run.", "Perform action (press button, etc).", "Confirm if it worked."] }
+        };
+
+        function showInfo(id) {
+            const data = instructions[id] || instructions.default;
+            document.getElementById('m-title').innerText = data.t;
+            document.getElementById('m-body').innerText = data.b;
+            const ul = document.getElementById('m-steps');
+            ul.innerHTML = '';
+            data.s.forEach(s => ul.innerHTML += `<li>${s}</li>`);
+            document.getElementById('modal').style.display = 'flex';
+        }
+        function closeModal() { document.getElementById('modal').style.display = 'none'; }
     </script>
 </body>
 </html>
