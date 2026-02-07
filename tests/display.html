@@ -40,13 +40,14 @@
             background: #000; border: 2px dashed var(--border); border-radius: 12px; height: 250px; position: relative; overflow: hidden; margin-bottom: 20px;
             display: flex; justify-content: center; align-items: center;
         }
-        .touch-instruction { position: absolute; pointer-events: none; color: var(--text); font-size: 12px; text-transform: uppercase; letter-spacing: 1px; text-align: center; }
-        canvas { width: 100%; height: 100%; touch-action: none; }
+        .touch-instruction { position: absolute; pointer-events: none; color: var(--text); font-size: 12px; text-transform: uppercase; letter-spacing: 1px; text-align: center; z-index: 2; }
+        .touch-count { position: absolute; top: 10px; right: 15px; font-family: 'JetBrains Mono', monospace; font-size: 24px; color: var(--success); font-weight: 800; z-index: 2; display: none; }
+        canvas { width: 100%; height: 100%; touch-action: none; position: absolute; top: 0; left: 0; z-index: 1; }
 
         /* COLOR GRID CONTROLS */
         .control-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
-        .btn-test { background: var(--panel); border: 1px solid var(--border); color: var(--text-bright); padding: 15px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 11px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 5px; transition: 0.2s; }
-        .btn-test:active { transform: scale(0.95); }
+        .btn-test { background: var(--panel); border: 1px solid var(--border); color: var(--text-bright); padding: 15px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 10px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 5px; transition: 0.2s; }
+        .btn-test:active { transform: scale(0.95); background: var(--border); }
         .btn-icon { font-size: 18px; margin-bottom: 5px; }
 
         /* FULLSCREEN COLOR MODAL */
@@ -57,7 +58,21 @@
         .overlay-hint {
             position: absolute; bottom: 50px; left: 50%; transform: translateX(-50%);
             color: rgba(255,255,255,0.5); font-size: 12px; pointer-events: none;
-            text-transform: uppercase; letter-spacing: 2px;
+            text-transform: uppercase; letter-spacing: 2px; text-align: center; width: 100%;
+        }
+        
+        /* CONTRAST BARS */
+        .contrast-container { display: none; width: 100%; height: 100%; flex-direction: column; justify-content: center; align-items: center; }
+        .contrast-row { display: flex; width: 90%; height: 100px; border: 1px solid white; }
+        .contrast-block { flex: 1; height: 100%; }
+
+        /* SHARPNESS GRID */
+        .sharpness-pattern {
+            display: none; width: 100%; height: 100%;
+            background-image: repeating-linear-gradient(0deg, transparent, transparent 1px, #fff 1px, #fff 2px),
+                              repeating-linear-gradient(90deg, transparent, transparent 1px, #fff 1px, #fff 2px);
+            background-size: 4px 4px;
+            background-color: black;
         }
 
         /* TERMINAL LOG */
@@ -89,29 +104,23 @@
     </div>
 
     <div class="touch-zone" id="touch-container">
-        <div class="touch-instruction" id="touch-text">DRAG FINGER HERE<br>TO TEST DIGITIZER</div>
+        <div class="touch-instruction" id="touch-text">USE MULTIPLE FINGERS<br>TO TEST DIGITIZER</div>
+        <div class="touch-count" id="touch-counter">0 POINTS</div>
         <canvas id="touchCanvas"></canvas>
     </div>
 
     <div class="control-grid">
-        <button class="btn-test" onclick="startColorTest('red')">
-            <span class="btn-icon">🔴</span> DEAD PIXEL RED
-        </button>
-        <button class="btn-test" onclick="startColorTest('green')">
-            <span class="btn-icon">🟢</span> DEAD PIXEL GREEN
-        </button>
-        <button class="btn-test" onclick="startColorTest('blue')">
-            <span class="btn-icon">🔵</span> DEAD PIXEL BLUE
-        </button>
-        <button class="btn-test" onclick="startColorTest('white')">
-            <span class="btn-icon">⚪</span> MAX BRIGHTNESS
-        </button>
-        <button class="btn-test" onclick="startColorTest('black')">
-            <span class="btn-icon">⚫</span> OLED BLACK LEVEL
-        </button>
-        <button class="btn-test" onclick="startColorTest('gradient')">
-            <span class="btn-icon">🌈</span> COLOR BANDING
-        </button>
+        <button class="btn-test" onclick="startColorTest('red')"><span class="btn-icon">🔴</span> DEAD PIXEL RED</button>
+        <button class="btn-test" onclick="startColorTest('green')"><span class="btn-icon">🟢</span> DEAD PIXEL GREEN</button>
+        <button class="btn-test" onclick="startColorTest('blue')"><span class="btn-icon">🔵</span> DEAD PIXEL BLUE</button>
+        
+        <button class="btn-test" onclick="startColorTest('white')"><span class="btn-icon">⚪</span> MAX BRIGHTNESS</button>
+        <button class="btn-test" onclick="startColorTest('black')"><span class="btn-icon">⚫</span> OLED BLACK LEVEL</button>
+        
+        <button class="btn-test" onclick="startColorTest('gradient')"><span class="btn-icon">🌈</span> COLOR BANDING</button>
+        <button class="btn-test" onclick="startContrastTest()"><span class="btn-icon">🌗</span> CONTRAST / GAMMA</button>
+        <button class="btn-test" onclick="startSharpnessTest()"><span class="btn-icon">📏</span> TEXT SHARPNESS</button>
+        <button class="btn-test" onclick="startColorTest('burnin')"><span class="btn-icon">⚠️</span> BURN-IN CHECK</button>
     </div>
 
     <div class="terminal" id="console-output">
@@ -123,7 +132,25 @@
     <a href="../index.html" class="back-btn">EXIT LABORATORY</a>
 
     <div id="fullscreen-overlay" onclick="closeOverlay()">
-        <div class="overlay-hint">TAP ANYWHERE TO CLOSE</div>
+        <div class="overlay-hint" id="overlay-msg">TAP ANYWHERE TO CLOSE</div>
+        
+        <div id="contrast-chart" class="contrast-container">
+            <div class="contrast-row">
+                <div class="contrast-block" style="background:#000"></div>
+                <div class="contrast-block" style="background:#111"></div>
+                <div class="contrast-block" style="background:#222"></div>
+                <div class="contrast-block" style="background:#333"></div>
+                <div class="contrast-block" style="background:#444"></div>
+                <div class="contrast-block" style="background:#555"></div>
+                <div class="contrast-block" style="background:#666"></div>
+                <div class="contrast-block" style="background:#777"></div>
+                <div class="contrast-block" style="background:#888"></div>
+                <div class="contrast-block" style="background:#999"></div>
+            </div>
+            <div style="color:white; margin-top:20px; font-family:monospace;">CAN YOU SEE ALL 10 BLOCKS?</div>
+        </div>
+
+        <div id="sharpness-grid" class="sharpness-pattern"></div>
     </div>
 
     <script>
@@ -154,11 +181,9 @@
             if(fpsBuffer.length > 10) fpsBuffer.shift();
             let avgFps = Math.round(fpsBuffer.reduce((a,b)=>a+b)/fpsBuffer.length);
 
-            // Update UI every 10 frames to stop flickering
             frameCount++;
             if(frameCount % 10 === 0) {
                 document.getElementById('fps-counter').innerText = avgFps + " Hz";
-                
                 let status = "STANDARD MOTION";
                 let color = "#a0aec0";
                 
@@ -174,10 +199,11 @@
         requestAnimationFrame(fpsLoop);
         log("> FPS MONITOR STARTED");
 
-        // --- 3. TOUCH DIGITIZER VISUALIZER ---
+        // --- 3. MULTI-TOUCH VISUALIZER ---
         const canvas = document.getElementById('touchCanvas');
         const ctx = canvas.getContext('2d');
         const container = document.getElementById('touch-container');
+        const countDisplay = document.getElementById('touch-counter');
 
         function resizeCanvas() {
             canvas.width = container.offsetWidth;
@@ -186,71 +212,99 @@
         resizeCanvas();
         window.addEventListener('resize', resizeCanvas);
 
-        let isDrawing = false;
+        // Map touch points to colors
+        const touchColors = ['#f000ff', '#00ff9d', '#ff0055', '#ffb700', '#00f0ff'];
 
-        function getPos(e) {
-            const rect = canvas.getBoundingClientRect();
-            // Handle both touch and mouse
-            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-            return { x: clientX - rect.left, y: clientY - rect.top };
-        }
-
-        function startDraw(e) {
-            isDrawing = true;
-            document.getElementById('touch-text').style.display = 'none';
-            log("> TOUCH INPUT DETECTED");
-            draw(e);
-        }
-
-        function endDraw() { isDrawing = false; ctx.beginPath(); }
-
-        function draw(e) {
-            if(!isDrawing) return;
-            e.preventDefault(); // Stop scrolling
-            const pos = getPos(e);
-
-            ctx.lineWidth = 5;
-            ctx.lineCap = 'round';
-            ctx.strokeStyle = '#f000ff'; // Neon Purple
-            ctx.shadowBlur = 10;
-            ctx.shadowColor = '#f000ff';
-
-            ctx.lineTo(pos.x, pos.y);
-            ctx.stroke();
-            ctx.beginPath();
-            ctx.moveTo(pos.x, pos.y);
-        }
-
-        // Event Listeners for Touch
-        canvas.addEventListener('mousedown', startDraw);
-        canvas.addEventListener('touchstart', startDraw);
-        canvas.addEventListener('mouseup', endDraw);
-        canvas.addEventListener('touchend', endDraw);
-        canvas.addEventListener('mousemove', draw);
-        canvas.addEventListener('touchmove', draw);
-
-        // --- 4. COLOR TESTS ---
-        const overlay = document.getElementById('fullscreen-overlay');
-        
-        function startColorTest(type) {
-            log(`> INITIATING SCREEN TEST: ${type.toUpperCase()}`);
-            overlay.style.display = 'block';
+        function handleTouch(e) {
+            e.preventDefault();
+            ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear previous frame
             
-            // Reset styles
+            const touches = e.touches;
+            const count = touches.length;
+
+            if(count > 0) {
+                document.getElementById('touch-text').style.display = 'none';
+                countDisplay.style.display = 'block';
+                countDisplay.innerText = count + (count === 1 ? " POINT" : " POINTS");
+                
+                // Draw each finger
+                for(let i=0; i<count; i++) {
+                    const touch = touches[i];
+                    const rect = canvas.getBoundingClientRect();
+                    const x = touch.clientX - rect.left;
+                    const y = touch.clientY - rect.top;
+                    
+                    // Draw Circle
+                    ctx.beginPath();
+                    ctx.arc(x, y, 20, 0, 2 * Math.PI);
+                    ctx.fillStyle = touchColors[i % touchColors.length];
+                    ctx.fill();
+                    
+                    // Draw Glow
+                    ctx.shadowBlur = 15;
+                    ctx.shadowColor = ctx.fillStyle;
+                    ctx.stroke();
+                    ctx.shadowBlur = 0; // Reset
+                }
+            } else {
+                // Reset if no touch
+                countDisplay.style.display = 'none';
+                document.getElementById('touch-text').style.display = 'block';
+            }
+        }
+
+        canvas.addEventListener('touchstart', handleTouch);
+        canvas.addEventListener('touchmove', handleTouch);
+        canvas.addEventListener('touchend', handleTouch);
+        canvas.addEventListener('touchcancel', handleTouch);
+
+        // --- 4. COLOR & PATTERN TESTS ---
+        const overlay = document.getElementById('fullscreen-overlay');
+        const contrastBox = document.getElementById('contrast-chart');
+        const sharpnessBox = document.getElementById('sharpness-grid');
+        const hint = document.getElementById('overlay-msg');
+        
+        function resetOverlay() {
+            overlay.style.display = 'block';
             overlay.style.background = '';
             overlay.style.backgroundImage = '';
+            contrastBox.style.display = 'none';
+            sharpnessBox.style.display = 'none';
+            hint.style.color = "rgba(255,255,255,0.5)";
+        }
+
+        function startColorTest(type) {
+            log(`> TEST PATTERN: ${type.toUpperCase()}`);
+            resetOverlay();
 
             if(type === 'red') overlay.style.background = '#ff0000';
             if(type === 'green') overlay.style.background = '#00ff00';
             if(type === 'blue') overlay.style.background = '#0000ff';
-            if(type === 'white') overlay.style.background = '#ffffff';
+            if(type === 'white') { overlay.style.background = '#ffffff'; hint.style.color = "rgba(0,0,0,0.5)"; }
             if(type === 'black') overlay.style.background = '#000000';
             
             if(type === 'gradient') {
                 overlay.style.background = 'linear-gradient(to right, black, white)';
-                log("> CHECK FOR SMOOTH BANDING");
+                log("> CHECK FOR BANDING ARTIFACTS");
             }
+            if(type === 'burnin') {
+                overlay.style.background = '#808080';
+                hint.innerText = "CHECK FOR GHOST IMAGES (GREY 50%)";
+            } else {
+                hint.innerText = "TAP ANYWHERE TO CLOSE";
+            }
+        }
+
+        function startContrastTest() {
+            log("> CONTRAST CHART LOADED");
+            resetOverlay();
+            contrastBox.style.display = 'flex';
+        }
+
+        function startSharpnessTest() {
+            log("> SUB-PIXEL GRID LOADED");
+            resetOverlay();
+            sharpnessBox.style.display = 'block';
         }
 
         function closeOverlay() {
