@@ -24,30 +24,32 @@
         /* HEADER */
         .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 15px; margin-bottom: 20px; }
         .logo { font-family: 'JetBrains Mono', monospace; font-weight: 800; font-size: 18px; color: var(--text-bright); letter-spacing: -1px; }
-        .logo span { color: var(--accent); }
+        .logo span { color: var(--secondary); }
         .live-badge { display: flex; align-items: center; gap: 6px; font-size: 10px; color: var(--accent); font-weight: 700; background: rgba(0, 255, 157, 0.1); padding: 4px 8px; border-radius: 4px; border: 1px solid rgba(0, 255, 157, 0.2); }
         .blink { animation: blink 1s infinite; width: 6px; height: 6px; background: var(--accent); border-radius: 50%; }
         @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0; } 100% { opacity: 1; } }
 
-        /* NODE MAP HERO */
+        /* INSTRUCTION PANELS */
+        .info-panel { background: rgba(0, 240, 255, 0.05); border-left: 3px solid var(--secondary); padding: 15px; margin-bottom: 15px; border-radius: 0 8px 8px 0; font-size: 12px; line-height: 1.5; color: var(--text-bright); }
+        .info-title { font-weight: 800; color: var(--secondary); text-transform: uppercase; margin-bottom: 5px; display: block; letter-spacing: 1px; }
+
+        /* MAP HERO */
         .map-container { 
-            background: #000; border: 1px solid var(--border); border-radius: 16px; height: 220px; position: relative; overflow: hidden; margin-bottom: 20px;
+            background: #000; border: 1px solid var(--border); border-radius: 16px; height: 200px; position: relative; overflow: hidden; margin-bottom: 20px;
             display: flex; justify-content: center; align-items: center;
         }
         canvas { width: 100%; height: 100%; }
-        
         .node-label { position: absolute; font-size: 10px; color: var(--text-bright); background: var(--panel); padding: 2px 6px; border-radius: 4px; border: 1px solid var(--border); }
         .lbl-you { bottom: 20px; left: 20px; color: var(--accent); border-color: var(--accent); }
         .lbl-isp { top: 20px; right: 20px; color: var(--secondary); border-color: var(--secondary); }
 
         /* DATA GRID */
-        .grid-master { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
-        
+        .grid-master { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
         .stat-card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 15px; }
         .stat-label { font-size: 10px; text-transform: uppercase; color: var(--text); display: block; margin-bottom: 4px; letter-spacing: 1px; }
         .stat-val { font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 700; color: var(--text-bright); word-break: break-all; }
-        .secure { color: var(--accent); }
-        .risk { color: var(--danger); }
+        .val-blue { color: var(--secondary); }
+        .val-green { color: var(--accent); }
 
         /* PORT SCANNER MATRIX */
         .port-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 5px; }
@@ -55,52 +57,77 @@
         .p-num { display: block; font-size: 10px; color: var(--text); }
         .p-status { display: block; font-size: 12px; font-weight: 700; color: var(--text); margin-top: 2px; }
         .p-closed { color: var(--accent); }
-        .p-open { color: var(--danger); }
 
-        /* CONTROL BUTTONS */
-        .btn-net { background: var(--panel); border: 1px solid var(--border); color: var(--text-bright); width: 100%; padding: 15px; border-radius: 12px; font-weight: 700; margin-bottom: 10px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: 0.2s; display: flex; justify-content: space-between; align-items: center; }
-        .btn-net:hover { border-color: var(--accent); color: var(--accent); }
-        .btn-icon { font-size: 16px; }
-
-        /* TERMINAL */
-        .terminal { background: #000; border: 1px solid var(--border); border-radius: 8px; padding: 10px; height: 120px; overflow: hidden; font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--accent); position: relative; }
-        .log-line { margin-bottom: 2px; opacity: 0.8; }
-        .terminal::after { content: ""; position: absolute; bottom: 0; left: 0; width: 100%; height: 20px; background: linear-gradient(to top, #000, transparent); }
+        /* FAQ ACCORDION */
+        .faq-section { display: grid; gap: 10px; margin-top: 30px; }
+        .faq-item { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+        .faq-q { padding: 15px; font-weight: 700; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .faq-q:hover { color: var(--accent); }
+        .faq-a { padding: 0 15px 15px 15px; color: var(--text); font-size: 12px; line-height: 1.5; display: none; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px; }
+        .faq-icon { font-size: 10px; transition: 0.2s; }
+        .faq-item.active .faq-a { display: block; }
+        .faq-item.active .faq-icon { transform: rotate(180deg); color: var(--accent); }
 
         .back-btn { display: block; text-align: center; margin-top: 20px; color: var(--text); text-decoration: none; font-weight: 700; padding: 15px; background: var(--panel); border-radius: 12px; }
+        .action-btn { background: var(--panel); border: 1px solid var(--border); color: var(--text-bright); width: 100%; padding: 15px; border-radius: 12px; font-weight: 700; margin-bottom: 20px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: 0.2s; }
+        .action-btn:hover { border-color: var(--secondary); color: var(--secondary); }
     </style>
 </head>
 <body>
 
     <div class="header">
         <div class="logo">DON<span>NET_OPS</span></div>
-        <div class="live-badge"><div class="blink"></div> PACKET SNIFFER ACTIVE</div>
+        <div class="live-badge"><div class="blink"></div> UPLINK ACTIVE</div>
     </div>
 
     <div class="map-container">
-        <div class="node-label lbl-you">LOCALHOST</div>
-        <div class="node-label lbl-isp">INTERNET GATEWAY</div>
+        <div class="node-label lbl-you">YOU</div>
+        <div class="node-label lbl-isp">INTERNET</div>
         <canvas id="netCanvas"></canvas>
     </div>
 
+    <div class="info-panel">
+        <span class="info-title">1. PUBLIC IDENTITY</span>
+        Your "Public IP" is the digital address websites see. It reveals your ISP and approximate physical location. <br>
+        <strong>GOAL:</strong> If you are using a VPN, this should show the VPN's location, not yours.
+    </div>
+
     <div class="grid-master">
-        
-        <div class="stat-card">
-            <span class="stat-label">LOCAL LAN IP (WEBRTC)</span>
-            <span class="stat-val" id="lan-ip">SCANNING...</span>
-        </div>
-
-        <div class="stat-card">
-            <span class="stat-label">PROTOCOL SUPPORT</span>
-            <div style="font-size: 11px; margin-top: 5px;">
-                <span id="p-ipv6" style="color:#64748b">IPv6</span> • 
-                <span id="p-quic" style="color:#64748b">QUIC</span> • 
-                <span id="p-ws" style="color:#64748b">WSS</span>
-            </div>
-        </div>
-
         <div class="stat-card" style="grid-column: span 2;">
-            <span class="stat-label">FIREWALL PORT AUDIT</span>
+            <span class="stat-label">PUBLIC IP ADDRESS</span>
+            <span class="stat-val val-blue" id="ip-address">FETCHING...</span>
+            <div style="font-size: 11px; margin-top: 5px; color: var(--text);" id="isp-info">LOCATING...</div>
+        </div>
+    </div>
+
+    <div class="info-panel">
+        <span class="info-title">2. WEBRTC LEAK DETECTION</span>
+        Sometimes browsers accidentally reveal your <strong>Local LAN IP</strong> (your internal home network address) even when using a VPN. <br>
+        <strong>GOAL:</strong> "HIDDEN / SECURE".
+    </div>
+
+    <div class="stat-card" style="margin-bottom: 20px;">
+        <span class="stat-label">LOCAL IP LEAK STATUS</span>
+        <span class="stat-val val-green" id="lan-ip">SCANNING...</span>
+    </div>
+
+    <div class="info-panel">
+        <span class="info-title">3. CONNECTION PROTOCOLS</span>
+        We detect the quality of your link (4G, 5G, WiFi) and perform a simulated "Port Scan" to ensure your firewall is blocking unwanted incoming traffic.
+    </div>
+
+    <div class="grid-master">
+        <div class="stat-card">
+            <span class="stat-label">LINK TYPE</span>
+            <span class="stat-val" id="net-type">--</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-label">DOWNLINK (EST)</span>
+            <span class="stat-val" id="net-speed">-- Mbps</span>
+        </div>
+        
+        <div class="stat-card" style="grid-column: span 2;">
+            <span class="stat-label">FIREWALL PORT AUDIT (SIMULATION)</span>
             <div class="port-grid">
                 <div class="port-box"><span class="p-num">21 (FTP)</span><span class="p-status" id="p-21">--</span></div>
                 <div class="port-box"><span class="p-num">22 (SSH)</span><span class="p-status" id="p-22">--</span></div>
@@ -108,51 +135,155 @@
                 <div class="port-box"><span class="p-num">443 (SSL)</span><span class="p-status" id="p-443">--</span></div>
             </div>
         </div>
-
     </div>
 
-    <button class="btn-net" onclick="runPortScan()">
-        <span>RUN DEEP PORT SCAN</span> <span class="btn-icon">🛡️</span>
-    </button>
-    <button class="btn-net" onclick="checkProtocols()">
-        <span>VERIFY PROTOCOLS</span> <span class="btn-icon">📡</span>
-    </button>
+    <button class="action-btn" onclick="runPortScan()">RE-RUN PORT SCAN</button>
 
-    <div class="terminal" id="console-output">
-        <div class="log-line">> NET_OPS INIT...</div>
-        <div class="log-line">> INITIALIZING PACKET TRACE...</div>
+    <h3 style="font-size: 14px; margin-bottom: 15px; color: var(--text-bright);">FAQ: NETWORKING</h3>
+    <div class="faq-section">
+        
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">1. What is an IP Address? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">It's your digital home address. Public IP is what the world sees. Local IP is what your router assigns to your specific phone.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">2. Why hide my IP? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">Hiding your IP (via VPN) prevents websites from tracking your location and stops hackers from targeting your specific connection.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">3. What is a "WebRTC Leak"? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">WebRTC is used for video chat. Sometimes it bypasses VPNs and sends your real IP directly to the website. This is a privacy flaw.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">4. What is "Latency" (Ping)? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">It's the time (in ms) it takes for data to travel from you to the server and back. Lower is better for gaming.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">5. What is a "Port"? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">Think of ports as doors to your house. Port 80 is the front door (Web). Port 22 is the back door (SSH). You want unused doors locked (Stealth).</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">6. Why is my 5G speed slow? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">5G signal is easily blocked by walls. If you have 1 bar of 5G, it might be slower than full bars of 4G LTE.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">7. What is "Jitter"? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">Jitter is the instability of your Ping. If Ping jumps from 20ms to 100ms rapidly, that is High Jitter (bad for calls/gaming).</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">8. What is "Packet Loss"? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">When data gets lost on the way. 1% packet loss causes stuttering in videos and lag in games.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">9. How do I fix a WebRTC Leak? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">Use a high-quality VPN app that has "Leak Protection" or disable WebRTC in your browser settings (advanced).</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">10. Why use "Stealth" ports? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">If a hacker scans your IP and sees "Closed" ports, they know you exist. If they see "Stealth," it looks like an empty void.</div>
+        </div>
+
     </div>
 
     <a href="../index.html" class="back-btn">EXIT OPS CENTER</a>
 
     <script>
-        // --- LOGGING ---
-        function log(msg) {
-            const term = document.getElementById('console-output');
-            const line = document.createElement('div');
-            line.className = 'log-line';
-            line.innerHTML = `<span style="color:#64748b">[NET]</span> ${msg}`;
-            term.appendChild(line);
-            if(term.children.length > 6) term.removeChild(term.children[0]);
-            term.scrollTop = term.scrollHeight;
+        // --- 1. IP FETCH ---
+        async function fetchIP() {
+            try {
+                // Using ipapi.co (Free Tier)
+                const response = await fetch('https://ipapi.co/json/');
+                const data = await response.json();
+                
+                document.getElementById('ip-address').innerText = data.ip;
+                document.getElementById('isp-info').innerText = `${data.city}, ${data.country_name} (${data.org})`;
+            } catch (e) {
+                document.getElementById('ip-address').innerText = "127.0.0.1 (Offline/Blocked)";
+                document.getElementById('isp-info').innerText = "Network Unavailable";
+            }
         }
 
-        // --- 1. PACKET ANIMATION (CANVAS) ---
+        // --- 2. WEBRTC LEAK ---
+        function findLocalIP() {
+            // Most modern browsers block this for privacy, so "Hidden" is the expected/good result
+            setTimeout(() => {
+                const el = document.getElementById('lan-ip');
+                if(el.innerText === "SCANNING...") {
+                    el.innerText = "HIDDEN / SECURE";
+                }
+            }, 2000);
+
+            // Attempt Scan
+            try {
+                const pc = new RTCPeerConnection({iceServers: []});
+                pc.createDataChannel('');
+                pc.createOffer().then(pc.setLocalDescription.bind(pc));
+                pc.onicecandidate = (ice) => {
+                    if (ice && ice.candidate && ice.candidate.candidate) {
+                        const ipRegex = /([0-9]{1,3}(\.[0-9]{1,3}){3})/;
+                        const match = ice.candidate.candidate.match(ipRegex);
+                        if (match && !match[1].startsWith("127.")) {
+                            document.getElementById('lan-ip').innerText = `LEAKED: ${match[1]}`;
+                            document.getElementById('lan-ip').style.color = "var(--danger)";
+                        }
+                    }
+                };
+            } catch(e) {
+                // Ignore errors, result remains secure
+            }
+        }
+
+        // --- 3. CONNECTION INFO ---
+        function checkConnection() {
+            const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+            if(conn) {
+                document.getElementById('net-type').innerText = (conn.effectiveType || "4G").toUpperCase();
+                document.getElementById('net-speed').innerText = (conn.downlink || 0) + " Mbps";
+            } else {
+                document.getElementById('net-type').innerText = "WIFI/LAN";
+                document.getElementById('net-speed').innerText = "UNKNOWN";
+            }
+        }
+
+        // --- 4. PORT SCAN SIM ---
+        function runPortScan() {
+            const ports = [21, 22, 80, 443];
+            ports.forEach((port, i) => {
+                const el = document.getElementById(`p-${port}`);
+                el.innerText = "--";
+                el.classList.remove("p-closed");
+                
+                setTimeout(() => {
+                    el.innerText = "STEALTH";
+                    el.classList.add("p-closed");
+                }, i * 300 + 500);
+            });
+        }
+
+        // --- 5. CANVAS ANIMATION ---
         const canvas = document.getElementById('netCanvas');
         const ctx = canvas.getContext('2d');
         let packets = [];
 
         function resize() {
-            canvas.width = document.querySelector('.map-container').offsetWidth;
-            canvas.height = document.querySelector('.map-container').offsetHeight;
+            const container = document.querySelector('.map-container');
+            canvas.width = container.offsetWidth;
+            canvas.height = container.offsetHeight;
         }
         window.addEventListener('resize', resize);
         resize();
 
         function spawnPacket() {
             packets.push({
-                x: 20, y: canvas.height - 20,
-                tx: canvas.width - 20, ty: 20,
                 progress: 0,
                 speed: 0.01 + Math.random() * 0.02,
                 color: Math.random() > 0.5 ? '#00ff9d' : '#00f0ff'
@@ -163,7 +294,7 @@
             ctx.fillStyle = 'rgba(0,0,0,0.1)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // Draw Connection Line
+            // Draw Line
             ctx.beginPath();
             ctx.moveTo(20, canvas.height - 20);
             ctx.bezierCurveTo(canvas.width/2, canvas.height - 20, canvas.width/2, 20, canvas.width - 20, 20);
@@ -171,19 +302,17 @@
             ctx.lineWidth = 2;
             ctx.stroke();
 
-            // Update Packets
+            // Draw Packets
             for (let i = 0; i < packets.length; i++) {
                 let p = packets[i];
                 p.progress += p.speed;
                 
-                // Bezier Point Calculation
                 let t = p.progress;
                 let sx = 20, sy = canvas.height - 20;
                 let ex = canvas.width - 20, ey = 20;
                 let cx1 = canvas.width/2, cy1 = sy;
                 let cx2 = canvas.width/2, cy2 = ey;
 
-                // Cubic Bezier Formula
                 let x = Math.pow(1-t,3)*sx + 3*Math.pow(1-t,2)*t*cx1 + 3*(1-t)*Math.pow(t,2)*cx2 + Math.pow(t,3)*ex;
                 let y = Math.pow(1-t,3)*sy + 3*Math.pow(1-t,2)*t*cy1 + 3*(1-t)*Math.pow(t,2)*cy2 + Math.pow(t,3)*ey;
 
@@ -191,89 +320,22 @@
                 ctx.beginPath();
                 ctx.arc(x, y, 3, 0, Math.PI * 2);
                 ctx.fill();
-                ctx.shadowBlur = 10;
-                ctx.shadowColor = p.color;
 
                 if(p.progress >= 1) { packets.splice(i, 1); i--; }
             }
             
-            if(Math.random() < 0.05) spawnPacket(); // Random spawn
+            if(Math.random() < 0.05) spawnPacket();
             requestAnimationFrame(drawLoop);
         }
+
+        function toggleFaq(el) { el.classList.toggle('active'); }
+
+        // Start
         drawLoop();
-
-        // --- 2. WEBRTC LOCAL IP DETECTION ---
-        // Browser security often blocks this now, but we try anyway
-        function findLocalIP() {
-            const pc = new RTCPeerConnection({iceServers: []});
-            pc.createDataChannel('');
-            pc.createOffer().then(pc.setLocalDescription.bind(pc));
-            
-            pc.onicecandidate = (ice) => {
-                if (ice && ice.candidate && ice.candidate.candidate) {
-                    const ipRegex = /([0-9]{1,3}(\.[0-9]{1,3}){3})/;
-                    const match = ice.candidate.candidate.match(ipRegex);
-                    if (match) {
-                        const ip = match[1];
-                        // Filter out local host 127.x.x.x
-                        if(!ip.startsWith("127.")) {
-                            document.getElementById('lan-ip').innerText = ip;
-                            document.getElementById('lan-ip').classList.add("risk");
-                            log(`> LOCAL IP LEAKED: ${ip}`);
-                        }
-                    }
-                }
-            };
-            
-            // Timeout fallback
-            setTimeout(() => {
-                if(document.getElementById('lan-ip').innerText === "SCANNING...") {
-                    document.getElementById('lan-ip').innerText = "HIDDEN / SECURE";
-                    document.getElementById('lan-ip').classList.add("secure");
-                    log("> NO WEBRTC LEAK DETECTED");
-                }
-            }, 2000);
-        }
+        fetchIP();
         findLocalIP();
-
-        // --- 3. PROTOCOL CHECKER ---
-        function checkProtocols() {
-            log("> TESTING PROTOCOL STACK...");
-            
-            // Check WebSocket
-            if('WebSocket' in window) {
-                document.getElementById('p-ws').style.color = "var(--accent)";
-                document.getElementById('p-ws').style.fontWeight = "bold";
-                log("> WEBSOCKET: AVAILABLE");
-            }
-
-            // Check Connection Type (approx for IPv6)
-            // Real IPv6 check requires fetching an IPv6-only URL, simplified here
-            document.getElementById('p-ipv6').style.color = "var(--accent)"; // Assume modern browser supports it
-            
-            // QUIC/HTTP3 check is server-dependent, we assume browser capability
-            document.getElementById('p-quic').style.color = "var(--accent)";
-            
-            log("> PROTOCOL SUITE: MODERN");
-        }
-
-        // --- 4. PORT SCAN SIMULATION ---
-        // Browsers cannot actually port scan localhost due to security sandbox.
-        // We simulate the behavior to show "Closed" (Safe) ports.
-        function runPortScan() {
-            log("> INITIATING PORT AUDIT...");
-            const ports = [21, 22, 80, 443];
-            
-            ports.forEach((port, index) => {
-                setTimeout(() => {
-                    const el = document.getElementById(`p-${port}`);
-                    // 80/443 might be open on some web servers, but for client device they should be closed/stealth
-                    el.innerText = "STEALTH";
-                    el.classList.add("p-closed");
-                    log(`> PORT ${port}: STEALTH/CLOSED`);
-                }, index * 500);
-            });
-        }
+        checkConnection();
+        runPortScan();
 
     </script>
 </body>
