@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Don Systems Sensor Fusion</title>
+    <title>Don Systems Sensor Array</title>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         :root { 
@@ -12,304 +12,255 @@
             --border: #2d3748; 
             --text: #a0aec0; 
             --text-bright: #e2e8f0;
-            --accent: #ff0055; 
-            --secondary: #00f0ff; 
+            --accent: #a855f7; /* Cyber Purple */
+            --secondary: #3b82f6; /* Electric Blue */
             --success: #00ff9d; 
+            --danger: #ff0055; 
             --warn: #ffb700; 
         }
         
-        * { box-sizing: border-box; }
+        * { box-sizing: border-box; touch-action: manipulation; -webkit-tap-highlight-color: transparent; user-select: none; }
         body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; padding: 20px; margin: 0; min-height: 100vh; font-size: 14px; overflow-x: hidden; }
         
         /* HEADER */
         .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 15px; margin-bottom: 20px; }
         .logo { font-family: 'JetBrains Mono', monospace; font-weight: 800; font-size: 18px; color: var(--text-bright); letter-spacing: -1px; }
         .logo span { color: var(--accent); }
-        .live-badge { display: flex; align-items: center; gap: 6px; font-size: 10px; color: var(--secondary); font-weight: 700; background: rgba(0, 240, 255, 0.1); padding: 4px 8px; border-radius: 4px; border: 1px solid rgba(0, 240, 255, 0.2); }
+        .live-badge { display: flex; align-items: center; gap: 6px; font-size: 10px; color: var(--secondary); font-weight: 700; background: rgba(59, 130, 246, 0.1); padding: 4px 8px; border-radius: 4px; border: 1px solid rgba(59, 130, 246, 0.2); }
         .blink { animation: blink 1s infinite; width: 6px; height: 6px; background: var(--secondary); border-radius: 50%; }
         @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0; } 100% { opacity: 1; } }
 
-        /* 3D VISUALIZER HERO */
-        .scene-container { 
-            background: radial-gradient(circle at center, #1a202c, #000); 
-            border: 1px solid var(--border); border-radius: 16px; height: 250px; 
-            position: relative; overflow: hidden; margin-bottom: 20px;
-            display: flex; justify-content: center; align-items: center;
-            perspective: 800px;
+        /* HERO VISUALIZER (GRAVITY WELL) */
+        .well-container { 
+            background: radial-gradient(circle at center, #1a1a2e 0%, #000 70%); 
+            border: 2px solid var(--border); border-radius: 50%; width: 220px; height: 220px; margin: 0 auto 30px auto; 
+            position: relative; overflow: hidden; display: flex; justify-content: center; align-items: center;
+            box-shadow: 0 0 30px rgba(168, 85, 247, 0.1);
         }
+        .crosshair { position: absolute; width: 100%; height: 1px; background: rgba(255,255,255,0.1); }
+        .crosshair.v { width: 1px; height: 100%; }
         
-        /* THE CUBE */
-        .cube {
-            width: 100px; height: 100px; position: relative; transform-style: preserve-3d;
-            transition: transform 0.1s linear;
+        .gravity-ball {
+            width: 20px; height: 20px; background: var(--accent); border-radius: 50%;
+            box-shadow: 0 0 15px var(--accent); position: absolute;
+            transition: transform 0.1s cubic-bezier(0.1, 0.7, 1.0, 0.1);
+            /* Centered by default */
+            top: 50%; left: 50%; margin-left: -10px; margin-top: -10px;
         }
-        .face {
-            position: absolute; width: 100px; height: 100px; 
-            border: 2px solid var(--accent); opacity: 0.8;
-            background: rgba(255, 0, 85, 0.1);
-            display: flex; justify-content: center; align-items: center;
-            font-family: 'JetBrains Mono', monospace; font-size: 20px; color: white;
+
+        /* PERMISSION OVERLAY */
+        .perm-btn {
+            background: var(--accent); color: white; border: none; padding: 15px 30px; font-weight: 800; border-radius: 8px; cursor: pointer;
+            width: 100%; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px;
+            box-shadow: 0 0 20px rgba(168, 85, 247, 0.3); animation: pulse 2s infinite;
         }
-        .front  { transform: translateZ(50px); }
-        .back   { transform: rotateY(180deg) translateZ(50px); }
-        .right  { transform: rotateY(90deg) translateZ(50px); border-color: var(--secondary); }
-        .left   { transform: rotateY(-90deg) translateZ(50px); border-color: var(--secondary); }
-        .top    { transform: rotateX(90deg) translateZ(50px); border-color: var(--success); }
-        .bottom { transform: rotateX(-90deg) translateZ(50px); border-color: var(--success); }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
 
-        /* HUD OVERLAY */
-        .hud-overlay { position: absolute; top: 15px; left: 15px; font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text); pointer-events: none; }
-        .hud-val { color: var(--text-bright); font-weight: 700; font-size: 12px; }
+        /* DATA GRID */
+        .grid-master { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        .stat-card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 10px; text-align: center; }
+        .stat-label { font-size: 9px; text-transform: uppercase; color: var(--text); display: block; margin-bottom: 4px; }
+        .stat-val { font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700; color: var(--text-bright); }
+        .val-acc { color: var(--accent); }
+        .val-gyro { color: var(--secondary); }
 
-        /* SENSOR MATRIX */
-        .grid-master { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
-        .sensor-card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 15px; }
-        .card-head { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 11px; font-weight: 700; color: var(--text); text-transform: uppercase; letter-spacing: 1px; }
-        
-        .axis-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-family: 'JetBrains Mono', monospace; font-size: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 4px; }
-        .axis-label { color: var(--text-bright); }
-        .axis-val { color: var(--accent); }
-        .axis-val.y { color: var(--secondary); }
-        .axis-val.z { color: var(--success); }
+        /* INFO PANELS */
+        .info-panel { background: rgba(168, 85, 247, 0.05); border-left: 3px solid var(--accent); padding: 15px; margin-bottom: 15px; border-radius: 0 8px 8px 0; font-size: 12px; line-height: 1.5; color: var(--text-bright); }
+        .info-title { font-weight: 800; color: var(--accent); text-transform: uppercase; margin-bottom: 5px; display: block; letter-spacing: 1px; }
 
-        /* COMPASS */
-        .compass-box { grid-column: span 2; display: flex; align-items: center; justify-content: space-between; }
-        .compass-circle { 
-            width: 60px; height: 60px; border: 2px solid var(--border); border-radius: 50%; position: relative; 
-            display: flex; justify-content: center; align-items: center;
-        }
-        .needle { width: 2px; height: 100%; background: linear-gradient(to top, var(--accent) 50%, transparent 50%); position: absolute; }
-        .north-marker { position: absolute; top: -5px; color: var(--accent); font-weight: 800; font-size: 10px; }
+        /* FAQ ACCORDION */
+        .faq-section { display: grid; gap: 10px; margin-top: 30px; }
+        .faq-item { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+        .faq-q { padding: 15px; font-weight: 700; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .faq-q:hover { color: var(--accent); }
+        .faq-a { padding: 0 15px 15px 15px; color: var(--text); font-size: 12px; line-height: 1.5; display: none; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px; }
+        .faq-icon { font-size: 10px; transition: 0.2s; }
+        .faq-item.active .faq-a { display: block; }
+        .faq-item.active .faq-icon { transform: rotate(180deg); color: var(--accent); }
 
-        /* TERMINAL */
-        .terminal { background: #000; border: 1px solid var(--border); border-radius: 8px; padding: 10px; height: 100px; overflow: hidden; font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--secondary); position: relative; }
-        .log-line { margin-bottom: 2px; opacity: 0.8; }
-        .terminal::after { content: ""; position: absolute; bottom: 0; left: 0; width: 100%; height: 20px; background: linear-gradient(to top, #000, transparent); }
-
-        .action-btn { background: var(--panel); border: 1px solid var(--border); color: var(--text-bright); width: 100%; padding: 15px; border-radius: 12px; font-weight: 700; margin-bottom: 15px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: 0.2s; }
-        .action-btn:hover { border-color: var(--accent); color: var(--accent); }
-        
         .back-btn { display: block; text-align: center; margin-top: 20px; color: var(--text); text-decoration: none; font-weight: 700; padding: 15px; background: var(--panel); border-radius: 12px; }
-
-        /* START OVERLAY */
-        #start-screen {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85); z-index: 99;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-        }
-        .start-btn { padding: 20px 40px; background: var(--secondary); color: black; font-weight: 800; border: none; border-radius: 50px; font-size: 16px; cursor: pointer; box-shadow: 0 0 30px var(--secondary); animation: pulse 2s infinite; }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <div class="logo">DON<span>FUSION</span></div>
-        <div class="live-badge" id="mode-badge"><div class="blink"></div> WAITING</div>
+        <div class="logo">DON<span>SENSORS</span></div>
+        <div class="live-badge"><div class="blink"></div> ACTIVE</div>
     </div>
 
-    <div class="scene-container">
-        <div id="start-screen">
-            <button class="start-btn" onclick="initSensors()">TAP TO ACTIVATE SENSORS</button>
-            <div style="color: #94a3b8; margin-top: 15px; font-size: 12px;">Required for iOS & Android</div>
-        </div>
+    <div class="well-container">
+        <div class="crosshair"></div>
+        <div class="crosshair v"></div>
+        <div class="gravity-ball" id="ball"></div>
+    </div>
 
-        <div class="hud-overlay">
-            PITCH: <span class="hud-val" id="hud-beta">0°</span><br>
-            ROLL: <span class="hud-val" id="hud-gamma">0°</span><br>
-            YAW: <span class="hud-val" id="hud-alpha">0°</span>
-        </div>
-        <div class="cube" id="cube">
-            <div class="face front">FRONT</div>
-            <div class="face back">BACK</div>
-            <div class="face right">RIGHT</div>
-            <div class="face left">LEFT</div>
-            <div class="face top">TOP</div>
-            <div class="face bottom">BTM</div>
-        </div>
+    <button class="perm-btn" id="start-btn" onclick="initSensors()">INITIALIZE SENSOR STREAM</button>
+
+    <div class="info-panel">
+        <span class="info-title">1. MOTION SENSORS</span>
+        <strong>Accelerometer:</strong> Measures acceleration forces (Gravity). <br>
+        <strong>Gyroscope:</strong> Measures rotation rate (Twisting). <br>
+        Tilt your phone to move the purple orb above.
     </div>
 
     <div class="grid-master">
+        <div class="stat-card">
+            <span class="stat-label">TILT X (Beta)</span>
+            <span class="stat-val val-acc" id="val-beta">0°</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-label">TILT Y (Gamma)</span>
+            <span class="stat-val val-acc" id="val-gamma">0°</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-label">COMPASS (Alpha)</span>
+            <span class="stat-val val-acc" id="val-alpha">0°</span>
+        </div>
         
-        <div class="sensor-card">
-            <div class="card-head">GYROSCOPE (deg/s)</div>
-            <div class="axis-row"><span class="axis-label">ALPHA (Z)</span><span class="axis-val z" id="gyro-z">0.00</span></div>
-            <div class="axis-row"><span class="axis-label">BETA (X)</span><span class="axis-val" id="gyro-x">0.00</span></div>
-            <div class="axis-row"><span class="axis-label">GAMMA (Y)</span><span class="axis-val y" id="gyro-y">0.00</span></div>
+        <div class="stat-card">
+            <span class="stat-label">ACCEL X</span>
+            <span class="stat-val val-gyro" id="acc-x">0.0</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-label">ACCEL Y</span>
+            <span class="stat-val val-gyro" id="acc-y">0.0</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-label">ACCEL Z</span>
+            <span class="stat-val val-gyro" id="acc-z">0.0</span>
+        </div>
+    </div>
+
+    <div class="info-panel">
+        <span class="info-title">2. MAGNETOMETER (COMPASS)</span>
+        Detects the Earth's magnetic field. The "Alpha" value above (0-360°) represents your heading relative to Magnetic North.
+    </div>
+
+    <h3 style="font-size: 14px; margin-bottom: 15px; color: var(--text-bright);">FAQ: DEVICE SENSORS</h3>
+    <div class="faq-section">
+        
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">1. Why do I need to click "Initialize"? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">Apple (iOS 13+) blocks websites from reading your motion sensors unless you explicitly tap a button to grant permission.</div>
         </div>
 
-        <div class="sensor-card">
-            <div class="card-head">ACCELEROMETER (g)</div>
-            <div class="axis-row"><span class="axis-label">X-AXIS</span><span class="axis-val" id="acc-x">0.00</span></div>
-            <div class="axis-row"><span class="axis-label">Y-AXIS</span><span class="axis-val y" id="acc-y">0.00</span></div>
-            <div class="axis-row"><span class="axis-label">Z-AXIS</span><span class="axis-val z" id="acc-z">0.00</span></div>
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">2. What is an Accelerometer? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">It is a tiny chip with a microscopic weight on a spring. When you move the phone, the weight moves, detecting gravity and speed.</div>
         </div>
 
-        <div class="sensor-card compass-box">
-            <div>
-                <div class="card-head">MAGNETOMETER</div>
-                <div class="axis-row"><span class="axis-label">HEADING</span><span class="axis-val z" id="mag-head">0°</span></div>
-                <div class="axis-row"><span class="axis-label">ACCURACY</span><span class="axis-val" id="mag-acc">HIGH</span></div>
-            </div>
-            <div class="compass-circle">
-                <div class="north-marker">N</div>
-                <div class="needle" id="compass-needle"></div>
-            </div>
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">3. Gyroscope vs. Accelerometer? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">Accelerometer measures *movement* (up/down/left/right). Gyroscope measures *rotation* (twisting/turning). They work together for stabilization.</div>
         </div>
 
-        <div class="sensor-card">
-            <div class="card-head">TOTAL G-FORCE</div>
-            <div style="text-align: center; font-family: 'JetBrains Mono'; font-size: 32px; font-weight: 800; color: var(--text-bright); margin-top: 10px;">
-                <span id="total-g">1.00</span><span style="font-size: 14px; color: var(--text);">g</span>
-            </div>
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">4. Why is the Compass wrong? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">Magnetometers are easily confused by metal objects (like cases with magnets) or interference. Wave your phone in a "Figure 8" to calibrate it.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">5. Does this drain battery? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">Yes. Continuously reading high-speed sensor data prevents the processor from sleeping. Close this tab when done testing.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">6. Why are the numbers jumping? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">Sensors are extremely sensitive. Even your heartbeat or hand tremors can cause tiny fluctuations in the data stream.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">7. What is "Proximity Sensor"? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">It detects when the phone is near your face (to turn off the screen during calls). Websites currently cannot access this sensor for security reasons.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">8. What is a "MEMS" chip? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">Micro-Electro-Mechanical Systems. It's basically a microscopic machine with moving parts inside a silicon computer chip.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">9. Can websites use this to track me? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">Yes. Your specific hand tremors and walking gait can be used to "Fingerprint" you uniquely. That's why browsers now ask for permission.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">10. Why doesn't this work on PC? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">Desktop computers and laptops usually don't have accelerometers or gyroscopes built in. This test is for mobile devices.</div>
         </div>
 
     </div>
 
-    <div class="terminal" id="console-output">
-        <div class="log-line">> SYSTEM READY...</div>
-        <div class="log-line">> WAITING FOR USER INPUT...</div>
-    </div>
-
-    <a href="../index.html" class="back-btn">EXIT FUSION HUB</a>
+    <a href="../index.html" class="back-btn">EXIT SENSOR ARRAY</a>
 
     <script>
-        // --- LOGGING ---
-        function log(msg) {
-            const term = document.getElementById('console-output');
-            const line = document.createElement('div');
-            line.className = 'log-line';
-            line.innerHTML = `<span style="color:#64748b">[SYS]</span> ${msg}`;
-            term.appendChild(line);
-            if(term.children.length > 6) term.removeChild(term.children[0]);
-            term.scrollTop = term.scrollHeight;
-        }
+        const ball = document.getElementById('ball');
+        let isRunning = false;
 
-        let isDemoMode = false;
-
-        // --- INIT SEQUENCE ---
+        // --- 1. INITIALIZE SENSORS ---
         function initSensors() {
-            document.getElementById('start-screen').style.display = 'none';
-            
-            // 1. Try iOS Permission
-            if (typeof DeviceMotionEvent.requestPermission === 'function') {
-                DeviceMotionEvent.requestPermission()
-                    .then(response => {
-                        if (response === 'granted') {
-                            log("> PERMISSION GRANTED (iOS)");
+            if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+                // iOS 13+ requires permission
+                DeviceOrientationEvent.requestPermission()
+                    .then(permissionState => {
+                        if (permissionState === 'granted') {
                             startListeners();
                         } else {
-                            log("> PERMISSION DENIED - STARTING SIMULATION");
-                            startDemoMode();
+                            alert("Permission Denied. Please reload and try again.");
                         }
                     })
-                    .catch(e => {
-                        log("> ERROR: " + e);
-                        startDemoMode();
-                    });
-            } 
-            // 2. Try Standard Android/PC
-            else if (window.DeviceMotionEvent) {
-                log("> STANDARD SENSORS DETECTED");
+                    .catch(console.error);
+            } else {
+                // Non-iOS devices (Android) usually just work
                 startListeners();
-                
-                // Fallback: If no data received in 1 second, switch to demo
-                setTimeout(() => {
-                    if(document.getElementById('acc-x').innerText === "0.00") {
-                        log("> NO SENSOR DATA - SWITCHING TO DEMO");
-                        startDemoMode();
-                    }
-                }, 1000);
-            } 
-            // 3. Fallback
-            else {
-                log("> NO SENSORS FOUND - STARTING SIMULATION");
-                startDemoMode();
             }
         }
 
         function startListeners() {
-            window.addEventListener("deviceorientation", handleOrientation);
-            window.addEventListener("devicemotion", handleMotion);
-            document.getElementById('mode-badge').innerHTML = '<div class="blink"></div> REALTIME DATA';
-        }
+            if(isRunning) return;
+            isRunning = true;
+            
+            // Hide button
+            document.getElementById('start-btn').style.display = 'none';
+            document.querySelector('.live-badge').innerText = "STREAMING DATA";
+            document.querySelector('.live-badge').style.color = "var(--success)";
 
-        // --- DEMO MODE (For PC/Blocked) ---
-        function startDemoMode() {
-            isDemoMode = true;
-            document.getElementById('mode-badge').innerHTML = '<div class="blink" style="background:orange"></div> DEMO SIMULATION';
-            document.getElementById('mode-badge').style.color = "orange";
-            document.getElementById('mode-badge').style.borderColor = "orange";
-            
-            let alpha = 0, beta = 0, gamma = 0;
-            
-            setInterval(() => {
-                // Animate Cube
-                alpha = (alpha + 1) % 360;
-                beta = Math.sin(Date.now() / 1000) * 30;
-                gamma = Math.cos(Date.now() / 1000) * 30;
+            // Orientation (Tilt/Compass)
+            window.addEventListener('deviceorientation', (e) => {
+                // Round values
+                const alpha = e.alpha ? Math.round(e.alpha) : 0; // Compass
+                const beta = e.beta ? Math.round(e.beta) : 0;   // Front/Back Tilt
+                const gamma = e.gamma ? Math.round(e.gamma) : 0; // Left/Right Tilt
+
+                // Update Text
+                document.getElementById('val-alpha').innerText = alpha + "°";
+                document.getElementById('val-beta').innerText = beta + "°";
+                document.getElementById('val-gamma').innerText = gamma + "°";
+
+                // Update Visualizer (Ball)
+                // Limit movement to within circle (approx)
+                let x = gamma * 3; 
+                let y = beta * 3;
                 
-                // Update UI with fake data
-                updateUI(alpha, beta, gamma, 
-                         (Math.random()*0.1).toFixed(2), 
-                         (Math.random()*0.1).toFixed(2), 
-                         (9.8 + Math.random()*0.1).toFixed(2));
-                
-                document.getElementById('cube').style.transform = `rotateX(${-beta}deg) rotateY(${gamma}deg) rotateZ(${alpha}deg)`;
-            }, 50);
+                // Clamp values so ball stays inside box
+                if(x > 90) x = 90; if(x < -90) x = -90;
+                if(y > 90) y = 90; if(y < -90) y = -90;
+
+                ball.style.transform = `translate(${x}px, ${y}px)`;
+            });
+
+            // Motion (Acceleration)
+            window.addEventListener('devicemotion', (e) => {
+                const acc = e.accelerationIncludingGravity;
+                if(acc) {
+                    document.getElementById('acc-x').innerText = acc.x ? acc.x.toFixed(1) : "0.0";
+                    document.getElementById('acc-y').innerText = acc.y ? acc.y.toFixed(1) : "0.0";
+                    document.getElementById('acc-z').innerText = acc.z ? acc.z.toFixed(1) : "0.0";
+                }
+            });
         }
 
-        // --- SENSOR HANDLERS ---
-        function handleOrientation(event) {
-            if(isDemoMode) return;
-            
-            const alpha = event.alpha || 0;
-            const beta = event.beta || 0;
-            const gamma = event.gamma || 0;
-
-            document.getElementById('cube').style.transform = `rotateX(${-beta}deg) rotateY(${gamma}deg) rotateZ(${alpha}deg)`;
-            document.getElementById('compass-needle').style.transform = `rotate(${-alpha}deg)`;
-            
-            document.getElementById('hud-alpha').innerText = alpha.toFixed(0) + "°";
-            document.getElementById('hud-beta').innerText = beta.toFixed(0) + "°";
-            document.getElementById('hud-gamma').innerText = gamma.toFixed(0) + "°";
-            
-            document.getElementById('gyro-z').innerText = alpha.toFixed(0);
-            document.getElementById('gyro-x').innerText = beta.toFixed(0);
-            document.getElementById('gyro-y').innerText = gamma.toFixed(0);
-            document.getElementById('mag-head').innerText = alpha.toFixed(0) + "°";
-        }
-
-        function handleMotion(event) {
-            if(isDemoMode) return;
-            const acc = event.accelerationIncludingGravity;
-            if(!acc) return;
-
-            const x = (acc.x || 0).toFixed(2);
-            const y = (acc.y || 0).toFixed(2);
-            const z = (acc.z || 0).toFixed(2);
-
-            document.getElementById('acc-x').innerText = x;
-            document.getElementById('acc-y').innerText = y;
-            document.getElementById('acc-z').innerText = z;
-
-            const total = Math.sqrt(acc.x*acc.x + acc.y*acc.y + acc.z*acc.z) / 9.81;
-            document.getElementById('total-g').innerText = total.toFixed(2);
-        }
-
-        function updateUI(a, b, g, ax, ay, az) {
-            document.getElementById('hud-alpha').innerText = Math.round(a) + "°";
-            document.getElementById('hud-beta').innerText = Math.round(b) + "°";
-            document.getElementById('hud-gamma').innerText = Math.round(g) + "°";
-            
-            document.getElementById('gyro-z').innerText = Math.round(a);
-            document.getElementById('gyro-x').innerText = Math.round(b);
-            document.getElementById('gyro-y').innerText = Math.round(g);
-            
-            document.getElementById('acc-x').innerText = ax;
-            document.getElementById('acc-y').innerText = ay;
-            document.getElementById('acc-z').innerText = az;
-            document.getElementById('mag-head').innerText = Math.round(a) + "°";
-        }
+        function toggleFaq(el) { el.classList.toggle('active'); }
 
     </script>
 </body>
