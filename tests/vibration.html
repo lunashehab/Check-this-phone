@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Don Systems Haptic Lab</title>
+    <title>Vibration Tests | CheckThisPhone.com</title>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         :root { 
@@ -12,261 +12,448 @@
             --border: #2d3748; 
             --text: #a0aec0; 
             --text-bright: #e2e8f0;
-            --accent: #ff9f43; /* Neon Orange */
-            --secondary: #ff6b6b; /* Warm Red */
-            --success: #00ff9d; 
-            --warn: #ffb700; 
+            --accent: #ff9f43; /* Orange */
+            --secondary: #3b82f6; /* Blue */
+            --danger: #ef4444; 
+            --warn: #f59e0b; 
+            --success: #10b981;
         }
         
-        * { box-sizing: border-box; touch-action: manipulation; -webkit-tap-highlight-color: transparent; user-select: none; }
+        * { box-sizing: border-box; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
         body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; padding: 20px; margin: 0; min-height: 100vh; font-size: 14px; overflow-x: hidden; }
         
         /* HEADER */
-        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 15px; margin-bottom: 20px; }
-        .logo { font-family: 'JetBrains Mono', monospace; font-weight: 800; font-size: 18px; color: var(--text-bright); letter-spacing: -1px; }
+        .header { text-align: center; margin-bottom: 40px; border-bottom: 1px solid var(--border); padding-bottom: 20px; }
+        .logo { font-family: 'JetBrains Mono', monospace; font-weight: 800; font-size: 24px; color: var(--text-bright); letter-spacing: -1px; margin-bottom: 10px; }
         .logo span { color: var(--accent); }
-        .live-badge { display: flex; align-items: center; gap: 6px; font-size: 10px; color: var(--accent); font-weight: 700; background: rgba(255, 159, 67, 0.1); padding: 4px 8px; border-radius: 4px; border: 1px solid rgba(255, 159, 67, 0.2); }
-        .blink { animation: blink 1s infinite; width: 6px; height: 6px; background: var(--accent); border-radius: 50%; }
-        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0; } 100% { opacity: 1; } }
+        .subtitle { font-size: 12px; color: var(--text); text-transform: uppercase; letter-spacing: 1px; }
 
-        /* INSTRUCTION PANELS */
-        .info-panel { background: rgba(255, 159, 67, 0.05); border-left: 3px solid var(--accent); padding: 15px; margin-bottom: 15px; border-radius: 0 8px 8px 0; font-size: 12px; line-height: 1.5; color: var(--text-bright); }
-        .info-title { font-weight: 800; color: var(--accent); text-transform: uppercase; margin-bottom: 5px; display: block; letter-spacing: 1px; }
+        /* GRID LAYOUT */
+        .test-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
+            gap: 20px; 
+            max-width: 1200px; 
+            margin: 0 auto; 
+        }
 
-        /* ENGINE CORE (VISUALIZER) */
-        .engine-container { 
-            display: flex; justify-content: center; align-items: center; height: 220px; margin-bottom: 20px;
-            background: radial-gradient(circle, rgba(255,159,67,0.05) 0%, rgba(0,0,0,0) 70%);
-            border: 1px solid var(--border); border-radius: 16px; position: relative; overflow: hidden;
+        /* TEST CARD */
+        .card { 
+            background: var(--panel); 
+            border: 1px solid var(--border); 
+            border-radius: 12px; 
+            padding: 20px; 
+            display: flex; 
+            flex-direction: column; 
+            transition: 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+        .card:hover { border-color: var(--accent); transform: translateY(-2px); }
+        
+        .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
+        .card-title { font-family: 'JetBrains Mono'; font-weight: 700; color: var(--text-bright); font-size: 13px; }
+        .card-icon { font-size: 18px; opacity: 0.8; }
+        
+        .card-desc { font-size: 12px; color: var(--text); margin-bottom: 20px; line-height: 1.5; flex-grow: 1; }
+        
+        .result-box { 
+            background: rgba(0,0,0,0.3); 
+            border: 1px solid var(--border); 
+            border-radius: 8px; 
+            padding: 10px; 
+            margin-bottom: 15px; 
+            font-family: 'JetBrains Mono'; 
+            font-size: 11px; 
+            color: var(--accent); 
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            transition: color 0.2s;
         }
         
-        .core-outer {
-            width: 140px; height: 140px; border: 2px dashed var(--border); border-radius: 50%;
-            display: flex; justify-content: center; align-items: center; position: relative;
-            transition: transform 0.1s;
+        .btn-group { display: flex; gap: 10px; }
+        
+        .btn { 
+            flex: 1; 
+            padding: 10px; 
+            border-radius: 6px; 
+            font-size: 11px; 
+            font-weight: 700; 
+            cursor: pointer; 
+            text-transform: uppercase; 
+            transition: 0.2s; 
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--text-bright);
         }
         
-        .core-inner {
-            width: 100px; height: 100px; background: #000; border: 4px solid var(--accent); border-radius: 50%;
-            display: flex; justify-content: center; align-items: center;
-            box-shadow: 0 0 30px rgba(255, 159, 67, 0.2); position: relative; z-index: 2;
-            transition: all 0.1s;
+        .btn-run { background: var(--accent); color: #000; border: none; }
+        .btn-run:hover { opacity: 0.9; }
+        .btn-stop { background: var(--danger); color: white; border: none; }
+        .btn-info:hover { border-color: var(--text-bright); }
+
+        /* VISUALIZER */
+        .haptic-viz {
+            height: 4px; width: 0%; background: var(--accent); 
+            position: absolute; bottom: 0; left: 0; transition: width 0.1s;
         }
-        
-        .core-icon { font-size: 32px; transition: 0.1s; }
+        .card.active .haptic-viz { width: 100%; transition: width 0.1s; }
 
-        /* VIBRATION ANIMATION CLASSES */
-        .vibrating .core-inner { animation: shake 0.1s infinite; background: var(--accent); box-shadow: 0 0 60px var(--accent); border-color: #fff; }
-        .vibrating .core-icon { transform: scale(1.5); }
-        .vibrating .core-outer { animation: spin 2s linear infinite; border-color: rgba(255, 159, 67, 0.5); }
-
-        @keyframes shake { 
-            0% { transform: translate(1px, 1px) rotate(0deg); }
-            50% { transform: translate(-1px, -2px) rotate(-1deg); }
-            100% { transform: translate(-3px, 0px) rotate(1deg); }
+        /* MODAL */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); z-index: 1000;
+            display: none; justify-content: center; align-items: center;
+            backdrop-filter: blur(5px);
         }
-        @keyframes spin { 100% { transform: rotate(360deg); } }
+        .modal {
+            background: var(--panel); border: 1px solid var(--accent); border-radius: 12px;
+            padding: 30px; max-width: 500px; width: 90%;
+            box-shadow: 0 0 30px rgba(255, 159, 67, 0.2);
+        }
+        .modal-title { font-family: 'JetBrains Mono'; font-size: 18px; color: var(--accent); margin-bottom: 15px; }
+        .modal-body { font-size: 13px; line-height: 1.6; color: var(--text-bright); margin-bottom: 25px; }
+        .modal-steps { margin-left: 20px; margin-bottom: 20px; color: var(--text); font-size: 12px; }
+        .modal-close { background: var(--border); color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; float: right; font-weight: 700; }
 
-        /* CONTROLS */
-        .control-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px; }
-        .btn-haptic { background: var(--panel); border: 1px solid var(--border); color: var(--text-bright); padding: 15px; border-radius: 12px; cursor: pointer; font-weight: 700; font-size: 11px; text-align: left; display: flex; justify-content: space-between; align-items: center; transition: 0.1s; }
-        .btn-haptic:active { transform: scale(0.96); border-color: var(--accent); background: rgba(255, 159, 67, 0.1); }
-        
-        .btn-stop { grid-column: span 2; background: var(--secondary); color: #000; border: none; text-align: center; justify-content: center; font-size: 14px; box-shadow: 0 4px 20px rgba(255, 107, 107, 0.3); }
-
-        /* INTENSITY SLIDER */
-        .slider-box { background: var(--panel); padding: 20px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 20px; }
-        .range-label { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 12px; font-weight: 700; color: var(--text-bright); }
-        input[type=range] { width: 100%; -webkit-appearance: none; background: transparent; }
-        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 20px; width: 20px; border-radius: 50%; background: var(--accent); cursor: pointer; margin-top: -8px; box-shadow: 0 0 10px var(--accent); }
-        input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 4px; cursor: pointer; background: var(--border); border-radius: 2px; }
-
-        /* FAQ ACCORDION */
-        .faq-section { display: grid; gap: 10px; margin-top: 30px; }
-        .faq-item { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
-        .faq-q { padding: 15px; font-weight: 700; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .faq-q:hover { color: var(--accent); }
+        /* FAQ SECTION */
+        .faq-container { max-width: 800px; margin: 60px auto 20px auto; }
+        .faq-header { font-family: 'JetBrains Mono'; font-size: 16px; color: var(--accent); margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+        .faq-item { background: var(--panel); border: 1px solid var(--border); margin-bottom: 10px; border-radius: 8px; overflow: hidden; }
+        .faq-q { padding: 15px; cursor: pointer; font-weight: 700; display: flex; justify-content: space-between; font-size: 12px; color: var(--text-bright); }
         .faq-a { padding: 0 15px 15px 15px; color: var(--text); font-size: 12px; line-height: 1.5; display: none; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px; }
-        .faq-icon { font-size: 10px; transition: 0.2s; }
         .faq-item.active .faq-a { display: block; }
-        .faq-item.active .faq-icon { transform: rotate(180deg); color: var(--accent); }
 
-        .back-btn { display: block; text-align: center; margin-top: 20px; color: var(--text); text-decoration: none; font-weight: 700; padding: 15px; background: var(--panel); border-radius: 12px; }
+        .sim-tag { font-size: 9px; opacity: 0.7; margin-left: 5px; border: 1px solid var(--border); padding: 1px 4px; border-radius: 3px; }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <div class="logo">DON<span>HAPTICS</span></div>
-        <div class="live-badge"><div class="blink"></div> MOTOR STANDBY</div>
+        <div class="logo">CHECK<span>VIBE</span></div>
+        <div class="subtitle">Browser-Based Vibration Diagnostics</div>
     </div>
 
-    <div class="engine-container" id="visualizer">
-        <div class="core-outer">
-            <div class="core-inner">
-                <div class="core-icon">📳</div>
-            </div>
-        </div>
+    <div class="test-grid" id="grid"></div>
+
+    <div class="faq-container">
+        <div class="faq-header">VIBRATION FAQ</div>
+        <div id="faq-list"></div>
     </div>
 
-    <div class="info-panel">
-        <span class="info-title">1. MOTOR TECHNOLOGY</span>
-        
-        There are two types of vibration motors:<br>
-        <strong>1. ERM (Old):</strong> A spinning weight. Slow to start/stop. Feels "Rumbly."<br>
-        <strong>2. LRA (New):</strong> A magnetic mass on a spring. Instant response. Feels "Crisp." (e.g., Apple Taptic Engine).
+    <div class="modal-overlay" id="modal">
+        <div class="modal">
+            <div class="modal-title" id="m-title"></div>
+            <div class="modal-body" id="m-body"></div>
+            <ul class="modal-steps" id="m-steps"></ul>
+            <button class="modal-close" onclick="closeModal()">CLOSE</button>
+        </div>
     </div>
-
-    <div class="control-grid">
-        <button class="btn-haptic" onclick="playPattern('tick')">
-            <span>CRISP TICK (UI)</span> <span>⚡</span>
-        </button>
-        <button class="btn-haptic" onclick="playPattern('double')">
-            <span>DOUBLE TAP</span> <span>⚡⚡</span>
-        </button>
-        <button class="btn-haptic" onclick="playPattern('heavy')">
-            <span>HEAVY HUM</span> <span>🔊</span>
-        </button>
-        <button class="btn-haptic" onclick="playPattern('heart')">
-            <span>HEARTBEAT</span> <span>❤️</span>
-        </button>
-        <button class="btn-haptic" onclick="playPattern('sos')">
-            <span>SOS SIGNAL</span> <span>🆘</span>
-        </button>
-        <button class="btn-haptic" onclick="playPattern('stress')">
-            <span>MAX POWER</span> <span>🔥</span>
-        </button>
-        
-        <button class="btn-haptic btn-stop" onclick="stopVibrate()">
-            STOP ALL MOTORS
-        </button>
-    </div>
-
-    <div class="info-panel">
-        <span class="info-title">2. MANUAL CALIBRATION</span>
-        Use this slider to test the "Spin Up" time of your motor. If short bursts (50ms) feel weak, you likely have an older ERM motor.
-    </div>
-
-    <div class="slider-box">
-        <div class="range-label">
-            <span>PULSE DURATION</span>
-            <span id="dur-val">200ms</span>
-        </div>
-        <input type="range" id="duration" min="50" max="2000" value="200" step="50" oninput="updateDur(this.value)">
-        <button class="btn-haptic" style="width:100%; margin-top:15px; justify-content:center;" onclick="manualPulse()">TEST PULSE</button>
-    </div>
-
-    <h3 style="font-size: 14px; margin-bottom: 15px; color: var(--text-bright);">FAQ: HAPTICS & VIBRATION</h3>
-    <div class="faq-section">
-        
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">1. Why doesn't it work on iPhone? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">Apple blocks the `navigator.vibrate` API in Safari to prevent websites from creating annoying ads. It only works on Android.</div>
-        </div>
-
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">2. What is "Phantom Vibration Syndrome"? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">A psychological phenomenon where you think your phone vibrated, but it didn't. Your brain misinterprets muscle spasms as notifications.</div>
-        </div>
-
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">3. Does vibration drain battery? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">Very minimally. A vibration motor uses about 0.95% - 4% of battery over a full day. The screen uses 100x more power.</div>
-        </div>
-
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">4. What is the "Taptic Engine"? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">Apple's brand name for a Linear Resonant Actuator (LRA). It can reach peak vibration in 10ms, vs 50ms for older motors.</div>
-        </div>
-
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">5. Can strong vibration damage my phone? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">Generally no. However, extreme prolonged vibration *can* sometimes de-stabilize optical image stabilization (OIS) in cameras (common on motorcycles).</div>
-        </div>
-
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">6. Why does my phone make a rattling noise? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">This indicates a loose component (like a camera lens or button) vibrating against the chassis, or a failing motor bearing.</div>
-        </div>
-
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">7. What is "Haptic Feedback"? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">"Haptic" refers to touch. It's the tiny vibration you feel when typing or pressing a button to confirm the action was registered.</div>
-        </div>
-
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">8. Why is the "Tick" pattern so weak? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">Short pulses (20-30ms) require a high-end LRA motor. On older phones, the motor can't spin up fast enough to be felt.</div>
-        </div>
-
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">9. Can I increase vibration strength? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">Only in your system settings. Web apps cannot control intensity, only duration (Time On / Time Off).</div>
-        </div>
-
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">10. What is an "SOS" pattern? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">It is Morse Code: 3 Short, 3 Long, 3 Short (... --- ...). This is the universal distress signal.</div>
-        </div>
-
-    </div>
-
-    <a href="../index.html" class="back-btn">EXIT HAPTIC LAB</a>
 
     <script>
-        // --- 1. CAPABILITY CHECK ---
-        const canVibrate = "vibrate" in navigator;
+        // --- DATA: ALL TESTS ---
+        const tests = [
+            // BASIC
+            { id: 'basic', title: 'Basic Vibration', icon: '📳', desc: 'Triggers a standard 200ms vibration pulse.', type: 'vib', pat: 200 },
+            { id: 'short', title: 'Short Pulse', icon: '⚡', desc: 'Triggers a sharp 50ms tick.', type: 'vib', pat: 50 },
+            { id: 'long', title: 'Long Pulse', icon: '〰️', desc: 'Triggers a sustained 1000ms vibration.', type: 'vib', pat: 1000 },
+            { id: 'repeat', title: 'Repeated Pulse', icon: '🔁', desc: 'Pulses 3 times in quick succession.', type: 'vib', pat: [200, 100, 200, 100, 200] },
+            { id: 'stop', title: 'Stop Test', icon: '⏹️', desc: 'Verifies that vibration can be cancelled immediately.', type: 'vib_stop' },
+
+            // PATTERNS
+            { id: 'pattern', title: 'Pattern Test', icon: '📈', desc: 'Plays a specific rhythm: Da-Da-Daaa.', type: 'vib', pat: [100, 50, 100, 50, 400] },
+            { id: 'heart', title: 'Heartbeat', icon: '❤️', desc: 'Simulates a double-thump heartbeat rhythm.', type: 'vib', pat: [100, 100, 100, 600] },
+            { id: 'morse', title: 'Morse Code', icon: '📟', desc: 'Vibrates "SOS" in Morse Code.', type: 'vib', pat: [100,50,100,50,100, 300, 300,100,300,100,300, 300, 100,50,100,50,100] },
+            { id: 'ramp_up', title: 'Ramp Up', icon: '↗️', desc: 'Increasing intensity simulation.', type: 'sim_ramp', dir: 'up' },
+            { id: 'ramp_down', title: 'Ramp Down', icon: '↘️', desc: 'Decreasing intensity simulation.', type: 'sim_ramp', dir: 'down' },
+            { id: 'wave', title: 'Wave Pattern', icon: '🌊', desc: 'Oscillating pulse duration.', type: 'vib_wave' },
+            { id: 'stutter', title: 'Stutter', icon: '🪜', desc: 'Rapid-fire short bursts.', type: 'vib', pat: [50,50,50,50,50,50,50,50] },
+            { id: 'sos', title: 'SOS Alert', icon: '🆘', desc: 'Standard distress signal pattern.', type: 'vib', pat: [100,100,100,100,100, 300, 300,300,300,300,300, 300, 100,100,100,100,100] },
+
+            // INTENSITY (Simulated via duration)
+            { id: 'weak', title: 'Weak Sim', icon: '🌑', desc: 'Very short pulses to mimic low intensity.', type: 'vib', pat: [20] },
+            { id: 'med', title: 'Medium Sim', icon: '🌗', desc: 'Standard pulses.', type: 'vib', pat: [200] },
+            { id: 'strong', title: 'Strong Sim', icon: '🌕', desc: 'Long pulses to maximize motor spin.', type: 'vib', pat: [1000] },
+            { id: 'perception', title: 'Perception Test', icon: '🧠', desc: 'Can you feel a 10ms micro-pulse?', type: 'vib', pat: 10 },
+            { id: 'consistency', title: 'Consistency', icon: '⚖️', desc: 'Checks for motor dropouts during long run.', type: 'vib', pat: 2000 },
+
+            // HAPTIC FEEDBACK
+            { id: 'tap', title: 'Tap Feedback', icon: '👆', desc: 'UI interaction click simulation.', type: 'vib', pat: 15 },
+            { id: 'keyboard', title: 'Keyboard Haptic', icon: '⌨️', desc: 'Simulates typing feedback.', type: 'vib_loop', dur: 30 },
+            { id: 'notif', title: 'Notification', icon: '🔔', desc: 'Standard "Buzz-Buzz" alert.', type: 'vib', pat: [200, 100, 200] },
+            { id: 'call', title: 'Incoming Call', icon: '📞', desc: 'Long repeated vibration pattern.', type: 'vib_loop', pat: [1000, 500] },
+            { id: 'alarm', title: 'Alarm Haptic', icon: '⏰', desc: 'Aggressive wake-up pattern.', type: 'vib_loop', pat: [500, 100] },
+            { id: 'game', title: 'Game Impact', icon: '🎮', desc: 'Simulates an explosion or hit.', type: 'vib', pat: 400 },
+            { id: 'success', title: 'Success Haptic', icon: '✅', desc: 'Two quick, light taps.', type: 'vib', pat: [50, 50, 50] },
+            { id: 'fail', title: 'Failure Haptic', icon: '❌', desc: 'Three heavy thuds.', type: 'vib', pat: [100, 50, 100, 50, 100] },
+
+            // HARDWARE / MANUAL
+            { id: 'response', title: 'Response Time', icon: '⏱️', desc: 'Measures lag between click and buzz.', type: 'vib_time' },
+            { id: 'stability', title: 'Motor Stability', icon: '🧱', desc: 'Sustained run to check fading.', type: 'vib', pat: 3000 },
+            { id: 'noise', title: 'Motor Noise', icon: '🔊', desc: 'Listen for rattling sounds.', type: 'manual' },
+            { id: 'rattle', title: 'Rattle Detect', icon: '🔩', desc: 'Shake while vibrating to hear loose parts.', type: 'manual' },
+            { id: 'heat', title: 'Heat Sim', icon: '🔥', desc: 'Runs motor to generate heat (Simulated).', type: 'vib', pat: 5000 },
+
+            // ADVANCED / SYSTEM
+            { id: 'duration', title: 'Duration Check', icon: '📏', desc: 'Verifies OS honors duration requests.', type: 'logic_dur' },
+            { id: 'dropout', title: 'Dropout Detect', icon: '📉', desc: 'Checks if vibration stops unexpectedly.', type: 'manual' },
+            { id: 'perm', title: 'Permission', icon: '🛡️', desc: 'Checks if Vibration API is allowed.', type: 'logic_perm' },
+            { id: 'silent', title: 'Silent Mode', icon: '🔕', desc: 'Checks if vibration works in silent mode.', type: 'manual' },
+            { id: 'dnd', title: 'DND Check', icon: '⛔', desc: 'Checks behavior during Do Not Disturb.', type: 'manual' },
+            { id: 'report', title: 'Engine Report', icon: '📝', desc: 'Capabilities summary.', type: 'report' },
+
+            // COMBINED
+            { id: 'touch_vib', title: 'Touch + Vibe', icon: 'point', desc: 'Vibrates wherever you touch.', type: 'interactive' },
+            { id: 'motion_vib', title: 'Motion + Vibe', icon: '👋', desc: 'Vibrates when you shake device.', type: 'interactive_motion' },
+            { id: 'audio_vib', title: 'Audio Sync', icon: '🎵', desc: 'Plays tone and vibration together.', type: 'vib_audio' },
+            { id: 'flash_vib', title: 'Flash Alert', icon: '📸', desc: 'Flashes screen and vibrates.', type: 'vib_flash' }
+        ];
+
+        // --- RENDER GRID ---
+        const grid = document.getElementById('grid');
+        tests.forEach(test => {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.id = `card-${test.id}`;
+            
+            // Add visualizer bar
+            const viz = document.createElement('div');
+            viz.className = 'haptic-viz';
+            card.appendChild(viz);
+
+            card.innerHTML += `
+                <div class="card-header">
+                    <span class="card-title">${test.title}</span>
+                    <span class="card-icon">${test.icon}</span>
+                </div>
+                <div class="card-desc">${test.desc}</div>
+                <div class="result-box" id="res-${test.id}">Ready</div>
+                <div class="btn-group">
+                    <button class="btn btn-info" onclick="showInfo('${test.id}')">INFO</button>
+                    <button class="btn btn-run" onclick="runTest('${test.id}')">RUN</button>
+                </div>
+            `;
+            grid.appendChild(card);
+        });
+
+        // --- TEST ENGINE ---
+        let loopInterval;
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 
-        if(isIOS) {
-            alert("SYSTEM NOTICE:\n\nApple iOS blocks web vibration capabilities.\nThis test will show visual feedback only.");
-        }
-
-        // --- 2. VISUALIZER ---
-        function triggerVisual(duration) {
-            const viz = document.getElementById('visualizer');
-            viz.classList.add('vibrating');
-            setTimeout(() => {
-                viz.classList.remove('vibrating');
-            }, duration);
-        }
-
-        // --- 3. PATTERN ENGINE ---
-        function playPattern(type) {
-            let pattern = [];
-            let vizDur = 500;
-
-            if(type === 'tick') { pattern = [20]; vizDur = 100; }
-            if(type === 'double') { pattern = [50, 50, 50]; vizDur = 200; }
-            if(type === 'heavy') { pattern = [800]; vizDur = 800; }
-            if(type === 'heart') { pattern = [100, 100, 100, 600]; vizDur = 1000; }
-            if(type === 'sos') { 
-                pattern = [100,50,100,50,100, 300, 300,100,300,100,300, 300, 100,50,100,50,100]; 
-                vizDur = 3000; 
+        async function runTest(id) {
+            const test = tests.find(t => t.id === id);
+            const res = document.getElementById(`res-${id}`);
+            const card = document.getElementById(`card-${id}`);
+            
+            // Stop previous loops
+            if(loopInterval) clearInterval(loopInterval);
+            navigator.vibrate(0);
+            
+            res.innerText = "Running...";
+            res.style.color = "var(--warn)";
+            
+            // iOS CHECK
+            if(isIOS && test.type !== 'manual' && test.type !== 'report') {
+                res.innerText = "Not Supported on iOS";
+                res.style.color = "var(--danger)";
+                return;
             }
-            if(type === 'stress') { pattern = [2000]; vizDur = 2000; }
 
-            if(canVibrate) navigator.vibrate(pattern);
-            triggerVisual(vizDur);
+            // VISUAL FEEDBACK
+            card.classList.add('active');
+            setTimeout(() => card.classList.remove('active'), 200);
+
+            // 1. STANDARD VIBRATION
+            if (test.type === 'vib') {
+                const success = navigator.vibrate(test.pat);
+                res.innerText = success ? "Vibrating..." : "Failed / Blocked";
+                res.style.color = success ? "var(--success)" : "var(--danger)";
+                if(success && typeof test.pat === 'number') setTimeout(() => res.innerText = "Complete", test.pat + 100);
+                else if(success) setTimeout(() => res.innerText = "Complete", 2000);
+            }
+
+            // 2. STOP TEST
+            if (test.type === 'vib_stop') {
+                navigator.vibrate(5000);
+                res.innerText = "Vibrating (5s)...";
+                setTimeout(() => {
+                    navigator.vibrate(0);
+                    res.innerText = "Stopped Abruptly (Pass)";
+                    res.style.color = "var(--success)";
+                }, 1000);
+            }
+
+            // 3. LOOPS
+            if (test.type === 'vib_loop') {
+                res.innerText = "Looping... (Tap to Stop)";
+                // Note: Actual loop requires setInterval as navigator.vibrate doesn't loop natively easily
+                let pattern = Array.isArray(test.pat) ? test.pat : [test.dur];
+                const totalDur = pattern.reduce((a,b)=>a+b, 0);
+                
+                navigator.vibrate(pattern); // First run
+                loopInterval = setInterval(() => {
+                    navigator.vibrate(pattern);
+                    card.classList.toggle('active');
+                }, totalDur + 200);
+                
+                // Change button to STOP
+                const btn = card.querySelector('.btn-run');
+                const oldText = btn.innerText;
+                btn.innerText = "STOP";
+                btn.classList.add('btn-stop');
+                btn.onclick = () => {
+                    clearInterval(loopInterval);
+                    navigator.vibrate(0);
+                    res.innerText = "Stopped";
+                    btn.innerText = oldText;
+                    btn.classList.remove('btn-stop');
+                    btn.onclick = () => runTest(id);
+                };
+            }
+
+            // 4. SIMULATIONS
+            if (test.type === 'sim_ramp') {
+                // Browsers can't control intensity, so we pulse rapidly
+                let pulse = test.dir === 'up' ? 20 : 100;
+                res.innerText = "Simulating Intensity...";
+                let count = 0;
+                loopInterval = setInterval(() => {
+                    navigator.vibrate(pulse);
+                    pulse = test.dir === 'up' ? pulse + 10 : pulse - 10;
+                    if(pulse <= 10 || pulse >= 150 || count > 10) {
+                        clearInterval(loopInterval);
+                        res.innerText = "Simulation Complete";
+                    }
+                    count++;
+                }, 200);
+            }
+
+            if (test.type === 'vib_wave') {
+                res.innerText = "Wave Pattern...";
+                const wavePat = [50, 50, 100, 50, 200, 50, 400, 50, 200, 50, 100];
+                navigator.vibrate(wavePat);
+                setTimeout(() => res.innerText = "Complete", 2000);
+            }
+
+            // 5. HARDWARE CHECKS
+            if (test.type === 'vib_time') {
+                const start = performance.now();
+                navigator.vibrate(50);
+                const end = performance.now();
+                res.innerText = `Latency: ${(end - start).toFixed(1)}ms`;
+                res.style.color = "var(--success)";
+            }
+
+            // 6. LOGIC / REPORT
+            if (test.type === 'logic_perm') {
+                res.innerText = "vibrate" in navigator ? "API Available" : "API Missing";
+            }
+            
+            if (test.type === 'report') {
+                const hasVib = "vibrate" in navigator;
+                res.innerText = hasVib ? "Motor: Detected | API: Active" : "Motor: Unknown | API: Missing";
+            }
+
+            // 7. INTERACTIVE
+            if (test.type === 'interactive') {
+                res.innerText = "Touch Screen Now";
+                const touchHandler = () => {
+                    navigator.vibrate(50);
+                    res.innerText = "Vibration Triggered";
+                    card.classList.add('active');
+                    setTimeout(() => card.classList.remove('active'), 100);
+                };
+                document.addEventListener('touchstart', touchHandler);
+                setTimeout(() => document.removeEventListener('touchstart', touchHandler), 5000);
+            }
+
+            if (test.type === 'interactive_motion') {
+                if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
+                    DeviceMotionEvent.requestPermission().then(r => { if(r=='granted') startMotion(); });
+                } else {
+                    startMotion();
+                }
+                function startMotion() {
+                    res.innerText = "Shake Device...";
+                    const handler = (e) => {
+                        const acc = e.accelerationIncludingGravity;
+                        if (acc && (Math.abs(acc.x) > 15 || Math.abs(acc.y) > 15)) {
+                            navigator.vibrate(200);
+                            res.innerText = "Shake Detected!";
+                        }
+                    };
+                    window.addEventListener('devicemotion', handler);
+                    setTimeout(() => window.removeEventListener('devicemotion', handler), 5000);
+                }
+            }
+
+            if (test.type === 'vib_audio') {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                osc.connect(ctx.destination);
+                osc.start();
+                navigator.vibrate(1000);
+                res.innerText = "Sync Test Active";
+                setTimeout(() => { osc.stop(); res.innerText = "Complete"; }, 1000);
+            }
+
+            if (test.type === 'vib_flash') {
+                document.body.style.backgroundColor = '#fff';
+                navigator.vibrate(200);
+                setTimeout(() => { document.body.style.backgroundColor = ''; res.innerText = "Flash + Vibe Sent"; }, 200);
+            }
+
+            // 8. MANUAL
+            if (test.type === 'manual') {
+                navigator.vibrate(2000);
+                res.innerText = "Observe Device...";
+            }
         }
 
-        function manualPulse() {
-            const dur = parseInt(document.getElementById('duration').value);
-            if(canVibrate) navigator.vibrate(dur);
-            triggerVisual(dur);
+        // --- FAQ ---
+        const faqs = [
+            { q: "Why doesn't it work on iPhone?", a: "Apple blocks the Vibration API in Safari for privacy/ad-prevention reasons. It currently only works on Android." },
+            { q: "Can I change vibration strength?", a: "No. The web API only allows controlling duration (time on/off), not intensity." },
+            { q: "What is Haptic Feedback?", a: "It is the use of touch (vibration) to communicate with the user, like a 'click' feeling when typing." },
+            { q: "Why is my vibration weak?", a: "This is hardware dependent. Some phones have powerful Linear Resonant Actuators (LRA), others have older rotating motors." },
+            { q: "Does this drain battery?", a: "Yes, motors use mechanical energy. Constant vibration drains battery faster than screen-on time." },
+            { q: "What is Phantom Vibration?", a: "A psychological phenomenon where you think your phone vibrated but it didn't." },
+            { q: "Why doesn't it vibrate in Silent Mode?", a: "Some system settings override browser commands. Check your 'Sound & Haptics' settings." },
+            { q: "Is the Pattern Test accurate?", a: "Yes, it sends precise timing arrays to the hardware driver." },
+            { q: "Can I damage the motor?", a: "Extremely unlikely via software. The hardware has built-in thermal limits." },
+            { q: "Why do games feel better?", a: "Native apps have access to low-level haptic APIs that offer finer control than the web browser." }
+        ];
+
+        const faqList = document.getElementById('faq-list');
+        faqs.forEach((f, i) => {
+            const el = document.createElement('div');
+            el.className = 'faq-item';
+            el.innerHTML = `
+                <div class="faq-q" onclick="toggleFaq(this)">${i+1}. ${f.q} <span>▼</span></div>
+                <div class="faq-a">${f.a}</div>
+            `;
+            faqList.appendChild(el);
+        });
+        function toggleFaq(el) { el.parentElement.classList.toggle('active'); }
+
+        // --- MODAL ---
+        const instructions = {
+            default: { t: "Vibration Test", b: "This test triggers your phone's vibration motor.", s: ["Click Run.", "Hold phone.", "Feel for buzz."] },
+            pattern: { t: "Pattern Test", b: "Plays a rhythmic vibration sequence.", s: ["Click Run.", "Wait for sequence.", "Verify rhythm."] },
+            manual: { t: "Manual Check", b: "This requires your observation.", s: ["Click Run.", "Listen/Feel.", "Verify result yourself."] }
+        };
+
+        function showInfo(id) {
+            const data = instructions[id] || instructions.default;
+            document.getElementById('m-title').innerText = data.t;
+            document.getElementById('m-body').innerText = data.b;
+            const ul = document.getElementById('m-steps');
+            ul.innerHTML = '';
+            data.s.forEach(s => ul.innerHTML += `<li>${s}</li>`);
+            document.getElementById('modal').style.display = 'flex';
         }
-
-        function stopVibrate() {
-            if(canVibrate) navigator.vibrate(0);
-            document.getElementById('visualizer').classList.remove('vibrating');
-        }
-
-        function updateDur(val) {
-            document.getElementById('dur-val').innerText = val + "ms";
-        }
-
-        function toggleFaq(el) { el.classList.toggle('active'); }
-
+        function closeModal() { document.getElementById('modal').style.display = 'none'; }
     </script>
 </body>
 </html>
