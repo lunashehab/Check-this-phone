@@ -12,8 +12,8 @@
             --border: #2d3748; 
             --text: #a0aec0; 
             --text-bright: #e2e8f0;
-            --accent: #ff0055; /* Neon Red */
-            --secondary: #00f0ff; /* Cyber Cyan */
+            --accent: #ff0055; 
+            --secondary: #00f0ff; 
             --success: #00ff9d; 
             --warn: #ffb700; 
         }
@@ -90,16 +90,29 @@
         .action-btn:hover { border-color: var(--accent); color: var(--accent); }
         
         .back-btn { display: block; text-align: center; margin-top: 20px; color: var(--text); text-decoration: none; font-weight: 700; padding: 15px; background: var(--panel); border-radius: 12px; }
+
+        /* START OVERLAY */
+        #start-screen {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); z-index: 99;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+        }
+        .start-btn { padding: 20px 40px; background: var(--secondary); color: black; font-weight: 800; border: none; border-radius: 50px; font-size: 16px; cursor: pointer; box-shadow: 0 0 30px var(--secondary); animation: pulse 2s infinite; }
     </style>
 </head>
 <body>
 
     <div class="header">
         <div class="logo">DON<span>FUSION</span></div>
-        <div class="live-badge"><div class="blink"></div> IMU ONLINE</div>
+        <div class="live-badge" id="mode-badge"><div class="blink"></div> WAITING</div>
     </div>
 
     <div class="scene-container">
+        <div id="start-screen">
+            <button class="start-btn" onclick="initSensors()">TAP TO ACTIVATE SENSORS</button>
+            <div style="color: #94a3b8; margin-top: 15px; font-size: 12px;">Required for iOS & Android</div>
+        </div>
+
         <div class="hud-overlay">
             PITCH: <span class="hud-val" id="hud-beta">0°</span><br>
             ROLL: <span class="hud-val" id="hud-gamma">0°</span><br>
@@ -114,8 +127,6 @@
             <div class="face bottom">BTM</div>
         </div>
     </div>
-
-    <button class="action-btn" onclick="requestPermission()" id="perm-btn">⚠️ ACTIVATE SENSORS (REQUIRED)</button>
 
     <div class="grid-master">
         
@@ -155,8 +166,8 @@
     </div>
 
     <div class="terminal" id="console-output">
-        <div class="log-line">> SENSOR MODULE INIT...</div>
-        <div class="log-line">> WAITING FOR PERMISSION...</div>
+        <div class="log-line">> SYSTEM READY...</div>
+        <div class="log-line">> WAITING FOR USER INPUT...</div>
     </div>
 
     <a href="../index.html" class="back-btn">EXIT FUSION HUB</a>
@@ -173,67 +184,103 @@
             term.scrollTop = term.scrollHeight;
         }
 
-        // --- 1. PERMISSION REQUEST (iOS 13+) ---
-        function requestPermission() {
+        let isDemoMode = false;
+
+        // --- INIT SEQUENCE ---
+        function initSensors() {
+            document.getElementById('start-screen').style.display = 'none';
+            
+            // 1. Try iOS Permission
             if (typeof DeviceMotionEvent.requestPermission === 'function') {
                 DeviceMotionEvent.requestPermission()
                     .then(response => {
                         if (response === 'granted') {
-                            log("> PERMISSION GRANTED");
-                            document.getElementById('perm-btn').style.display = 'none';
-                            startSensors();
+                            log("> PERMISSION GRANTED (iOS)");
+                            startListeners();
                         } else {
-                            log("> PERMISSION DENIED");
-                            alert("Sensors blocked by user.");
+                            log("> PERMISSION DENIED - STARTING SIMULATION");
+                            startDemoMode();
                         }
                     })
-                    .catch(console.error);
-            } else {
-                // Non-iOS devices usually don't need permission
-                log("> STANDARD ACCESS (ANDROID/PC)");
-                document.getElementById('perm-btn').style.display = 'none';
-                startSensors();
+                    .catch(e => {
+                        log("> ERROR: " + e);
+                        startDemoMode();
+                    });
+            } 
+            // 2. Try Standard Android/PC
+            else if (window.DeviceMotionEvent) {
+                log("> STANDARD SENSORS DETECTED");
+                startListeners();
+                
+                // Fallback: If no data received in 1 second, switch to demo
+                setTimeout(() => {
+                    if(document.getElementById('acc-x').innerText === "0.00") {
+                        log("> NO SENSOR DATA - SWITCHING TO DEMO");
+                        startDemoMode();
+                    }
+                }, 1000);
+            } 
+            // 3. Fallback
+            else {
+                log("> NO SENSORS FOUND - STARTING SIMULATION");
+                startDemoMode();
             }
         }
 
-        // --- 2. SENSOR LOGIC ---
-        function startSensors() {
+        function startListeners() {
             window.addEventListener("deviceorientation", handleOrientation);
             window.addEventListener("devicemotion", handleMotion);
-            log("> IMU DATA STREAM STARTED");
+            document.getElementById('mode-badge').innerHTML = '<div class="blink"></div> REALTIME DATA';
         }
 
-        // --- 3. ORIENTATION (GYRO) ---
+        // --- DEMO MODE (For PC/Blocked) ---
+        function startDemoMode() {
+            isDemoMode = true;
+            document.getElementById('mode-badge').innerHTML = '<div class="blink" style="background:orange"></div> DEMO SIMULATION';
+            document.getElementById('mode-badge').style.color = "orange";
+            document.getElementById('mode-badge').style.borderColor = "orange";
+            
+            let alpha = 0, beta = 0, gamma = 0;
+            
+            setInterval(() => {
+                // Animate Cube
+                alpha = (alpha + 1) % 360;
+                beta = Math.sin(Date.now() / 1000) * 30;
+                gamma = Math.cos(Date.now() / 1000) * 30;
+                
+                // Update UI with fake data
+                updateUI(alpha, beta, gamma, 
+                         (Math.random()*0.1).toFixed(2), 
+                         (Math.random()*0.1).toFixed(2), 
+                         (9.8 + Math.random()*0.1).toFixed(2));
+                
+                document.getElementById('cube').style.transform = `rotateX(${-beta}deg) rotateY(${gamma}deg) rotateZ(${alpha}deg)`;
+            }, 50);
+        }
+
+        // --- SENSOR HANDLERS ---
         function handleOrientation(event) {
-            // Get Values
-            const alpha = event.alpha ? event.alpha.toFixed(0) : 0; // Z-axis (Compass)
-            const beta = event.beta ? event.beta.toFixed(0) : 0;   // X-axis (Tilt Front/Back)
-            const gamma = event.gamma ? event.gamma.toFixed(0) : 0; // Y-axis (Tilt Left/Right)
+            if(isDemoMode) return;
+            
+            const alpha = event.alpha || 0;
+            const beta = event.beta || 0;
+            const gamma = event.gamma || 0;
 
-            // Update HUD
-            document.getElementById('hud-alpha').innerText = alpha + "°";
-            document.getElementById('hud-beta').innerText = beta + "°";
-            document.getElementById('hud-gamma').innerText = gamma + "°";
-
-            // Update 3D Cube
-            const cube = document.getElementById('cube');
-            // CSS rotate3d order: X (beta), Y (gamma), Z (alpha - compass)
-            // Note: Adjusting for screen feel.
-            cube.style.transform = `rotateX(${-beta}deg) rotateY(${gamma}deg) rotateZ(0deg)`;
-
-            // Update Gyro Card
-            document.getElementById('gyro-z').innerText = alpha;
-            document.getElementById('gyro-x').innerText = beta;
-            document.getElementById('gyro-y').innerText = gamma;
-
-            // Update Compass
-            document.getElementById('mag-head').innerText = alpha + "°";
+            document.getElementById('cube').style.transform = `rotateX(${-beta}deg) rotateY(${gamma}deg) rotateZ(${alpha}deg)`;
             document.getElementById('compass-needle').style.transform = `rotate(${-alpha}deg)`;
+            
+            document.getElementById('hud-alpha').innerText = alpha.toFixed(0) + "°";
+            document.getElementById('hud-beta').innerText = beta.toFixed(0) + "°";
+            document.getElementById('hud-gamma').innerText = gamma.toFixed(0) + "°";
+            
+            document.getElementById('gyro-z').innerText = alpha.toFixed(0);
+            document.getElementById('gyro-x').innerText = beta.toFixed(0);
+            document.getElementById('gyro-y').innerText = gamma.toFixed(0);
+            document.getElementById('mag-head').innerText = alpha.toFixed(0) + "°";
         }
 
-        // --- 4. MOTION (ACCELEROMETER) ---
         function handleMotion(event) {
-            // Acceleration including gravity
+            if(isDemoMode) return;
             const acc = event.accelerationIncludingGravity;
             if(!acc) return;
 
@@ -241,44 +288,27 @@
             const y = (acc.y || 0).toFixed(2);
             const z = (acc.z || 0).toFixed(2);
 
-            // Update Accel Card
             document.getElementById('acc-x').innerText = x;
             document.getElementById('acc-y').innerText = y;
             document.getElementById('acc-z').innerText = z;
 
-            // Calculate Total G-Force (Pythagorean theorem)
-            const totalForce = Math.sqrt(acc.x*acc.x + acc.y*acc.y + acc.z*acc.z);
-            const gForce = (totalForce / 9.81).toFixed(2); // Convert m/s² to g
-            
-            const gEl = document.getElementById('total-g');
-            gEl.innerText = gForce;
-
-            // Visual Feedback for Drop/Shake
-            if(gForce > 2.0) {
-                gEl.style.color = "var(--warn)";
-                log("> HIGH G-FORCE DETECTED!");
-            } else if (gForce < 0.2) {
-                gEl.style.color = "var(--accent)";
-                log("> FREE FALL DETECTED!");
-            } else {
-                gEl.style.color = "var(--text-bright)";
-            }
+            const total = Math.sqrt(acc.x*acc.x + acc.y*acc.y + acc.z*acc.z) / 9.81;
+            document.getElementById('total-g').innerText = total.toFixed(2);
         }
 
-        // Fallback for PC testing (Simulate movement)
-        if (!window.DeviceOrientationEvent) {
-            log("> NO SENSORS FOUND (PC MODE)");
-            document.getElementById('cube').style.animation = "spinDemo 10s infinite linear";
+        function updateUI(a, b, g, ax, ay, az) {
+            document.getElementById('hud-alpha').innerText = Math.round(a) + "°";
+            document.getElementById('hud-beta').innerText = Math.round(b) + "°";
+            document.getElementById('hud-gamma').innerText = Math.round(g) + "°";
             
-            // Inject CSS for demo
-            const style = document.createElement('style');
-            style.innerHTML = `
-                @keyframes spinDemo { 
-                    0% { transform: rotateX(0) rotateY(0); } 
-                    100% { transform: rotateX(360deg) rotateY(360deg); } 
-                }
-            `;
-            document.head.appendChild(style);
+            document.getElementById('gyro-z').innerText = Math.round(a);
+            document.getElementById('gyro-x').innerText = Math.round(b);
+            document.getElementById('gyro-y').innerText = Math.round(g);
+            
+            document.getElementById('acc-x').innerText = ax;
+            document.getElementById('acc-y').innerText = ay;
+            document.getElementById('acc-z').innerText = az;
+            document.getElementById('mag-head').innerText = Math.round(a) + "°";
         }
 
     </script>
