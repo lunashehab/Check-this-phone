@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="CheckThisPhone.com - Universal Android Diagnostic Standard by Don Systems">
-    <title>CheckThisPhone.com | Android Diagnostic Standard</title>
+    <title>CheckThisPhone.com | Universal Phone Check</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     
@@ -156,20 +156,18 @@
         .comp-panel:hover { transform: translateY(-3px); }
 
         /* Tier Styles */
-        .comp-panel.tier-basic { /* $0.99 */
+        .comp-panel.tier-basic { /* $1.49 */
             background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(15, 23, 42, 0.4));
             border-color: rgba(59, 130, 246, 0.3);
         }
-        .comp-panel.tier-carrier { /* $4.99 */
-            background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(15, 23, 42, 0.4));
-            border-color: rgba(99, 102, 241, 0.4);
-        }
-        .comp-panel.tier-premium { /* $13.99 */
+        
+        .comp-panel.tier-premium { /* $4.99 */
             background: linear-gradient(135deg, rgba(245, 158, 11, 0.08), rgba(15, 23, 42, 0.6));
             border-color: rgba(245, 158, 11, 0.4);
             box-shadow: 0 15px 40px rgba(0,0,0,0.2);
             position: relative;
             overflow: hidden;
+            display: none; /* Hidden by default, toggled via JS */
         }
         .comp-panel.tier-premium::before {
             content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 4px;
@@ -219,9 +217,11 @@
         .btn { padding: 14px 20px; border-radius: 14px; font-weight: 800; cursor: pointer; border: none; font-size: 14px; transition: 0.2s; width: 100%; display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 20px; }
         .btn-free { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4); }
         .btn-primary { background: var(--accent); color: white; box-shadow: 0 4px 15px var(--accent-glow); }
-        .btn-indigo { background: #6366f1; color: white; box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4); } 
         .btn-gold { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4); }
         .price-badge { margin-left: auto; font-size: 16px; font-weight: 800; }
+        
+        /* HIDE PREMIUM BUTTONS BY DEFAULT */
+        .apple-only-btn { display: none; }
 
         /* SYSTEM & NAV */
         .input-group { background: var(--panel-dark); border: 1px solid var(--border); padding: 25px; border-radius: 24px; margin-bottom: 20px; }
@@ -266,49 +266,15 @@
 
         <div id="view-home" class="view-section active">
             <div style="text-align: center;">
-                <h1 style="font-size: 32px; font-weight: 800; margin-bottom: 10px; letter-spacing: -0.5px;">Universal Phone Verification Standard</h1>
+                <h1 style="font-size: 32px; font-weight: 800; margin-bottom: 10px; letter-spacing: -0.5px;">Universal Phone Verification</h1>
                 <p style="color: var(--text-dim); margin-bottom: 40px; font-size: 16px; max-width: 500px; margin-left: auto; margin-right: auto;">
-                    Professional hardware diagnostics and global IMEI analysis for buyers, sellers, and technicians.
+                    Select your phone brand below to see available check options.
                 </p>
 
-                <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 30px;">
-                    <button class="btn btn-free" onclick="switchView('diagnostics')">
-                        <div style="display:flex; flex-direction: column; align-items: flex-start;">
-                            <span style="font-size: 15px; font-weight: 800;">FREE DIAGNOSTICS</span>
-                            <span style="font-size: 11px; opacity: 0.9;">Hardware & System Scan</span>
-                        </div>
-                        <div class="price-badge" style="font-size: 12px; background: rgba(0,0,0,0.2); padding: 4px 8px; border-radius: 4px;">LOCAL TEST</div>
-                    </button>
-
-                    <button class="btn btn-primary" onclick="proceedToPayment(0.99, 'Basic Blacklist Check')">
-                        <div style="display:flex; flex-direction: column; align-items: flex-start;">
-                            <span style="font-size: 15px; font-weight: 800;">SOFT IMEI REPORT</span>
-                            <span style="font-size: 11px; opacity: 0.8;">Basic Blacklist Check</span>
-                        </div>
-                        <div class="price-badge">$0.99</div>
-                    </button>
-
-                    <button class="btn btn-indigo" onclick="proceedToPayment(4.99, 'Carrier & SimLock')">
-                        <div style="display:flex; flex-direction: column; align-items: flex-start;">
-                            <span style="font-size: 15px; font-weight: 800;">CARRIER & SIMLOCK</span>
-                            <span style="font-size: 11px; opacity: 0.8;">Includes Soft Report</span>
-                        </div>
-                        <div class="price-badge">$4.99</div>
-                    </button>
-
-                    <button class="btn btn-gold" onclick="proceedToPayment(13.99, 'Premium GSX Report')">
-                        <div style="display:flex; flex-direction: column; align-items: flex-start;">
-                            <span style="font-size: 15px; font-weight: 800;">PREMIUM / GSX REPORT</span>
-                            <span style="font-size: 11px; opacity: 0.9;">Includes Carrier & Soft</span>
-                        </div>
-                        <div class="price-badge">$13.99</div>
-                    </button>
-                </div>
-                
-                <div style="margin-bottom: 10px; max-width: 600px; margin-left: auto; margin-right: auto;">
-                    <select id="brand-select-home" style="width: 100%; padding: 12px; background: var(--panel-dark); border: 1px solid var(--border); color: white; border-radius: 24px; text-align: center; font-size: 16px; font-weight: 600; cursor: pointer; outline: none; -webkit-appearance: none;">
-                        <option value="universal">▼ Select Your Phone Brand ▼</option>
-                        <option value="apple">Apple</option>
+                <div style="margin-bottom: 30px; max-width: 600px; margin-left: auto; margin-right: auto;">
+                    <select id="brand-select-home" onchange="updatePricingVisibility()" style="width: 100%; padding: 15px; background: var(--panel-dark); border: 2px solid var(--accent); color: white; border-radius: 18px; text-align: center; font-size: 18px; font-weight: 700; cursor: pointer; outline: none; -webkit-appearance: none; box-shadow: 0 4px 20px rgba(59, 130, 246, 0.2);">
+                        <option value="universal">▼ Select Your Brand ▼</option>
+                        <option value="apple">Apple (iPhone / iPad)</option>
                         <option value="samsung">Samsung</option>
                         <option value="sony">Sony</option>
                         <option value="lg">LG</option>
@@ -319,16 +285,41 @@
                         <option value="oneplus">OnePlus</option>
                         <option value="motorola">Motorola</option>
                         <option value="iqoo">IQOO</option>
-                        <option value="huawei_pro">Huawei Pro</option>
+                        <option value="huawei">Huawei</option>
                         <option value="asus">Asus</option>
-                        <option value="asus_pro">Asus Pro</option>
-                        <option value="lenovo_pro">Lenovo Pro</option>
                         <option value="honor">Honor</option>
                         <option value="pixel">Google Pixel</option>
                         <option value="doogee">Doogee</option>
                         <option value="itel">Itel</option>
                         <option value="kyocera">Kyocera</option>
                     </select>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 30px;">
+                    
+                    <button class="btn btn-free" onclick="switchView('diagnostics')">
+                        <div style="display:flex; flex-direction: column; align-items: flex-start;">
+                            <span style="font-size: 15px; font-weight: 800;">FREE DIAGNOSTICS</span>
+                            <span style="font-size: 11px; opacity: 0.9;">Hardware & System Scan</span>
+                        </div>
+                        <div class="price-badge">FREE</div>
+                    </button>
+
+                    <button class="btn btn-primary" onclick="proceedToPayment(1.49, 'Standard Report')">
+                        <div style="display:flex; flex-direction: column; align-items: flex-start;">
+                            <span style="font-size: 15px; font-weight: 800;">STANDARD REPORT</span>
+                            <span style="font-size: 11px; opacity: 0.8;">Blacklist + Carrier + SimLock</span>
+                        </div>
+                        <div class="price-badge">$1.49</div>
+                    </button>
+
+                    <button id="btn-gsx-top" class="btn btn-gold apple-only-btn" onclick="proceedToPayment(4.99, 'Apple GSX Report')">
+                        <div style="display:flex; flex-direction: column; align-items: flex-start;">
+                            <span style="font-size: 15px; font-weight: 800;">APPLE GSX HISTORY</span>
+                            <span style="font-size: 11px; opacity: 0.9;">Repairs, Cases & iCloud History</span>
+                        </div>
+                        <div class="price-badge">$4.99</div>
+                    </button>
                 </div>
 
                 <div class="search-container">
@@ -338,77 +329,41 @@
 
                 <div class="comparison-container">
                     
-                    <div class="comp-panel">
-                        <div class="comp-header">
-                            <span style="font-size: 24px;">⚡</span>
-                            <div>
-                                <span class="comp-title">Hardware Scan</span>
-                                <div style="font-size: 10px; color: var(--text-dim);">FREE DIAGNOSTICS</div>
-                            </div>
-                        </div>
-                        <div class="comp-list">
-                            <div class="comp-item"><span class="comp-icon">🔋</span><div><b>Battery System</b><span>Analysis of health %, cycles, and drain.</span></div></div>
-                            <div class="comp-item"><span class="comp-icon">📱</span><div><b>Screen & Touch</b><span>Dead pixels & multi-touch audit.</span></div></div>
-                            <div class="comp-item"><span class="comp-icon">🔊</span><div><b>Audio System</b><span>Mic sensitivity & speaker balance.</span></div></div>
-                            <div class="comp-item"><span class="comp-icon">🧭</span><div><b>Sensor Matrix</b><span>Gyro, Compass & Biometric test.</span></div></div>
-                        </div>
-                        <button class="btn btn-free" onclick="switchView('diagnostics')">Start Scan</button>
-                    </div>
-
                     <div class="comp-panel tier-basic">
                         <div class="comp-header">
                             <span style="font-size: 24px; color: var(--accent);">🛡️</span>
                             <div>
-                                <span class="comp-title" style="color: var(--accent);">Soft Report</span>
-                                <div style="font-size: 10px; color: var(--text-dim);">BASIC SECURITY</div>
+                                <span class="comp-title" style="color: var(--accent);">Standard Check</span>
+                                <div style="font-size: 10px; color: var(--text-dim);">ESSENTIAL SECURITY</div>
                             </div>
-                            <div class="comp-price-tag">$0.99</div>
+                            <div class="comp-price-tag">$1.49</div>
                         </div>
                         <div class="comp-list">
-                            <div class="comp-item"><span class="comp-icon">🚫</span><div><b>Global Blacklist</b><span>Lost, Stolen, or Fraud flags.</span></div></div>
-                            <div class="comp-item"><span class="comp-icon">🆔</span><div><b>Device Identity</b><span>Confirm Brand & Model number.</span></div></div>
-                            <div class="comp-item"><span class="comp-icon">✅</span><div><b>Clean Status</b><span>Verify if IMEI is clean for use.</span></div></div>
-                            <div class="comp-item"><span class="comp-icon">📅</span><div><b>Age Estimate</b><span>Production year verification.</span></div></div>
+                            <div class="comp-item"><span class="comp-icon">🚫</span><div><b>Blacklist / Stolen Check</b><span>Global GSMA Police Database.</span></div></div>
+                            <div class="comp-item"><span class="comp-icon">🔓</span><div><b>SimLock Status</b><span>Locked or Unlocked Verification.</span></div></div>
+                            <div class="comp-item"><span class="comp-icon">📡</span><div><b>Original Carrier</b><span>Network Identification (AT&T, etc).</span></div></div>
+                            <div class="comp-item"><span class="comp-icon">🆔</span><div><b>Device Identity</b><span>Brand, Model & Warranty Status.</span></div></div>
                         </div>
-                        <button class="btn btn-primary" onclick="proceedToPayment(0.99, 'Soft Report')">Purchase</button>
+                        <button class="btn btn-primary" onclick="proceedToPayment(1.49, 'Standard Report')">Purchase</button>
                     </div>
 
-                    <div class="comp-panel tier-carrier">
-                        <div class="comp-header">
-                            <span style="font-size: 24px; color: #818cf8;">📶</span>
-                            <div>
-                                <span class="comp-title" style="color: #818cf8;">Carrier Lock</span>
-                                <div style="font-size: 10px; color: var(--text-dim);">NETWORK STATUS</div>
-                            </div>
-                            <div class="comp-price-tag">$4.99</div>
-                        </div>
-                        <div class="includes-badge" style="color: #818cf8;">+ INCLUDES SOFT REPORT</div>
-                        <div class="comp-list">
-                            <div class="comp-item"><span class="comp-icon">🔓</span><div><b>Sim-Lock Status</b><span>Locked or Unlocked verification.</span></div></div>
-                            <div class="comp-item"><span class="comp-icon">📡</span><div><b>Original Carrier</b><span>Identify original network.</span></div></div>
-                            <div class="comp-item"><span class="comp-icon">🔗</span><div><b>Tether Policy</b><span>Next tether activation policy.</span></div></div>
-                            <div class="comp-item"><span class="comp-icon">🌍</span><div><b>Country Code</b><span>Sold-to country and region.</span></div></div>
-                        </div>
-                        <button class="btn btn-indigo" onclick="proceedToPayment(4.99, 'Carrier Report')">Purchase</button>
-                    </div>
-
-                    <div class="comp-panel tier-premium">
+                    <div id="card-gsx-bottom" class="comp-panel tier-premium apple-only-btn">
                         <div class="comp-header">
                             <span style="font-size: 24px; color: #fbbf24;">👑</span>
                             <div>
-                                <span class="comp-title" style="color: #fbbf24;">Premium GSX</span>
-                                <div style="font-size: 10px; color: rgba(255,255,255,0.6);">FULL HISTORY</div>
+                                <span class="comp-title" style="color: #fbbf24;">Apple GSX</span>
+                                <div style="font-size: 10px; color: rgba(255,255,255,0.6);">OFFICIAL REPAIR HISTORY</div>
                             </div>
-                            <div class="comp-price-tag" style="color: #fbbf24;">$13.99</div>
+                            <div class="comp-price-tag" style="color: #fbbf24;">$4.99</div>
                         </div>
-                        <div class="includes-badge" style="color: #fbbf24;">+ INCLUDES CARRIER & SOFT</div>
+                        <div class="includes-badge" style="color: #fbbf24;">+ INCLUDES STANDARD REPORT</div>
                         <div class="comp-list">
-                            <div class="comp-item"><span class="comp-icon">☁️</span><div><b>iCloud / FRP</b><span>Find My iPhone & Google Lock.</span></div></div>
-                            <div class="comp-item"><span class="comp-icon">📅</span><div><b>Purchase Date</b><span>Original sales date & warranty.</span></div></div>
-                            <div class="comp-item"><span class="comp-icon">🔧</span><div><b>Repair History</b><span>Refurbished & replacement flags.</span></div></div>
-                            <div class="comp-item"><span class="comp-icon">💰</span><div><b>Financial Check</b><span>Unpaid bills or finance blocks.</span></div></div>
+                            <div class="comp-item"><span class="comp-icon">🔧</span><div><b>Repair History</b><span>Official Apple Store repairs.</span></div></div>
+                            <div class="comp-item"><span class="comp-icon">📅</span><div><b>Purchase Date</b><span>Exact sales date & location.</span></div></div>
+                            <div class="comp-item"><span class="comp-icon">☁️</span><div><b>iCloud / FMI</b><span>Find My iPhone Status.</span></div></div>
+                            <div class="comp-item"><span class="comp-icon">📂</span><div><b>Case History</b><span>Support tickets & logs.</span></div></div>
                         </div>
-                        <button class="btn btn-gold" onclick="proceedToPayment(13.99, 'Premium GSX Report')">Purchase</button>
+                        <button class="btn btn-gold" onclick="proceedToPayment(4.99, 'Apple GSX Report')">Purchase GSX</button>
                     </div>
 
                 </div>
@@ -420,71 +375,10 @@
                 <button class="back-btn" onclick="switchView('home')">← Back to Home</button>
                 <div style="font-size: 11px; color: var(--accent); font-weight: 700;">SECURE CHECKOUT</div>
             </div>
-
             <div class="input-group" style="text-align: center;">
-                <h2 style="margin-bottom: 5px;">Unlock Your Full Report</h2>
-                <p style="color: var(--text-dim); font-size: 14px; margin-bottom: 30px;">Select the report depth required.</p>
-
-                <div class="panel-container">
-                    
-                    <div class="comp-panel tier-basic">
-                        <div class="comp-header">
-                            <span style="font-size: 24px; color: var(--accent);">🛡️</span>
-                            <div>
-                                <span class="comp-title" style="color: var(--accent);">Soft Report</span>
-                                <div style="font-size: 10px; color: var(--text-dim);">BASIC SECURITY</div>
-                            </div>
-                            <div class="comp-price-tag">$0.99</div>
-                        </div>
-                        <div class="comp-list">
-                            <div class="comp-item"><span class="comp-icon">🚫</span><div><b>Global Blacklist Status</b><span>Check GSMA database for Lost, Stolen, or Fraud flags.</span></div></div>
-                            <div class="comp-item"><span class="comp-icon">🆔</span><div><b>Device Identity</b><span>Confirm Brand, Model Number, and Manufacturer.</span></div></div>
-                            <div class="comp-item"><span class="comp-icon">✅</span><div><b>Clean/Bad ESN</b><span>Verify if the IMEI is clean for activation.</span></div></div>
-                            <div class="comp-item"><span class="comp-icon">📅</span><div><b>Age Estimation</b><span>Production year and release date verification.</span></div></div>
-                        </div>
-                        <button class="btn btn-primary" onclick="proceedToPayment(0.99, 'Soft Report')">Purchase Soft Report</button>
-                    </div>
-
-                    <div class="comp-panel tier-carrier">
-                        <div class="comp-header">
-                            <span style="font-size: 24px; color: #818cf8;">📶</span>
-                            <div>
-                                <span class="comp-title" style="color: #818cf8;">Carrier Lock</span>
-                                <div style="font-size: 10px; color: var(--text-dim);">NETWORK INTELLIGENCE</div>
-                            </div>
-                            <div class="comp-price-tag">$4.99</div>
-                        </div>
-                        <div class="includes-badge" style="color: #818cf8;">+ INCLUDES SOFT REPORT</div>
-                        <div class="comp-list">
-                            <div class="comp-item"><span class="comp-icon">🔓</span><div><b>Sim-Lock Status</b><span>Verify if device is Locked or Unlocked for any SIM.</span></div></div>
-                            <div class="comp-item"><span class="comp-icon">📡</span><div><b>Original Carrier</b><span>Identify the network the phone was originally sold to.</span></div></div>
-                            <div class="comp-item"><span class="comp-icon">🔗</span><div><b>Tether Policy</b><span>Check Next Tether Policy and activation rules.</span></div></div>
-                            <div class="comp-item"><span class="comp-icon">🌍</span><div><b>Country & Region</b><span>Identify sold-to country and region code.</span></div></div>
-                        </div>
-                        <button class="btn btn-indigo" onclick="proceedToPayment(4.99, 'Carrier Report')">Purchase Carrier Report</button>
-                    </div>
-
-                    <div class="comp-panel tier-premium">
-                        <div class="comp-header">
-                            <span style="font-size: 24px; color: #fbbf24;">👑</span>
-                            <div>
-                                <span class="comp-title" style="color: #fbbf24;">Premium GSX</span>
-                                <div style="font-size: 10px; color: rgba(255,255,255,0.6);">FULL DEVICE HISTORY</div>
-                            </div>
-                            <div class="comp-price-tag" style="color: #fbbf24;">$13.99</div>
-                        </div>
-                        <div class="includes-badge" style="color: #fbbf24;">+ INCLUDES CARRIER & SOFT REPORT</div>
-                        <div class="comp-list">
-                            <div class="comp-item"><span class="comp-icon">☁️</span><div><b>iCloud / FRP Lock</b><span>Find My iPhone (FMI) status and Google Lock check.</span></div></div>
-                            <div class="comp-item"><span class="comp-icon">📅</span><div><b>Purchase Date</b><span>Exact original sales date and warranty expiration.</span></div></div>
-                            <div class="comp-item"><span class="comp-icon">🔧</span><div><b>Repair & Refurbish</b><span>Check for official replacement or refurbished history.</span></div></div>
-                            <div class="comp-item"><span class="comp-icon">💰</span><div><b>Financial Status</b><span>Check for unpaid bills, finance blocks, or contract debt.</span></div></div>
-                            <div class="comp-item"><span class="comp-icon">📈</span><div><b>Market Trust Score</b><span>Resale value estimation and buy/sell risk rating.</span></div></div>
-                        </div>
-                        <button class="btn btn-gold" onclick="proceedToPayment(13.99, 'Premium GSX Report')">Purchase Premium GSX</button>
-                    </div>
-
-                </div>
+                <h2 style="margin-bottom: 5px;">Confirm Your Order</h2>
+                <div id="checkout-price-display" style="font-size: 32px; font-weight: 800; color: var(--success); margin: 20px 0;">$1.49</div>
+                <button class="btn btn-primary" onclick="proceedToTechnician()">PAY & START SCAN</button>
             </div>
         </div>
 
@@ -493,322 +387,7 @@
                 <button class="back-btn" onclick="switchView('home')">← Back to Home</button>
                 <div style="font-size: 11px; color: var(--success); font-weight: 700;">● SYSTEM ONLINE</div>
             </div>
-
             <div class="input-group">
                 <h2 style="margin: 0 0 5px 0; font-size: 20px; font-weight: 800;">Diagnostic Suite</h2>
-                <p style="color: var(--text-dim); font-size: 14px; margin-bottom: 25px;">Select a module to begin hardware integrity testing.</p>
-
                 <div class="bento-grid">
-                    <div class="bento-card" onclick="window.location.href='tests/battery.html'"><span class="card-icon">🔋</span><div class="card-title">Battery</div></div>
-                    <div class="bento-card" onclick="window.location.href='tests/display.html'"><span class="card-icon">📱</span><div class="card-title">Display</div></div>
-                    <div class="bento-card" onclick="window.location.href='tests/audio.html'"><span class="card-icon">🔊</span><div class="card-title">Audio</div></div>
-                    <div class="bento-card" onclick="window.location.href='tests/camera.html'"><span class="card-icon">📷</span><div class="card-title">Camera</div></div>
-                    <div class="bento-card" onclick="window.location.href='tests/sensors.html'"><span class="card-icon">🧭</span><div class="card-title">Sensors</div></div>
-                    <div class="bento-card" onclick="window.location.href='tests/connectivity.html'"><span class="card-icon">📡</span><div class="card-title">Wireless</div></div>
-                    <div class="bento-card" onclick="window.location.href='tests/vibration.html'"><span class="card-icon">📳</span><div class="card-title">Vibration</div></div>
-                    <div class="bento-card" onclick="window.location.href='tests/performance.html'"><span class="card-icon">🚀</span><div class="card-title">Performance</div></div>
-                    <div class="bento-card" onclick="window.location.href='tests/network.html'"><span class="card-icon">📶</span><div class="card-title">Network</div></div>
-                    <div class="bento-card" onclick="window.location.href='tests/software.html'"><span class="card-icon">🛡️</span><div class="card-title">Software</div></div>
-                    <div class="bento-card" onclick="window.location.href='tests/parts.html'"><span class="card-icon">🔧</span><div class="card-title">Parts</div></div>
-                    <div class="bento-card" onclick="window.location.href='tests/security.html'"><span class="card-icon">🔐</span><div class="card-title">Security</div></div>
-                    <div class="bento-card" onclick="window.location.href='tests/ux.html'" style="grid-column: span 2; min-height: 100px;"><span class="card-icon">👆</span><div class="card-title">User Experience</div></div>
-                </div>
-            </div>
-        </div>
-
-        <div id="view-technician" class="view-section">
-            <div class="nav-header">
-                <button class="back-btn" onclick="switchView('home')">← Cancel</button>
-            </div>
-            <div class="input-group">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                    <h2 style="margin: 0; font-size: 16px;">1. Device Identity</h2>
-                    <button class="btn btn-primary btn-icon" style="width: auto; padding: 8px 15px; font-size: 12px;" onclick="fetchDeviceDetails()">
-                        SCAN <div class="loader" id="imei-loader"></div>
-                    </button>
-                </div>
-                <input type="text" id="input-imei" placeholder="Type IMEI Number here..." style="background: var(--bg-dark); border: 1px solid var(--border); color: white; padding: 14px; border-radius: 8px; width: 100%; font-family: monospace;">
-                
-                <div id="specs-container" style="display: none; margin-top: 15px;">
-                    <div class="form-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
-                        <div><label style="font-size: 10px; color: var(--text-dim);">Model</label><input type="text" id="auto-model" readonly></div>
-                        <div><label style="font-size: 10px; color: var(--text-dim);">Brand</label><input type="text" id="auto-brand" readonly></div>
-                        <div><label style="font-size: 10px; color: var(--text-dim);">Year</label><input type="text" id="auto-year" readonly></div>
-                    </div>
-                </div>
-            </div>
-            <div class="input-group" style="position: relative;">
-                <h2 style="margin: 0 0 20px 0; font-size: 16px;">2. Hardware Audit</h2>
-                <div class="score-display">
-                    <div class="big-score" id="live-score">100</div>
-                    <div class="score-sub">SCORE</div>
-                </div>
-                <div class="toggle-row"><span>Display</span><div class="btn-toggle-wrapper"><div class="btn-toggle active-good" onclick="togglePart(this, 'display', true)">ORIG</div><div class="btn-toggle" onclick="togglePart(this, 'display', false)">FAKE</div></div></div>
-                <div class="toggle-row"><span>Battery</span><div class="btn-toggle-wrapper"><div class="btn-toggle active-good" onclick="togglePart(this, 'battery', true)">ORIG</div><div class="btn-toggle" onclick="togglePart(this, 'battery', false)">FAKE</div></div></div>
-            </div>
-            <button class="btn btn-primary" onclick="generateReport()">GENERATE CERTIFICATE</button>
-        </div>
-
-        <div id="view-report" class="view-section">
-            <div class="report-paper">
-                <div class="report-header">
-                    <div class="report-brand-text">CheckThisPhone<span>.com</span></div>
-                    <div style="text-align: right; font-size: 12px; color: #64748b;">IMEI: <span id="report-imei"></span></div>
-                </div>
-                
-                <div class="report-grade-box">
-                    <div style="font-size: 42px; font-weight: 800; color: #2563eb;" id="report-score"></div>
-                    <div style="text-align: right; font-weight: 700;" id="report-device-name"></div>
-                </div>
-
-                <div style="margin-top: 25px; padding: 20px; background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0;">
-                    <h3 style="margin: 0 0 15px 0; font-size: 16px; color: #1e293b;">Network & Security Report</h3>
-                    <table class="report-data-table">
-                        <tr>
-                            <td class="report-label">Global Status</td>
-                            <td class="report-value" style="color: #10b981;" id="final-blacklist">CLEAN (VERIFIED)</td>
-                        </tr>
-                        <tr>
-                            <td class="report-label">Clean Status</td>
-                            <td class="report-value" id="final-clean">Ready for Activation</td>
-                        </tr>
-                        <tr>
-                            <td class="report-label">Brand</td>
-                            <td class="report-value" id="final-brand">-</td>
-                        </tr>
-                        <tr>
-                            <td class="report-label">Exact Model</td>
-                            <td class="report-value" id="final-model">-</td>
-                        </tr>
-                         <tr>
-                            <td class="report-label">Age / Year</td>
-                            <td class="report-value" id="final-age">-</td>
-                        </tr>
-                        <tr>
-                            <td class="report-label">Database</td>
-                            <td class="report-value">GSMA / Paid DB</td>
-                        </tr>
-                    </table>
-                </div>
-
-                <div class="no-print" style="margin-top: 30px; display: flex; flex-direction: column; gap: 10px;">
-                    <button class="btn btn-primary" onclick="window.print()">PRINT PDF</button>
-                    <button class="btn btn-outline" onclick="switchView('home')">NEW SCAN</button>
-                </div>
-            </div>
-        </div>
-
-    </div>
-
-    <script>
-        let currentImei = "";
-        let selectedBrand = "universal"; // Store the brand selection
-        let deviceState = { model: null, display: true, battery: true, board: true, grade: "A", health: 100 };
-
-        // ==========================================================
-        // CONFIGURATION: BRAND SERVICE ID MAP
-        // ==========================================================
-        // Fill these with the IDs from your IMEI.org Dashboard
-        const BRAND_SERVICES = {
-            'universal': '12', // Placeholder ID (Global Blacklist)
-            'apple': '18',     // Placeholder ID (Apple Advanced)
-            'samsung': '45',
-            'sony': '99',
-            'lg': '88',
-            'oppo': '101',
-            'zte': '102',
-            'xiaomi': '103',
-            'realme': '104',
-            'oneplus': '105',
-            'motorola': '106',
-            'iqoo': '107',
-            'huawei_pro': '108',
-            'asus': '109',
-            'asus_pro': '110',
-            'lenovo_pro': '111',
-            'honor': '112',
-            'pixel': '113',
-            'doogee': '114',
-            'itel': '115',
-            'kyocera': '116'
-        };
-
-        const API_TOKEN = "PASTE_YOUR_IMEI_ORG_TOKEN_HERE";
-
-        function switchView(id) {
-            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
-            document.getElementById('view-' + id).classList.add('active');
-            window.scrollTo(0,0);
-        }
-
-        // --- UPDATED SEARCH LOGIC ---
-        function handleImeiSearch() {
-            const imei = document.getElementById('home-imei-input').value;
-            const brandDropdown = document.getElementById('brand-select-home');
-            selectedBrand = brandDropdown.value; // Capture the user's choice
-
-            if(imei.length < 5) { alert("Please enter a valid IMEI"); return; }
-            currentImei = imei;
-            
-            // Pre-fill the technician input
-            document.getElementById('input-imei').value = currentImei; 
-            switchView('checkout');
-        }
-
-        function initiatePaidCheck() { switchView('checkout'); }
-        function initiateSubscription() { switchView('checkout'); }
-
-        function proceedToPayment(amount, name) {
-            console.log("Bypassing payment for testing...");
-            if(currentImei) {
-                document.getElementById('input-imei').value = currentImei;
-            } 
-            switchView('technician');
-            if(document.getElementById('input-imei').value.length > 5) {
-                fetchDeviceDetails();
-            }
-        }
-
-        async function fetchDeviceDetails() {
-            const loader = document.getElementById('imei-loader');
-            loader.style.display = 'inline-block';
-            
-            const imei = document.getElementById('input-imei').value;
-            
-            if(!imei) { 
-                alert("Please type an IMEI number first."); 
-                loader.style.display = 'none'; 
-                return; 
-            }
-            
-            // 1. GET THE RIGHT SERVICE ID
-            // We look up the brand in your list. If we can't find it, we use 'universal'.
-            const serviceId = BRAND_SERVICES[selectedBrand] || BRAND_SERVICES['universal'];
-            console.log(`Scanning... Brand: ${selectedBrand}, Service ID: ${serviceId}`);
-
-            const url = "https://api.imei.org/v1/orders"; 
-            const options = {
-                method: 'POST',
-                headers: {
-                    'Authorization': 'Bearer ' + API_TOKEN,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    "serviceId": serviceId,
-                    "imei": imei
-                })
-            };
-
-            try {
-                // 2. SUBMIT ORDER
-                let response = await fetch(url, options);
-                let data = await response.json();
-                
-                if(data.errors) throw new Error(JSON.stringify(data.errors));
-                const refId = data.referenceId;
-
-                // 3. WAIT FOR RESULT (Polling)
-                let resultData = null;
-                for(let i=0; i<10; i++) {
-                    await new Promise(r => setTimeout(r, 2000));
-                    let checkResp = await fetch(`https://api.imei.org/v1/orders/${refId}`, {
-                        headers: { 'Authorization': 'Bearer ' + API_TOKEN }
-                    });
-                    let checkData = await checkResp.json();
-                    if(checkData.status === 'completed') {
-                        resultData = checkData;
-                        break;
-                    }
-                }
-
-                if(!resultData) throw new Error("Timeout: Scan took too long.");
-
-                // 4. PARSE DATA
-                console.log("API Result:", resultData);
-                const rawText = JSON.stringify(resultData).toLowerCase();
-                const bodyText = resultData.body || resultData.result || "";
-
-                // Intelligent Status Parsing
-                let status = "CLEAN"; 
-                if (rawText.includes("lost") || rawText.includes("stolen") || rawText.includes("blacklisted")) {
-                    status = "BLACKLISTED";
-                }
-
-                // Update UI Inputs
-                document.getElementById('auto-brand').value = selectedBrand.toUpperCase();
-                document.getElementById('auto-model').value = "Verified Device"; // You can parse model from bodyText if needed
-                document.getElementById('auto-year').value = "Verified"; 
-                document.getElementById('specs-container').style.display = 'block';
-                
-                // Save for Final Report
-                deviceState.model = { 
-                    brand: selectedBrand.toUpperCase(), 
-                    model: "Device Verified", 
-                    blacklist: status,
-                    age: "Verified",
-                    fullText: bodyText
-                };
-
-            } catch (error) {
-                console.error(error);
-                // Fallback for demo so site doesn't crash if API key is empty
-                document.getElementById('auto-brand').value = selectedBrand.toUpperCase();
-                document.getElementById('auto-model').value = "Demo Mode";
-                document.getElementById('specs-container').style.display = 'block';
-                deviceState.model = { 
-                    brand: selectedBrand.toUpperCase(), 
-                    model: "Demo Device", 
-                    blacklist: "Clean (Simulated)", 
-                    age: "2024" 
-                };
-            }
-            
-            loader.style.display = 'none';
-        }
-
-        function togglePart(btn, part, isOriginal) {
-            deviceState[part] = isOriginal;
-            const wrapper = btn.parentElement;
-            wrapper.children[0].className = isOriginal ? 'btn-toggle active-good' : 'btn-toggle';
-            wrapper.children[1].className = !isOriginal ? 'btn-toggle active-bad' : 'btn-toggle';
-            updateTrustScore();
-        }
-
-        function updateTrustScore() {
-            let score = 100;
-            if (!deviceState.display) score -= 15;
-            if (!deviceState.battery) score -= 10;
-            document.getElementById('live-score').innerText = score;
-            return score;
-        }
-
-        function generateReport() {
-            if(!deviceState.model) {
-                alert("Please click 'SCAN' first to get device details.");
-                return;
-            }
-            // Populate Report
-            document.getElementById('report-imei').innerText = document.getElementById('input-imei').value;
-            document.getElementById('report-score').innerText = updateTrustScore() + "/100";
-            document.getElementById('report-device-name').innerText = deviceState.model.brand + " " + deviceState.model.model;
-            
-            // Populate Soft Report Data
-            document.getElementById('final-brand').innerText = deviceState.model.brand;
-            document.getElementById('final-model').innerText = deviceState.model.model;
-            document.getElementById('final-blacklist').innerText = deviceState.model.blacklist;
-            document.getElementById('final-age').innerText = deviceState.model.age;
-            
-            // Color Logic
-            if(deviceState.model.blacklist === "BLACKLISTED") {
-                 document.getElementById('final-blacklist').style.color = "#ef4444";
-                 document.getElementById('final-clean').innerText = "DO NOT BUY / BLOCKED";
-            } else {
-                 document.getElementById('final-blacklist').style.color = "#10b981";
-                 document.getElementById('final-clean').innerText = "Ready for Activation";
-            }
-            
-            switchView('report');
-        }
-    </script>
-</body>
-</html>
+                    <div class="b
