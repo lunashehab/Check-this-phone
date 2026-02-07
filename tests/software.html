@@ -55,6 +55,28 @@
         .cap-good { color: var(--success); }
         .cap-bad { color: var(--danger); }
 
+        /* --- IMEI INTELLIGENCE MODULE --- */
+        .imei-section { background: #0b0b14; border: 1px solid var(--accent); border-radius: 16px; padding: 20px; margin-bottom: 20px; position: relative; overflow: hidden; }
+        .imei-section::before { content: "CELLULAR IDENTITY"; position: absolute; top: 0; left: 0; background: var(--accent); color: black; font-size: 10px; font-weight: 800; padding: 4px 10px; border-bottom-right-radius: 8px; }
+        
+        .explainer-text { font-size: 12px; color: var(--text); margin-top: 15px; margin-bottom: 20px; line-height: 1.5; }
+        
+        .brand-select { width: 100%; background: var(--panel); color: white; border: 1px solid var(--border); padding: 12px; border-radius: 8px; font-family: 'JetBrains Mono'; margin-bottom: 15px; cursor: pointer; }
+        
+        /* PRICING PANELS */
+        .pricing-container { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        .price-card { background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 12px; padding: 15px; position: relative; transition: 0.2s; cursor: pointer; }
+        .price-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+        .price-card.active { border-color: var(--accent); background: rgba(214, 51, 132, 0.05); }
+        
+        .pc-title { font-weight: 800; font-size: 13px; color: var(--text-bright); text-transform: uppercase; }
+        .pc-price { font-family: 'JetBrains Mono'; font-size: 18px; color: var(--accent); margin: 5px 0; font-weight: 700; }
+        .pc-desc { font-size: 10px; color: var(--text); line-height: 1.4; }
+        
+        .input-row { display: flex; gap: 10px; }
+        .cyber-input { flex: 1; background: #000; border: 1px solid var(--border); padding: 12px; color: white; font-family: 'JetBrains Mono'; border-radius: 8px; }
+        .cyber-btn { background: var(--accent); color: white; border: none; padding: 0 20px; font-weight: 800; border-radius: 8px; cursor: pointer; }
+
         /* RAW AGENT BOX */
         .agent-box { background: #000; padding: 15px; border-radius: 12px; border: 1px solid var(--border); font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #64748b; line-height: 1.4; word-break: break-all; margin-bottom: 20px; }
 
@@ -81,6 +103,38 @@
         <div style="flex:1">
             <span class="fp-label">UNIQUE DEVICE FINGERPRINT</span>
             <div class="hash-display" id="fp-hash">GENERATING HASH...</div>
+        </div>
+    </div>
+
+    <div class="imei-section">
+        <p class="explainer-text">
+            <strong>IMEI INTELLIGENCE:</strong> Access the global GSMA database to verify device status. This check reveals if a device is <strong>Blacklisted (Stolen)</strong>, its <strong>Carrier Lock Status</strong>, and <strong>Warranty Validity</strong>. Essential for buying/selling used hardware.
+        </p>
+
+        <select class="brand-select" id="brand-selector" onchange="updateBrand()">
+            <option value="universal">▼ SELECT PHONE BRAND ▼</option>
+            <option value="apple">APPLE (iPhone/iPad)</option>
+            <option value="samsung">SAMSUNG</option>
+            <option value="google">GOOGLE PIXEL</option>
+            <option value="other">OTHER (Android)</option>
+        </select>
+
+        <div class="pricing-container">
+            <div class="price-card active" onclick="selectPlan(this, 'standard')">
+                <div class="pc-title">STANDARD CHECK</div>
+                <div class="pc-price">$1.49</div>
+                <div class="pc-desc">Blacklist Status<br>SimLock Check<br>Model ID</div>
+            </div>
+            <div class="price-card" onclick="selectPlan(this, 'gsx')">
+                <div class="pc-title">PRO / GSX</div>
+                <div class="pc-price">$4.99</div>
+                <div class="pc-desc"><strong>Apple Only</strong><br>Repair History<br>iCloud Status<br>Replacement Info</div>
+            </div>
+        </div>
+
+        <div class="input-row">
+            <input type="text" class="cyber-input" placeholder="ENTER 15-DIGIT IMEI" maxlength="15">
+            <button class="cyber-btn" onclick="startImeiScan()">SCAN</button>
         </div>
     </div>
 
@@ -116,7 +170,7 @@
 
     <div class="terminal" id="console-output">
         <div class="log-line">> SOFTWARE KERNEL INIT...</div>
-        <div class="log-line">> PARSING USER AGENT...</div>
+        <div class="log-line">> WAITING FOR INPUT...</div>
     </div>
 
     <a href="../index.html" class="back-btn">EXIT MATRIX</a>
@@ -133,9 +187,47 @@
             term.scrollTop = term.scrollHeight;
         }
 
+        // --- IMEI LOGIC ---
+        function updateBrand() {
+            const brand = document.getElementById('brand-selector').value;
+            const cards = document.querySelectorAll('.price-card');
+            
+            // Highlight GSX if Apple, Disable if not
+            if(brand === 'apple') {
+                cards[1].style.opacity = "1";
+                cards[1].style.pointerEvents = "auto";
+                log("> BRAND: APPLE DETECTED (GSX ENABLED)");
+            } else if (brand !== 'universal') {
+                cards[1].style.opacity = "0.3";
+                cards[1].style.pointerEvents = "none";
+                // Force select standard
+                selectPlan(cards[0], 'standard');
+                log(`> BRAND: ${brand.toUpperCase()} (GSX DISABLED)`);
+            }
+        }
+
+        function selectPlan(card, plan) {
+            document.querySelectorAll('.price-card').forEach(c => c.classList.remove('active'));
+            card.classList.add('active');
+            log(`> PLAN SELECTED: ${plan.toUpperCase()}`);
+        }
+
+        function startImeiScan() {
+            const input = document.querySelector('.cyber-input').value;
+            if(input.length < 5) {
+                alert("Please enter a valid IMEI");
+                return;
+            }
+            log(`> CONNECTING TO GSMA GATEWAY...`);
+            log(`> QUERYING IMEI: ${input}`);
+            setTimeout(() => {
+                alert("This is a demo of the Software Matrix.\n\nIn the real version, this button connects to the Payment Gateway (Stripe) to process the check.");
+                log("> AWAITING PAYMENT TOKEN...");
+            }, 1000);
+        }
+
         // --- 1. DEVICE FINGERPRINTING ---
         function generateFingerprint() {
-            // We use Canvas Fingerprinting to create a unique ID
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
             const txt = "DonSystems_Hardware_ID_v1.0";
@@ -150,7 +242,6 @@
             ctx.fillStyle = "rgba(102, 204, 0, 0.7)";
             ctx.fillText(txt, 4, 17);
             
-            // Generate hash from data URL
             const dataURI = canvas.toDataURL();
             let hash = 0;
             for (let i = 0; i < dataURI.length; i++) {
@@ -169,7 +260,6 @@
             const ua = navigator.userAgent;
             document.getElementById('raw-agent').innerText = ua;
             
-            // Detect OS
             let os = "Unknown OS";
             if (ua.indexOf("Win") != -1) os = "Windows";
             if (ua.indexOf("Mac") != -1) os = "MacOS";
@@ -177,7 +267,6 @@
             if (ua.indexOf("Android") != -1) os = "Android";
             if (ua.indexOf("like Mac") != -1) os = "iOS";
             
-            // Detect Browser
             let browser = "Unknown";
             if(ua.indexOf("Chrome") != -1) browser = "Chrome (Blink)";
             else if(ua.indexOf("Safari") != -1) browser = "Safari (WebKit)";
@@ -195,7 +284,7 @@
         function checkCaps() {
             const caps = [
                 { name: "Cookies", check: navigator.cookieEnabled },
-                { name: "Do Not Track", check: navigator.doNotTrack === "1" ? false : true }, // DNT on = secure
+                { name: "Do Not Track", check: navigator.doNotTrack === "1" ? false : true },
                 { name: "WebAssembly", check: typeof WebAssembly === 'object' },
                 { name: "Service Worker", check: 'serviceWorker' in navigator },
                 { name: "Secure Context", check: window.isSecureContext },
@@ -228,7 +317,6 @@
             btn.style.background = "var(--border)";
             
             setTimeout(() => {
-                // Heuristic check for root/jailbreak artifacts in UA
                 const ua = navigator.userAgent.toLowerCase();
                 const rooted = ua.includes("cyanogen") || ua.includes("mod") || ua.includes("cydia");
                 
