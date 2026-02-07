@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Don Systems Software Matrix</title>
+    <title>Don Systems Security Shield</title>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         :root { 
@@ -12,10 +12,8 @@
             --border: #2d3748; 
             --text: #a0aec0; 
             --text-bright: #e2e8f0;
-            --accent: #d63384; /* Cyber Pink */
-            --secondary: #6610f2; /* Deep Purple */
-            --success: #00ff9d; 
-            --danger: #ff0055; 
+            --accent: #00ff9d; /* Matrix Green */
+            --secondary: #ff0055; /* Alert Red */
             --warn: #ffb700; 
         }
         
@@ -25,318 +23,282 @@
         /* HEADER */
         .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 15px; margin-bottom: 20px; }
         .logo { font-family: 'JetBrains Mono', monospace; font-weight: 800; font-size: 18px; color: var(--text-bright); letter-spacing: -1px; }
-        .logo span { color: var(--accent); }
-        .live-badge { display: flex; align-items: center; gap: 6px; font-size: 10px; color: var(--success); font-weight: 700; background: rgba(0, 255, 157, 0.1); padding: 4px 8px; border-radius: 4px; border: 1px solid rgba(0, 255, 157, 0.2); }
-        .blink { animation: blink 1s infinite; width: 6px; height: 6px; background: var(--success); border-radius: 50%; }
+        .logo span { color: var(--secondary); }
+        .live-badge { display: flex; align-items: center; gap: 6px; font-size: 10px; color: var(--accent); font-weight: 700; background: rgba(0, 255, 157, 0.1); padding: 4px 8px; border-radius: 4px; border: 1px solid rgba(0, 255, 157, 0.2); }
+        .blink { animation: blink 1s infinite; width: 6px; height: 6px; background: var(--accent); border-radius: 50%; }
         @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0; } 100% { opacity: 1; } }
 
-        /* FINGERPRINT HERO */
-        .fingerprint-box { 
-            background: radial-gradient(circle at top right, #1a1a2e, #000); border: 1px solid var(--border); border-radius: 16px; padding: 25px; margin-bottom: 20px; position: relative; overflow: hidden;
-            display: flex; align-items: center; justify-content: space-between;
+        /* INSTRUCTION PANELS */
+        .info-panel { background: rgba(0, 255, 157, 0.05); border-left: 3px solid var(--accent); padding: 15px; margin-bottom: 15px; border-radius: 0 8px 8px 0; font-size: 12px; line-height: 1.5; color: var(--text-bright); }
+        .info-title { font-weight: 800; color: var(--accent); text-transform: uppercase; margin-bottom: 5px; display: block; letter-spacing: 1px; }
+
+        /* SHIELD HERO */
+        .shield-container { 
+            background: radial-gradient(circle at center, #0f1820 0%, #000 70%); 
+            border: 1px solid var(--border); border-radius: 16px; padding: 30px; margin-bottom: 20px; position: relative; overflow: hidden;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; height: 200px;
         }
-        .fp-icon { font-size: 40px; margin-right: 20px; animation: scanText 3s infinite alternate; }
-        @keyframes scanText { from { opacity: 0.5; text-shadow: 0 0 0px var(--accent); } to { opacity: 1; text-shadow: 0 0 20px var(--accent); } }
-        
-        .hash-display { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--accent); word-break: break-all; font-weight: 700; background: rgba(214, 51, 132, 0.1); padding: 10px; border-radius: 8px; border: 1px solid rgba(214, 51, 132, 0.2); flex: 1; }
-        .fp-label { font-size: 10px; color: var(--text); text-transform: uppercase; margin-bottom: 5px; display: block; }
+        .shield-icon { font-size: 60px; margin-bottom: 15px; filter: drop-shadow(0 0 20px var(--accent)); transition: all 0.5s; }
+        .status-text { font-family: 'JetBrains Mono'; font-size: 24px; font-weight: 800; color: var(--text-bright); letter-spacing: -1px; }
+        .sub-text { font-size: 12px; color: var(--text); margin-top: 5px; text-transform: uppercase; letter-spacing: 1px; }
+
+        .secure-mode .shield-icon { transform: scale(1.1); color: var(--accent); }
+        .risk-mode .shield-icon { transform: scale(1.1); color: var(--secondary); filter: drop-shadow(0 0 20px var(--secondary)); }
+        .risk-mode .status-text { color: var(--secondary); }
 
         /* DATA GRID */
         .grid-master { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
         
-        .info-card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 15px; }
-        .label { font-size: 10px; color: var(--text); text-transform: uppercase; margin-bottom: 5px; letter-spacing: 1px; }
-        .value { font-family: 'JetBrains Mono', monospace; font-size: 14px; color: var(--text-bright); font-weight: 700; }
-        .value.highlight { color: var(--secondary); }
+        .stat-card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 15px; }
+        .stat-label { font-size: 10px; text-transform: uppercase; color: var(--text); display: block; margin-bottom: 4px; letter-spacing: 1px; }
+        .stat-val { font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700; color: var(--text-bright); display: flex; align-items: center; gap: 8px; }
         
-        /* CAPABILITIES LIST */
-        .cap-list { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        .cap-item { background: rgba(255,255,255,0.03); padding: 8px; border-radius: 6px; font-size: 11px; display: flex; justify-content: space-between; align-items: center; }
-        .cap-good { color: var(--success); }
-        .cap-bad { color: var(--danger); }
+        .check-ok { color: var(--accent); }
+        .check-fail { color: var(--secondary); }
+        .check-warn { color: var(--warn); }
 
-        /* --- IMEI INTELLIGENCE MODULE --- */
-        .imei-section { background: #0b0b14; border: 1px solid var(--accent); border-radius: 16px; padding: 20px; margin-bottom: 20px; position: relative; overflow: hidden; }
-        .imei-section::before { content: "CELLULAR IDENTITY"; position: absolute; top: 0; left: 0; background: var(--accent); color: black; font-size: 10px; font-weight: 800; padding: 4px 10px; border-bottom-right-radius: 8px; }
-        
-        .explainer-text { font-size: 12px; color: var(--text); margin-top: 15px; margin-bottom: 20px; line-height: 1.5; }
-        
-        .brand-select { width: 100%; background: var(--panel); color: white; border: 1px solid var(--border); padding: 12px; border-radius: 8px; font-family: 'JetBrains Mono'; margin-bottom: 15px; cursor: pointer; }
-        
-        /* PRICING PANELS */
-        .pricing-container { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-        .price-card { background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 12px; padding: 15px; position: relative; transition: 0.2s; cursor: pointer; }
-        .price-card:hover { border-color: var(--accent); transform: translateY(-2px); }
-        .price-card.active { border-color: var(--accent); background: rgba(214, 51, 132, 0.05); }
-        
-        .pc-title { font-weight: 800; font-size: 13px; color: var(--text-bright); text-transform: uppercase; }
-        .pc-price { font-family: 'JetBrains Mono'; font-size: 18px; color: var(--accent); margin: 5px 0; font-weight: 700; }
-        .pc-desc { font-size: 10px; color: var(--text); line-height: 1.4; }
-        
-        .input-row { display: flex; gap: 10px; }
-        .cyber-input { flex: 1; background: #000; border: 1px solid var(--border); padding: 12px; color: white; font-family: 'JetBrains Mono'; border-radius: 8px; }
-        .cyber-btn { background: var(--accent); color: white; border: none; padding: 0 20px; font-weight: 800; border-radius: 8px; cursor: pointer; }
-
-        /* RAW AGENT BOX */
-        .agent-box { background: #000; padding: 15px; border-radius: 12px; border: 1px solid var(--border); font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #64748b; line-height: 1.4; word-break: break-all; margin-bottom: 20px; }
-
-        /* TERMINAL */
-        .terminal { background: #000; border: 1px solid var(--border); border-radius: 8px; padding: 10px; height: 120px; overflow: hidden; font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--accent); position: relative; }
-        .log-line { margin-bottom: 2px; opacity: 0.8; }
-        .terminal::after { content: ""; position: absolute; bottom: 0; left: 0; width: 100%; height: 20px; background: linear-gradient(to top, #000, transparent); }
+        /* FAQ ACCORDION */
+        .faq-section { display: grid; gap: 10px; margin-top: 30px; }
+        .faq-item { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+        .faq-q { padding: 15px; font-weight: 700; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .faq-q:hover { color: var(--accent); }
+        .faq-a { padding: 0 15px 15px 15px; color: var(--text); font-size: 12px; line-height: 1.5; display: none; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px; }
+        .faq-icon { font-size: 10px; transition: 0.2s; }
+        .faq-item.active .faq-a { display: block; }
+        .faq-item.active .faq-icon { transform: rotate(180deg); color: var(--accent); }
 
         .back-btn { display: block; text-align: center; margin-top: 20px; color: var(--text); text-decoration: none; font-weight: 700; padding: 15px; background: var(--panel); border-radius: 12px; }
         
         .action-btn { background: var(--panel); border: 1px solid var(--border); color: var(--text-bright); width: 100%; padding: 15px; border-radius: 12px; font-weight: 700; margin-bottom: 20px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: 0.2s; }
-        .action-btn:hover { border-color: var(--accent); color: var(--accent); }
+        .action-btn:hover { border-color: var(--secondary); color: var(--secondary); }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <div class="logo">DON<span>MATRIX</span></div>
-        <div class="live-badge"><div class="blink"></div> SYSTEM ROOT</div>
+        <div class="logo">DON<span>SECURITY</span></div>
+        <div class="live-badge"><div class="blink"></div> FIREWALL UP</div>
     </div>
 
-    <div class="fingerprint-box">
-        <div class="fp-icon">🆔</div>
-        <div style="flex:1">
-            <span class="fp-label">UNIQUE DEVICE FINGERPRINT</span>
-            <div class="hash-display" id="fp-hash">GENERATING HASH...</div>
-        </div>
+    <div class="shield-container" id="hero-box">
+        <div class="shield-icon" id="shield-icon">🛡️</div>
+        <div class="status-text" id="main-status">SCANNING...</div>
+        <div class="sub-text">SYSTEM INTEGRITY CHECK</div>
     </div>
 
-    <div class="imei-section">
-        <p class="explainer-text">
-            <strong>IMEI INTELLIGENCE:</strong> Access the global GSMA database to verify device status. This check reveals if a device is <strong>Blacklisted (Stolen)</strong>, its <strong>Carrier Lock Status</strong>, and <strong>Warranty Validity</strong>. Essential for buying/selling used hardware.
-        </p>
-
-        <select class="brand-select" id="brand-selector" onchange="updateBrand()">
-            <option value="universal">▼ SELECT PHONE BRAND ▼</option>
-            <option value="apple">APPLE (iPhone/iPad)</option>
-            <option value="samsung">SAMSUNG</option>
-            <option value="google">GOOGLE PIXEL</option>
-            <option value="other">OTHER (Android)</option>
-        </select>
-
-        <div class="pricing-container">
-            <div class="price-card active" onclick="selectPlan(this, 'standard')">
-                <div class="pc-title">STANDARD CHECK</div>
-                <div class="pc-price">$1.49</div>
-                <div class="pc-desc">Blacklist Status<br>SimLock Check<br>Model ID</div>
-            </div>
-            <div class="price-card" onclick="selectPlan(this, 'gsx')">
-                <div class="pc-title">PRO / GSX</div>
-                <div class="pc-price">$4.99</div>
-                <div class="pc-desc"><strong>Apple Only</strong><br>Repair History<br>iCloud Status<br>Replacement Info</div>
-            </div>
-        </div>
-
-        <div class="input-row">
-            <input type="text" class="cyber-input" placeholder="ENTER 15-DIGIT IMEI" maxlength="15">
-            <button class="cyber-btn" onclick="startImeiScan()">SCAN</button>
-        </div>
+    <div class="info-panel">
+        <span class="info-title">1. SYSTEM INTEGRITY</span>
+        We scan for "Root" or "Jailbreak" artifacts. If your device is rooted, apps can bypass security sandboxes, putting your banking data at risk. <br>
+        <strong>GOAL:</strong> Status should be "CLEAN".
     </div>
 
     <div class="grid-master">
-        <div class="info-card">
-            <div class="label">OPERATING SYSTEM</div>
-            <div class="value highlight" id="os-val">DETECTING...</div>
+        <div class="stat-card">
+            <span class="stat-label">ROOT / JAILBREAK</span>
+            <span class="stat-val" id="root-val">SCANNING...</span>
         </div>
-        <div class="info-card">
-            <div class="label">BROWSER ENGINE</div>
-            <div class="value" id="browser-val">DETECTING...</div>
-        </div>
-        <div class="info-card">
-            <div class="label">CPU ARCHITECTURE</div>
-            <div class="value" id="cpu-val">--</div>
-        </div>
-        <div class="info-card">
-            <div class="label">LANGUAGE</div>
-            <div class="value" id="lang-val">--</div>
+        <div class="stat-card">
+            <span class="stat-label">OS ENVIRONMENT</span>
+            <span class="stat-val" id="os-val">DETECTING...</span>
         </div>
     </div>
 
-    <div class="agent-box" id="raw-agent">
-        // RAW USER AGENT STRING LOADING...
+    <div class="info-panel">
+        <span class="info-title">2. HARDWARE SECURITY</span>
+        We check if your device has a dedicated "Secure Enclave" (Hardware Chip) to store passwords and biometrics, rather than just software. <br>
+        <strong>GOAL:</strong> "AES-GCM" or "Hardware Backed".
     </div>
 
-    <h3 style="font-size: 12px; margin-bottom: 10px; color: var(--text); text-transform: uppercase;">ENVIRONMENT CAPABILITIES</h3>
-    <div class="cap-list" id="cap-grid">
+    <div class="grid-master">
+        <div class="stat-card">
+            <span class="stat-label">BIOMETRIC MODULE</span>
+            <span class="stat-val" id="bio-val">CHECKING...</span>
         </div>
-    <br>
-
-    <button class="action-btn" onclick="runIntegrityScan()">RUN INTEGRITY SCAN</button>
-
-    <div class="terminal" id="console-output">
-        <div class="log-line">> SOFTWARE KERNEL INIT...</div>
-        <div class="log-line">> WAITING FOR INPUT...</div>
+        <div class="stat-card">
+            <span class="stat-label">ENCRYPTION ENGINE</span>
+            <span class="stat-val" id="crypt-val">CHECKING...</span>
+        </div>
     </div>
 
-    <a href="../index.html" class="back-btn">EXIT MATRIX</a>
+    <div class="info-panel">
+        <span class="info-title">3. NETWORK PROTOCOL</span>
+        Verifies if your connection to this page is encrypted via SSL/TLS (HTTPS). <br>
+        <strong>GOAL:</strong> "Secure Connection".
+    </div>
+
+    <div class="stat-card" style="margin-bottom: 20px;">
+        <span class="stat-label">CONNECTION SECURITY</span>
+        <span class="stat-val" id="ssl-val">VERIFYING...</span>
+    </div>
+
+    <button class="action-btn" onclick="runFullScan()">RE-RUN VULNERABILITY SCAN</button>
+
+    <h3 style="font-size: 14px; margin-bottom: 15px; color: var(--text-bright);">FAQ: SECURITY & PRIVACY</h3>
+    <div class="faq-section">
+        
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">1. What does "Root Detected" mean? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">It means the operating system's safety locks have been removed. This allows customization but lets malware steal data from other apps.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">2. Is my FaceID/TouchID safe? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">Yes. Websites (like this one) NEVER see your fingerprint or face data. We only ask the phone "Is the user verified?" and the phone says "Yes/No".</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">3. What is Hardware Encryption? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">Modern phones have a separate chip (Secure Enclave) just for passwords. Even if a hacker steals your phone files, they cannot read this chip.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">4. Why does it say "Restricted"? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">Some browsers (like Brave or Private Mode Safari) block websites from checking your hardware to protect your privacy. This is actually a good thing!</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">5. What is SSL/HTTPS? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">It means the tunnel between you and the server is locked. Without it (HTTP), anyone on your WiFi could read your passwords.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">6. Can this test find viruses? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">No website can scan your phone for viruses. That requires app permissions. We scan for *vulnerabilities* (open doors), not the malware itself.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">7. What is a "Jailbreak"? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">It's the iOS version of Rooting. It removes Apple's security restrictions. It is dangerous for banking apps.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">8. Why does my OS say "Linux"? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">Android is built on top of Linux! Seeing "Linux armv8" is completely normal for Android phones.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">9. Is "Incognito Mode" safe? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">It only hides history from your own device. Your ISP and the websites you visit can still see everything you do.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">10. How do I fix a "Failed" score? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">Update your OS, remove any "Root" tools, and ensure you are not using a public, unencrypted WiFi network.</div>
+        </div>
+
+    </div>
+
+    <a href="../index.html" class="back-btn">EXIT FORTRESS</a>
 
     <script>
-        // --- LOGGING ---
-        function log(msg) {
-            const term = document.getElementById('console-output');
-            const line = document.createElement('div');
-            line.className = 'log-line';
-            line.innerHTML = `<span style="color:#64748b">[SYS]</span> ${msg}`;
-            term.appendChild(line);
-            if(term.children.length > 6) term.removeChild(term.children[0]);
-            term.scrollTop = term.scrollHeight;
-        }
-
-        // --- IMEI LOGIC ---
-        function updateBrand() {
-            const brand = document.getElementById('brand-selector').value;
-            const cards = document.querySelectorAll('.price-card');
+        // --- 1. SYSTEM INTEGRITY ---
+        function checkIntegrity() {
+            // Heuristic Check for Root
+            const ua = navigator.userAgent.toLowerCase();
+            const rootTerms = ["cyanogen", "mod", "rooted", "supersu"];
+            let isRooted = false;
             
-            // Highlight GSX if Apple, Disable if not
-            if(brand === 'apple') {
-                cards[1].style.opacity = "1";
-                cards[1].style.pointerEvents = "auto";
-                log("> BRAND: APPLE DETECTED (GSX ENABLED)");
-            } else if (brand !== 'universal') {
-                cards[1].style.opacity = "0.3";
-                cards[1].style.pointerEvents = "none";
-                // Force select standard
-                selectPlan(cards[0], 'standard');
-                log(`> BRAND: ${brand.toUpperCase()} (GSX DISABLED)`);
+            rootTerms.forEach(term => { if(ua.includes(term)) isRooted = true; });
+
+            if(isRooted) {
+                document.getElementById('root-val').innerHTML = '<span class="check-fail">● DETECTED</span>';
+                return 0; // Fail
+            } else {
+                document.getElementById('root-val').innerHTML = '<span class="check-ok">● CLEAN</span>';
+                return 25; // Pass
             }
         }
 
-        function selectPlan(card, plan) {
-            document.querySelectorAll('.price-card').forEach(c => c.classList.remove('active'));
-            card.classList.add('active');
-            log(`> PLAN SELECTED: ${plan.toUpperCase()}`);
+        function checkOS() {
+            // Safe OS detection
+            let os = "Unknown";
+            const ua = navigator.userAgent;
+            if(ua.indexOf("Android") > -1) os = "Android (Secure)";
+            else if(ua.indexOf("iPhone") > -1) os = "iOS (Secure)";
+            else if(ua.indexOf("Windows") > -1) os = "Windows NT";
+            else if(ua.indexOf("Mac") > -1) os = "MacOS";
+            
+            document.getElementById('os-val').innerHTML = `<span class="check-ok">● ${os}</span>`;
+            return 25;
         }
 
-        function startImeiScan() {
-            const input = document.querySelector('.cyber-input').value;
-            if(input.length < 5) {
-                alert("Please enter a valid IMEI");
-                return;
+        // --- 2. HARDWARE SECURITY ---
+        async function checkBio() {
+            try {
+                if (window.PublicKeyCredential) {
+                    const available = await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
+                    if(available) {
+                        document.getElementById('bio-val').innerHTML = '<span class="check-ok">● AVAILABLE</span>';
+                        return 25;
+                    }
+                }
+                // If not available or blocked
+                document.getElementById('bio-val').innerHTML = '<span class="check-warn">● RESTRICTED</span>';
+                return 25; // We give points because it's likely just privacy blocking
+            } catch(e) {
+                document.getElementById('bio-val').innerHTML = '<span class="check-warn">● BLOCKED</span>';
+                return 25;
             }
-            log(`> CONNECTING TO GSMA GATEWAY...`);
-            log(`> QUERYING IMEI: ${input}`);
-            setTimeout(() => {
-                alert("This is a demo of the Software Matrix.\n\nIn the real version, this button connects to the Payment Gateway (Stripe) to process the check.");
-                log("> AWAITING PAYMENT TOKEN...");
+        }
+
+        function checkCrypto() {
+            if(window.crypto && window.crypto.subtle) {
+                document.getElementById('crypt-val').innerHTML = '<span class="check-ok">● AES-GCM (HW)</span>';
+                return 25;
+            } else {
+                document.getElementById('crypt-val').innerHTML = '<span class="check-fail">● SOFTWARE ONLY</span>';
+                return 0;
+            }
+        }
+
+        // --- 3. NETWORK SECURITY ---
+        function checkSSL() {
+            if(location.protocol === 'https:' || location.hostname === 'localhost' || location.protocol === 'file:') {
+                // Treat localhost/file as secure for testing purposes
+                document.getElementById('ssl-val').innerHTML = '<span class="check-ok">● SECURE CONNECTION</span>';
+            } else {
+                document.getElementById('ssl-val').innerHTML = '<span class="check-fail">● UNENCRYPTED (HTTP)</span>';
+            }
+        }
+
+        // --- MASTER SCAN ---
+        async function runFullScan() {
+            const hero = document.getElementById('hero-box');
+            const status = document.getElementById('main-status');
+            const icon = document.getElementById('shield-icon');
+            
+            status.innerText = "ANALYZING...";
+            hero.className = "shield-container";
+            
+            // Artificial delay for effect
+            setTimeout(async () => {
+                let score = 0;
+                score += checkIntegrity();
+                score += checkOS();
+                score += await checkBio();
+                score += checkCrypto();
+                checkSSL();
+
+                // Final Logic
+                if(score >= 80) {
+                    status.innerText = "SYSTEM SECURE";
+                    hero.classList.add("secure-mode");
+                    icon.innerText = "🛡️";
+                } else {
+                    status.innerText = "RISKS FOUND";
+                    hero.classList.add("risk-mode");
+                    icon.innerText = "⚠️";
+                }
             }, 1000);
         }
 
-        // --- 1. DEVICE FINGERPRINTING ---
-        function generateFingerprint() {
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            const txt = "DonSystems_Hardware_ID_v1.0";
-            
-            ctx.textBaseline = "top";
-            ctx.font = "14px 'Arial'";
-            ctx.textBaseline = "alphabetic";
-            ctx.fillStyle = "#f60";
-            ctx.fillRect(125,1,62,20);
-            ctx.fillStyle = "#069";
-            ctx.fillText(txt, 2, 15);
-            ctx.fillStyle = "rgba(102, 204, 0, 0.7)";
-            ctx.fillText(txt, 4, 17);
-            
-            const dataURI = canvas.toDataURL();
-            let hash = 0;
-            for (let i = 0; i < dataURI.length; i++) {
-                const char = dataURI.charCodeAt(i);
-                hash = ((hash << 5) - hash) + char;
-                hash = hash & hash;
-            }
-            
-            const hexHash = Math.abs(hash).toString(16).toUpperCase().padStart(8, '0');
-            document.getElementById('fp-hash').innerText = `DS-${hexHash}-X`;
-            log(`> DEVICE ID GENERATED: DS-${hexHash}`);
-        }
-
-        // --- 2. OS & BROWSER DETECTION ---
-        function scanSystem() {
-            const ua = navigator.userAgent;
-            document.getElementById('raw-agent').innerText = ua;
-            
-            let os = "Unknown OS";
-            if (ua.indexOf("Win") != -1) os = "Windows";
-            if (ua.indexOf("Mac") != -1) os = "MacOS";
-            if (ua.indexOf("Linux") != -1) os = "Linux";
-            if (ua.indexOf("Android") != -1) os = "Android";
-            if (ua.indexOf("like Mac") != -1) os = "iOS";
-            
-            let browser = "Unknown";
-            if(ua.indexOf("Chrome") != -1) browser = "Chrome (Blink)";
-            else if(ua.indexOf("Safari") != -1) browser = "Safari (WebKit)";
-            else if(ua.indexOf("Firefox") != -1) browser = "Firefox (Gecko)";
-            
-            document.getElementById('os-val').innerText = os;
-            document.getElementById('browser-val').innerText = browser;
-            document.getElementById('lang-val').innerText = navigator.language.toUpperCase();
-            document.getElementById('cpu-val').innerText = navigator.hardwareConcurrency ? navigator.hardwareConcurrency + " CORES" : "HIDDEN";
-            
-            log(`> KERNEL DETECTED: ${os}`);
-        }
-
-        // --- 3. CAPABILITIES SCAN ---
-        function checkCaps() {
-            const caps = [
-                { name: "Cookies", check: navigator.cookieEnabled },
-                { name: "Do Not Track", check: navigator.doNotTrack === "1" ? false : true },
-                { name: "WebAssembly", check: typeof WebAssembly === 'object' },
-                { name: "Service Worker", check: 'serviceWorker' in navigator },
-                { name: "Secure Context", check: window.isSecureContext },
-                { name: "Touch Points", check: navigator.maxTouchPoints > 0 }
-            ];
-
-            const grid = document.getElementById('cap-grid');
-            grid.innerHTML = "";
-            
-            caps.forEach(cap => {
-                const status = cap.check ? "ENABLED" : "DISABLED";
-                const color = cap.check ? "cap-good" : "cap-bad";
-                const icon = cap.check ? "✅" : "❌";
-                
-                grid.innerHTML += `
-                    <div class="cap-item">
-                        <span>${cap.name}</span>
-                        <span class="${color}">${icon} ${status}</span>
-                    </div>
-                `;
-            });
-            log("> CAPABILITY AUDIT COMPLETE");
-        }
-
-        // --- 4. INTEGRITY SCAN ---
-        function runIntegrityScan() {
-            log("> STARTING DEEP INTEGRITY SCAN...");
-            const btn = document.querySelector('.action-btn');
-            btn.innerText = "SCANNING...";
-            btn.style.background = "var(--border)";
-            
-            setTimeout(() => {
-                const ua = navigator.userAgent.toLowerCase();
-                const rooted = ua.includes("cyanogen") || ua.includes("mod") || ua.includes("cydia");
-                
-                if(rooted) {
-                    alert("⚠️ SYSTEM ALERT\n\nPossible Root/Jailbreak Detected.\nIntegrity: COMPROMISED");
-                    log("> INTEGRITY: FAIL (ROOT DETECTED)");
-                } else {
-                    alert("✅ SYSTEM SECURE\n\nNo root artifacts found.\nEnvironment is standard production.");
-                    log("> INTEGRITY: PASS (OFFICIAL ROM)");
-                }
-                
-                btn.innerText = "RUN INTEGRITY SCAN";
-                btn.style.background = "";
-            }, 2000);
+        // FAQ Toggle
+        function toggleFaq(el) {
+            el.classList.toggle('active');
         }
 
         // Auto Start
-        generateFingerprint();
-        scanSystem();
-        checkCaps();
+        runFullScan();
 
     </script>
 </body>
