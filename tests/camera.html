@@ -12,69 +12,67 @@
             --border: #2d3748; 
             --text: #a0aec0; 
             --text-bright: #e2e8f0;
-            --accent: #00f0ff; /* Cyber Cyan */
+            --accent: #f43f5e; /* Rose Red */
+            --secondary: #3b82f6; /* Electric Blue */
             --success: #00ff9d; 
             --danger: #ff0055; 
             --warn: #ffb700; 
         }
         
-        * { box-sizing: border-box; }
+        * { box-sizing: border-box; touch-action: manipulation; -webkit-tap-highlight-color: transparent; user-select: none; }
         body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; padding: 20px; margin: 0; min-height: 100vh; font-size: 14px; overflow-x: hidden; }
         
         /* HEADER */
         .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 15px; margin-bottom: 20px; }
         .logo { font-family: 'JetBrains Mono', monospace; font-weight: 800; font-size: 18px; color: var(--text-bright); letter-spacing: -1px; }
         .logo span { color: var(--accent); }
-        .live-badge { display: flex; align-items: center; gap: 6px; font-size: 10px; color: var(--danger); font-weight: 700; background: rgba(255, 0, 85, 0.1); padding: 4px 8px; border-radius: 4px; border: 1px solid rgba(255, 0, 85, 0.2); }
-        .blink { animation: blink 1s infinite; width: 6px; height: 6px; background: var(--danger); border-radius: 50%; }
+        .live-badge { display: flex; align-items: center; gap: 6px; font-size: 10px; color: var(--accent); font-weight: 700; background: rgba(244, 63, 94, 0.1); padding: 4px 8px; border-radius: 4px; border: 1px solid rgba(244, 63, 94, 0.2); }
+        .blink { animation: blink 1s infinite; width: 6px; height: 6px; background: var(--accent); border-radius: 50%; }
         @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0; } 100% { opacity: 1; } }
 
         /* VIEWFINDER HERO */
-        .viewfinder { 
-            background: #000; border: 2px solid var(--border); border-radius: 16px; height: 300px; position: relative; overflow: hidden; margin-bottom: 20px;
-            display: flex; justify-content: center; align-items: center;
+        .camera-container { 
+            background: #000; border: 2px solid var(--border); border-radius: 16px; height: 250px; margin-bottom: 20px; 
+            position: relative; overflow: hidden; display: flex; justify-content: center; align-items: center;
         }
-        video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); } /* Mirror by default */
+        video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); /* Mirror selfie */ }
         
-        /* OVERLAYS */
-        .grid-overlay {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; opacity: 0.3; display: none;
-            background-image: linear-gradient(var(--accent) 1px, transparent 1px), linear-gradient(90deg, var(--accent) 1px, transparent 1px);
+        .overlay-grid {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;
+            background: 
+                linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px);
             background-size: 33.3% 33.3%;
+            border: 1px solid rgba(255,255,255,0.1);
         }
-        .crosshair {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 40px; height: 40px; pointer-events: none; display: none;
-        }
-        .crosshair::before, .crosshair::after { content: ''; position: absolute; background: var(--success); }
-        .crosshair::before { width: 2px; height: 100%; left: 50%; transform: translateX(-50%); }
-        .crosshair::after { width: 100%; height: 2px; top: 50%; transform: translateY(-50%); }
+        .cam-status { position: absolute; bottom: 10px; right: 10px; background: rgba(0,0,0,0.7); padding: 4px 8px; border-radius: 4px; color: var(--accent); font-family: 'JetBrains Mono'; font-size: 10px; border: 1px solid var(--accent); }
 
-        /* METRICS BAR */
-        .metrics-row { display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 5px; }
-        .metric-card { background: var(--panel); border: 1px solid var(--border); padding: 12px; border-radius: 8px; min-width: 100px; flex: 1; }
-        .metric-label { font-size: 10px; text-transform: uppercase; color: var(--text); display: block; margin-bottom: 4px; }
-        .metric-val { font-family: 'JetBrains Mono', monospace; font-size: 16px; font-weight: 700; color: var(--text-bright); }
-        .unit { font-size: 10px; color: var(--text); }
+        /* CONTROLS */
+        .btn-group { display: flex; gap: 10px; margin-bottom: 20px; }
+        .action-btn { flex: 1; background: var(--panel); border: 1px solid var(--border); color: var(--text-bright); padding: 15px; border-radius: 12px; font-weight: 700; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: 0.2s; font-size: 11px; }
+        .action-btn:hover { border-color: var(--accent); color: var(--accent); }
+        .btn-primary { background: var(--accent); color: white; border: none; }
 
-        /* CONTROL GRID */
-        .control-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 20px; }
-        .btn-cam { background: var(--panel); border: 1px solid var(--border); color: var(--text-bright); padding: 15px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 11px; text-align: left; display: flex; align-items: center; justify-content: space-between; transition: 0.2s; }
-        .btn-cam:active { transform: scale(0.98); background: var(--border); }
-        .btn-capture { grid-column: span 2; background: var(--accent); color: #000; border: none; text-align: center; justify-content: center; font-size: 14px; box-shadow: 0 0 20px rgba(0, 240, 255, 0.3); }
-        .btn-icon { font-size: 18px; }
+        /* DATA GRID */
+        .grid-master { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        .stat-card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 10px; }
+        .stat-label { font-size: 9px; text-transform: uppercase; color: var(--text); display: block; margin-bottom: 4px; }
+        .stat-val { font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700; color: var(--text-bright); }
+        .val-red { color: var(--accent); }
 
-        /* CAPABILITIES LIST */
-        .cap-box { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 15px; margin-bottom: 20px; }
-        .cap-title { font-size: 12px; color: var(--accent); font-weight: 700; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
-        .cap-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 11px; font-family: 'JetBrains Mono', monospace; }
-        .cap-item { color: var(--text); }
-        .cap-check { color: var(--success); }
-        .cap-x { color: var(--danger); }
+        /* INSTRUCTION PANELS */
+        .info-panel { background: rgba(244, 63, 94, 0.05); border-left: 3px solid var(--accent); padding: 15px; margin-bottom: 15px; border-radius: 0 8px 8px 0; font-size: 12px; line-height: 1.5; color: var(--text-bright); }
+        .info-title { font-weight: 800; color: var(--accent); text-transform: uppercase; margin-bottom: 5px; display: block; letter-spacing: 1px; }
 
-        /* TERMINAL */
-        .terminal { background: #000; border: 1px solid var(--border); border-radius: 8px; padding: 10px; height: 100px; overflow: hidden; font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--accent); position: relative; }
-        .log-line { margin-bottom: 2px; opacity: 0.8; }
-        .terminal::after { content: ""; position: absolute; bottom: 0; left: 0; width: 100%; height: 20px; background: linear-gradient(to top, #000, transparent); }
+        /* FAQ ACCORDION */
+        .faq-section { display: grid; gap: 10px; margin-top: 30px; }
+        .faq-item { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+        .faq-q { padding: 15px; font-weight: 700; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .faq-q:hover { color: var(--accent); }
+        .faq-a { padding: 0 15px 15px 15px; color: var(--text); font-size: 12px; line-height: 1.5; display: none; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px; }
+        .faq-icon { font-size: 10px; transition: 0.2s; }
+        .faq-item.active .faq-a { display: block; }
+        .faq-item.active .faq-icon { transform: rotate(180deg); color: var(--accent); }
 
         .back-btn { display: block; text-align: center; margin-top: 20px; color: var(--text); text-decoration: none; font-weight: 700; padding: 15px; background: var(--panel); border-radius: 12px; }
     </style>
@@ -83,72 +81,116 @@
 
     <div class="header">
         <div class="logo">DON<span>OPTICS</span></div>
-        <div class="live-badge"><div class="blink"></div> SENSOR ACTIVE</div>
+        <div class="live-badge"><div class="blink"></div> SENSOR IDLE</div>
     </div>
 
-    <div class="viewfinder" id="cam-container">
-        <div class="grid-overlay" id="grid-lines"></div>
-        <div class="crosshair" id="focus-point"></div>
-        <video id="videoElement" autoplay playsinline></video>
+    <div class="camera-container">
+        <video id="video-feed" autoplay playsinline></video>
+        <div class="overlay-grid"></div>
+        <div class="cam-status" id="cam-status">OFFLINE</div>
     </div>
 
-    <div class="metrics-row">
-        <div class="metric-card">
-            <span class="metric-label">Resolution</span>
-            <span class="metric-val" id="res-val">--</span>
+    <div class="btn-group">
+        <button class="action-btn btn-primary" onclick="startCamera()">ACTIVATE LENS</button>
+        <button class="action-btn" onclick="switchCamera()">FLIP CAM ↻</button>
+    </div>
+
+    <div class="info-panel">
+        <span class="info-title">1. STREAM METRICS</span>
+        Displays the *live* data stream properties. Browsers often compress video to 720p or 1080p to save battery, even if you have a 48MP sensor.
+    </div>
+
+    <div class="grid-master">
+        <div class="stat-card">
+            <span class="stat-label">RESOLUTION</span>
+            <span class="stat-val val-red" id="res-val">-- x --</span>
         </div>
-        <div class="metric-card">
-            <span class="metric-label">Megapixels</span>
-            <span class="metric-val" id="mp-val">--<span class="unit">MP</span></span>
+        <div class="stat-card">
+            <span class="stat-label">MEGAPIXELS (MP)</span>
+            <span class="stat-val" id="mp-val">--</span>
         </div>
-        <div class="metric-card">
-            <span class="metric-label">Frame Rate</span>
-            <span class="metric-val" id="fps-val">--<span class="unit">FPS</span></span>
+        <div class="stat-card">
+            <span class="stat-label">ASPECT RATIO</span>
+            <span class="stat-val" id="ar-val">--</span>
         </div>
-    </div>
-
-    <div class="control-grid">
-        <button class="btn-cam" onclick="switchCamera()">
-            <span>FLIP CAM</span> <span class="btn-icon">🔄</span>
-        </button>
-        <button class="btn-cam" onclick="toggleGrid()">
-            <span>GRID LINES</span> <span class="btn-icon">#️⃣</span>
-        </button>
-        <button class="btn-cam btn-capture" onclick="runShutterTest()">
-            <span>📸 RUN SHUTTER SPEED TEST</span>
-        </button>
-    </div>
-
-    <div class="cap-box">
-        <div class="cap-title">Hardware Capabilities</div>
-        <div class="cap-grid" id="cap-list">
-            <div class="cap-item">Scanning Drivers...</div>
+        <div class="stat-card">
+            <span class="stat-label">FRAME RATE</span>
+            <span class="stat-val" id="fps-val">--</span>
         </div>
     </div>
 
-    <div class="terminal" id="console-output">
-        <div class="log-line">> OPTICS MODULE INIT...</div>
-        <div class="log-line">> REQUESTING PERMISSION...</div>
+    <div class="info-panel">
+        <span class="info-title">2. LENS ENUMERATION</span>
+        Lists all accessible cameras. Modern phones have 3-4 back cameras (Ultra, Wide, Tele), but browsers usually group them into one "Back Camera" switchable by zoom.
     </div>
 
-    <a href="../index.html" class="back-btn">EXIT LABORATORY</a>
+    <div class="stat-card" style="margin-bottom: 20px;">
+        <span class="stat-label">DETECTED HARDWARE LABELS</span>
+        <div class="stat-val" id="cam-list" style="margin-top: 5px; line-height: 1.5; color: var(--text);">
+            [ Waiting for Permission ]
+        </div>
+    </div>
+
+    <h3 style="font-size: 14px; margin-bottom: 15px; color: var(--text-bright);">FAQ: CAMERA & OPTICS</h3>
+    <div class="faq-section">
+        
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">1. Why is the quality lower than my Camera app? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">Browsers (Chrome/Safari) throttle video quality to save battery and data. They rarely let websites access the full 48MP or 200MP raw sensor data.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">2. What is "OIS"? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">Optical Image Stabilization. The lens physically floats on magnets to counteract your hand shaking. It's crucial for night photos.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">3. What is an "Aperture" (f/1.8)? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">The size of the hole letting light in. A lower number (f/1.8) means a bigger hole = better night photos.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">4. Digital Zoom vs. Optical Zoom? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">Optical Zoom uses physical glass lenses (better quality). Digital Zoom just crops the image (pixelated quality). </div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">5. Why do I have 3 cameras? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">Usually: 1 Main (Wide), 1 Ultra-Wide (0.5x), and 1 Telephoto (3x/5x Zoom). The phone switches between them automatically.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">6. Is "Megapixels" everything? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">No! A 12MP camera with a large sensor is often better than a 1080MP camera with a tiny sensor. Sensor size determines light intake.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">7. Can websites spy on me? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">No. Browsers have a hard "Permission Wall." You must click "Allow" every time a site wants to see your camera.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">8. What is "LiDAR"? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">Light Detection and Ranging. It shoots lasers to measure depth. It helps with fast autofocus in the dark and AR apps.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">9. Why is selfie video mirrored? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">Humans are used to seeing themselves in a mirror. Non-mirrored video looks "wrong" to our brains. We mirror the preview here for comfort.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">10. What is "ISP"? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">Image Signal Processor. It's a chip that processes raw data from the sensor into a JPG photo instantly (HDR, noise reduction).</div>
+        </div>
+
+    </div>
+
+    <a href="../index.html" class="back-btn">EXIT OPTICS LAB</a>
 
     <script>
-        // --- LOGGING ---
-        function log(msg) {
-            const term = document.getElementById('console-output');
-            const line = document.createElement('div');
-            line.className = 'log-line';
-            line.innerHTML = `<span style="color:#64748b">[SYS]</span> ${msg}`;
-            term.appendChild(line);
-            if(term.children.length > 6) term.removeChild(term.children[0]);
-            term.scrollTop = term.scrollHeight;
-        }
-
-        // --- CAMERA ENGINE ---
-        const video = document.getElementById('videoElement');
         let currentStream;
-        let facingMode = "user"; // "user" (front) or "environment" (back)
+        let facingMode = "user"; // "user" = front, "environment" = back
 
         async function startCamera() {
             if (currentStream) {
@@ -156,149 +198,92 @@
             }
 
             const constraints = {
+                audio: false,
                 video: {
                     facingMode: facingMode,
-                    width: { ideal: 4096 }, // Request max resolution
-                    height: { ideal: 2160 }
+                    width: { ideal: 1920 }, // Request High Res
+                    height: { ideal: 1080 }
                 }
             };
 
             try {
-                log(`> OPENING LENS: ${facingMode.toUpperCase()}`);
                 const stream = await navigator.mediaDevices.getUserMedia(constraints);
                 currentStream = stream;
+                
+                const video = document.getElementById('video-feed');
                 video.srcObject = stream;
                 
-                // Wait for video to load to get dimensions
-                video.onloadedmetadata = () => {
-                    analyzeStream();
-                    getCapabilities();
-                };
+                document.getElementById('cam-status').innerText = "LIVE FEED";
+                document.getElementById('cam-status').style.color = "var(--success)";
+                document.getElementById('cam-status').style.borderColor = "var(--success)";
+                document.querySelector('.live-badge').innerText = "RECORDING";
+                
+                // Flip video element if front camera
+                if(facingMode === 'user') video.style.transform = "scaleX(-1)";
+                else video.style.transform = "scaleX(1)";
+
+                // Analyze Track
+                const track = stream.getVideoTracks()[0];
+                const settings = track.getSettings();
+                
+                updateStats(settings);
+                listCameras();
+
             } catch (err) {
-                log("> ERROR: CAMERA ACCESS DENIED");
-                alert("Please allow camera access to run diagnostics.");
+                alert("CAMERA ERROR:\n" + err.name + "\n\nPlease allow camera permissions.");
+                document.getElementById('cam-status').innerText = "DENIED";
+                document.getElementById('cam-status').style.color = "var(--danger)";
             }
         }
 
-        // --- 1. SENSOR ANALYSIS ---
-        function analyzeStream() {
-            const w = video.videoWidth;
-            const h = video.videoHeight;
-            const mp = (w * h / 1000000).toFixed(1);
-            
-            document.getElementById('res-val').innerText = `${w}x${h}`;
-            document.getElementById('mp-val').innerText = mp;
-            document.getElementById('fps-val').innerText = "30"; // Standard web estimate
-            
-            log(`> STREAM LOCKED: ${w}x${h} (${mp}MP)`);
-            
-            // Mirror logic: Front cam = mirror, Back cam = normal
-            if(facingMode === 'user') video.style.transform = "scaleX(-1)";
-            else video.style.transform = "scaleX(1)";
-        }
-
-        // --- 2. HARDWARE CAPABILITIES SCAN ---
-        function getCapabilities() {
-            const track = currentStream.getVideoTracks()[0];
-            const caps = track.getCapabilities();
-            const settings = track.getSettings();
-            const list = document.getElementById('cap-list');
-            
-            list.innerHTML = ""; // Clear
-
-            // Helper to render
-            const addCap = (name, supported, val) => {
-                const icon = supported ? "✅" : "❌";
-                const text = supported ? (val ? val : "Supported") : "N/A";
-                list.innerHTML += `<div class="cap-item">${name}</div><div class="cap-check">${icon} ${text}</div>`;
-            };
-
-            // Zoom
-            if(caps.zoom) {
-                const zoomMax = caps.zoom.max;
-                addCap("Optical Zoom", true, `1x - ${zoomMax}x`);
-            } else {
-                addCap("Optical Zoom", false);
-            }
-
-            // Focus
-            if(caps.focusMode) {
-                addCap("Auto Focus", true, settings.focusMode);
-            } else {
-                addCap("Auto Focus", false);
-            }
-
-            // Torch/Flash
-            if(caps.torch) {
-                addCap("LED Flash", true, "Available");
-            } else {
-                addCap("LED Flash", false);
-            }
-
-            // ISO (Exposure)
-            if(caps.exposureMode) {
-                addCap("Auto Exposure", true, "Active");
-            } else {
-                addCap("Auto Exposure", false);
-            }
-            
-            log("> HARDWARE PROFILE BUILT");
-        }
-
-        // --- CONTROLS ---
         function switchCamera() {
-            facingMode = (facingMode === "user") ? "environment" : "user";
+            facingMode = facingMode === "user" ? "environment" : "user";
             startCamera();
         }
 
-        function toggleGrid() {
-            const grid = document.getElementById('grid-lines');
-            const cross = document.getElementById('focus-point');
+        function updateStats(s) {
+            // Resolution
+            if(s.width && s.height) {
+                document.getElementById('res-val').innerText = `${s.width} x ${s.height}`;
+                
+                // MP Calc
+                const mp = (s.width * s.height) / 1000000;
+                document.getElementById('mp-val').innerText = mp.toFixed(1) + " MP";
+            }
             
-            if(grid.style.display === 'block') {
-                grid.style.display = 'none';
-                cross.style.display = 'none';
-                log("> OVERLAYS DISABLED");
+            // Aspect Ratio
+            if(s.aspectRatio) {
+                document.getElementById('ar-val').innerText = s.aspectRatio.toFixed(2);
+            }
+            
+            // FPS
+            if(s.frameRate) {
+                document.getElementById('fps-val').innerText = Math.round(s.frameRate) + " FPS";
             } else {
-                grid.style.display = 'block';
-                cross.style.display = 'block';
-                log("> GRID & CROSSHAIR ACTIVE");
+                document.getElementById('fps-val').innerText = "30 FPS (Est)";
             }
         }
 
-        // --- 3. SHUTTER SPEED TEST ---
-        function runShutterTest() {
-            log("> PREPARING CAPTURE...");
-            const btn = document.querySelector('.btn-capture');
-            const originalText = btn.innerHTML;
+        async function listCameras() {
+            if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) return;
             
-            btn.innerHTML = "<span>CAPTURING...</span>";
-            btn.style.background = "#fff";
-            
-            const start = performance.now();
-            
-            // Create a temporary canvas to 'capture' the frame
-            const canvas = document.createElement('canvas');
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(video, 0, 0);
-            
-            const end = performance.now();
-            const lag = (end - start).toFixed(1);
-            
-            log(`> IMAGE CAPTURED`);
-            log(`> SHUTTER LAG: ${lag}ms`);
-            
-            setTimeout(() => {
-                btn.innerHTML = originalText;
-                btn.style.background = "var(--accent)";
-                alert(`TEST RESULT:\n\nResolution: ${canvas.width}x${canvas.height}\nShutter Lag: ${lag}ms\n\nSensor responsiveness is excellent.`);
-            }, 500);
+            try {
+                const devices = await navigator.mediaDevices.enumerateDevices();
+                const cams = devices.filter(d => d.kind === 'videoinput');
+                
+                const list = document.getElementById('cam-list');
+                list.innerHTML = "";
+                
+                cams.forEach((cam, index) => {
+                    let label = cam.label || `Camera ${index + 1}`;
+                    list.innerHTML += `<div>• ${label}</div>`;
+                });
+            } catch(e) {
+                console.log(e);
+            }
         }
 
-        // Auto-start
-        startCamera();
+        function toggleFaq(el) { el.classList.toggle('active'); }
 
     </script>
 </body>
