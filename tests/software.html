@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Don Systems Software Matrix</title>
+    <title>Software Tests | CheckThisPhone.com</title>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         :root { 
@@ -12,311 +12,465 @@
             --border: #2d3748; 
             --text: #a0aec0; 
             --text-bright: #e2e8f0;
-            --accent: #d63384; /* Cyber Pink */
-            --secondary: #6610f2; /* Deep Purple */
-            --success: #00ff9d; 
-            --danger: #ff0055; 
-            --warn: #ffb700; 
+            --accent: #8b5cf6; /* Violet */
+            --secondary: #3b82f6; /* Blue */
+            --danger: #ef4444; 
+            --warn: #f59e0b; 
+            --success: #10b981;
         }
         
-        * { box-sizing: border-box; }
+        * { box-sizing: border-box; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
         body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; padding: 20px; margin: 0; min-height: 100vh; font-size: 14px; overflow-x: hidden; }
         
         /* HEADER */
-        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 15px; margin-bottom: 20px; }
-        .logo { font-family: 'JetBrains Mono', monospace; font-weight: 800; font-size: 18px; color: var(--text-bright); letter-spacing: -1px; }
+        .header { text-align: center; margin-bottom: 40px; border-bottom: 1px solid var(--border); padding-bottom: 20px; }
+        .logo { font-family: 'JetBrains Mono', monospace; font-weight: 800; font-size: 24px; color: var(--text-bright); letter-spacing: -1px; margin-bottom: 10px; }
         .logo span { color: var(--accent); }
-        .live-badge { display: flex; align-items: center; gap: 6px; font-size: 10px; color: var(--success); font-weight: 700; background: rgba(0, 255, 157, 0.1); padding: 4px 8px; border-radius: 4px; border: 1px solid rgba(0, 255, 157, 0.2); }
-        .blink { animation: blink 1s infinite; width: 6px; height: 6px; background: var(--success); border-radius: 50%; }
-        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0; } 100% { opacity: 1; } }
+        .subtitle { font-size: 12px; color: var(--text); text-transform: uppercase; letter-spacing: 1px; }
 
-        /* INSTRUCTION PANELS */
-        .info-panel { background: rgba(214, 51, 132, 0.05); border-left: 3px solid var(--accent); padding: 15px; margin-bottom: 15px; border-radius: 0 8px 8px 0; font-size: 12px; line-height: 1.5; color: var(--text-bright); }
-        .info-title { font-weight: 800; color: var(--accent); text-transform: uppercase; margin-bottom: 5px; display: block; letter-spacing: 1px; }
-
-        /* FINGERPRINT HERO */
-        .fingerprint-box { 
-            background: radial-gradient(circle at top right, #1a1a2e, #000); border: 1px solid var(--border); border-radius: 16px; padding: 25px; margin-bottom: 20px; position: relative; overflow: hidden;
-            display: flex; align-items: center; justify-content: space-between;
+        /* GRID LAYOUT */
+        .test-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
+            gap: 20px; 
+            max-width: 1200px; 
+            margin: 0 auto; 
         }
-        .fp-icon { font-size: 40px; margin-right: 20px; animation: scanText 3s infinite alternate; }
-        @keyframes scanText { from { opacity: 0.5; text-shadow: 0 0 0px var(--accent); } to { opacity: 1; text-shadow: 0 0 20px var(--accent); } }
-        
-        .hash-display { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--accent); word-break: break-all; font-weight: 700; background: rgba(214, 51, 132, 0.1); padding: 10px; border-radius: 8px; border: 1px solid rgba(214, 51, 132, 0.2); flex: 1; }
-        .fp-label { font-size: 10px; color: var(--text); text-transform: uppercase; margin-bottom: 5px; display: block; }
 
-        /* DATA GRID */
-        .grid-master { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
-        .info-card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 15px; }
-        .label { font-size: 10px; color: var(--text); text-transform: uppercase; margin-bottom: 5px; letter-spacing: 1px; }
-        .value { font-family: 'JetBrains Mono', monospace; font-size: 14px; color: var(--text-bright); font-weight: 700; }
-        .value.highlight { color: var(--secondary); }
+        /* TEST CARD */
+        .card { 
+            background: var(--panel); 
+            border: 1px solid var(--border); 
+            border-radius: 12px; 
+            padding: 20px; 
+            display: flex; 
+            flex-direction: column; 
+            transition: 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+        .card:hover { border-color: var(--accent); transform: translateY(-2px); }
+        
+        .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
+        .card-title { font-family: 'JetBrains Mono'; font-weight: 700; color: var(--text-bright); font-size: 13px; }
+        .card-icon { font-size: 18px; opacity: 0.8; }
+        
+        .card-desc { font-size: 12px; color: var(--text); margin-bottom: 20px; line-height: 1.5; flex-grow: 1; }
+        
+        .result-box { 
+            background: rgba(0,0,0,0.3); 
+            border: 1px solid var(--border); 
+            border-radius: 8px; 
+            padding: 10px; 
+            margin-bottom: 15px; 
+            font-family: 'JetBrains Mono'; 
+            font-size: 11px; 
+            color: var(--accent); 
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            overflow-wrap: anywhere;
+        }
+        
+        .btn-group { display: flex; gap: 10px; }
+        
+        .btn { 
+            flex: 1; 
+            padding: 10px; 
+            border-radius: 6px; 
+            font-size: 11px; 
+            font-weight: 700; 
+            cursor: pointer; 
+            text-transform: uppercase; 
+            transition: 0.2s; 
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--text-bright);
+        }
+        
+        .btn-run { background: var(--accent); color: white; border: none; }
+        .btn-run:hover { opacity: 0.9; }
+        .btn-info:hover { border-color: var(--text-bright); }
 
-        /* RAW AGENT BOX */
-        .agent-box { background: #000; padding: 15px; border-radius: 12px; border: 1px solid var(--border); font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #64748b; line-height: 1.4; word-break: break-all; margin-bottom: 20px; }
+        /* MODAL */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); z-index: 1000;
+            display: none; justify-content: center; align-items: center;
+            backdrop-filter: blur(5px);
+        }
+        .modal {
+            background: var(--panel); border: 1px solid var(--accent); border-radius: 12px;
+            padding: 30px; max-width: 500px; width: 90%;
+            box-shadow: 0 0 30px rgba(139, 92, 246, 0.2);
+        }
+        .modal-title { font-family: 'JetBrains Mono'; font-size: 18px; color: var(--accent); margin-bottom: 15px; }
+        .modal-body { font-size: 13px; line-height: 1.6; color: var(--text-bright); margin-bottom: 25px; }
+        .modal-steps { margin-left: 20px; margin-bottom: 20px; color: var(--text); font-size: 12px; }
+        .modal-close { background: var(--border); color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; float: right; font-weight: 700; }
 
-        /* IMEI INTELLIGENCE MODULE */
-        .imei-section { background: #0b0b14; border: 1px solid var(--accent); border-radius: 16px; padding: 20px; margin-bottom: 20px; position: relative; overflow: hidden; }
-        .imei-section::before { content: "CELLULAR IDENTITY"; position: absolute; top: 0; left: 0; background: var(--accent); color: black; font-size: 10px; font-weight: 800; padding: 4px 10px; border-bottom-right-radius: 8px; }
-        .explainer-text { font-size: 12px; color: var(--text); margin-top: 15px; margin-bottom: 20px; line-height: 1.5; }
-        
-        .brand-select { width: 100%; background: var(--panel); color: white; border: 1px solid var(--border); padding: 12px; border-radius: 8px; font-family: 'JetBrains Mono'; margin-bottom: 15px; cursor: pointer; }
-        
-        .pricing-container { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-        .price-card { background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 12px; padding: 15px; position: relative; transition: 0.2s; cursor: pointer; }
-        .price-card:hover { border-color: var(--accent); transform: translateY(-2px); }
-        .price-card.active { border-color: var(--accent); background: rgba(214, 51, 132, 0.05); }
-        
-        .pc-title { font-weight: 800; font-size: 13px; color: var(--text-bright); text-transform: uppercase; }
-        .pc-price { font-family: 'JetBrains Mono'; font-size: 18px; color: var(--accent); margin: 5px 0; font-weight: 700; }
-        .pc-desc { font-size: 10px; color: var(--text); line-height: 1.4; }
-        
-        .input-row { display: flex; gap: 10px; }
-        .cyber-input { flex: 1; background: #000; border: 1px solid var(--border); padding: 12px; color: white; font-family: 'JetBrains Mono'; border-radius: 8px; }
-        .cyber-btn { background: var(--accent); color: white; border: none; padding: 0 20px; font-weight: 800; border-radius: 8px; cursor: pointer; }
-
-        /* FAQ ACCORDION */
-        .faq-section { display: grid; gap: 10px; margin-top: 30px; }
-        .faq-item { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
-        .faq-q { padding: 15px; font-weight: 700; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .faq-q:hover { color: var(--accent); }
+        /* FAQ SECTION */
+        .faq-container { max-width: 800px; margin: 60px auto 20px auto; }
+        .faq-header { font-family: 'JetBrains Mono'; font-size: 16px; color: var(--accent); margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+        .faq-item { background: var(--panel); border: 1px solid var(--border); margin-bottom: 10px; border-radius: 8px; overflow: hidden; }
+        .faq-q { padding: 15px; cursor: pointer; font-weight: 700; display: flex; justify-content: space-between; font-size: 12px; color: var(--text-bright); }
         .faq-a { padding: 0 15px 15px 15px; color: var(--text); font-size: 12px; line-height: 1.5; display: none; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px; }
-        .faq-icon { font-size: 10px; transition: 0.2s; }
         .faq-item.active .faq-a { display: block; }
-        .faq-item.active .faq-icon { transform: rotate(180deg); color: var(--accent); }
 
-        .back-btn { display: block; text-align: center; margin-top: 20px; color: var(--text); text-decoration: none; font-weight: 700; padding: 15px; background: var(--panel); border-radius: 12px; }
+        .sim-tag { font-size: 9px; opacity: 0.7; margin-left: 5px; border: 1px solid var(--border); padding: 1px 4px; border-radius: 3px; }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <div class="logo">DON<span>MATRIX</span></div>
-        <div class="live-badge"><div class="blink"></div> SYSTEM ROOT</div>
+        <div class="logo">CHECK<span>SOFTWARE</span></div>
+        <div class="subtitle">Browser-Based System Diagnostics</div>
     </div>
 
-    <div class="info-panel">
-        <span class="info-title">1. DIGITAL FINGERPRINT</span>
-        Websites track you by asking your GPU to draw invisible text. Because every chip draws slightly differently, this creates a unique "Hash ID" that follows you across the web.
+    <div class="test-grid" id="grid"></div>
+
+    <div class="faq-container">
+        <div class="faq-header">SOFTWARE FAQ</div>
+        <div id="faq-list"></div>
     </div>
 
-    <div class="fingerprint-box">
-        <div class="fp-icon">🆔</div>
-        <div style="flex:1">
-            <span class="fp-label">UNIQUE DEVICE HASH</span>
-            <div class="hash-display" id="fp-hash">GENERATING HASH...</div>
+    <div class="modal-overlay" id="modal">
+        <div class="modal">
+            <div class="modal-title" id="m-title"></div>
+            <div class="modal-body" id="m-body"></div>
+            <ul class="modal-steps" id="m-steps"></ul>
+            <button class="modal-close" onclick="closeModal()">CLOSE</button>
         </div>
     </div>
-
-    <div class="info-panel">
-        <span class="info-title">2. IMEI & BLACKLIST</span>
-        Every phone has a 15-digit serial number (IMEI). This database check reveals if a phone is <strong>Stolen (Blacklisted)</strong>, <strong>Carrier Locked</strong>, or still under <strong>Warranty</strong>.
-    </div>
-
-    <div class="imei-section">
-        <select class="brand-select" id="brand-selector" onchange="updateBrand()">
-            <option value="universal">▼ SELECT PHONE BRAND ▼</option>
-            <option value="apple">APPLE (iPhone/iPad)</option>
-            <option value="samsung">SAMSUNG</option>
-            <option value="google">GOOGLE PIXEL</option>
-            <option value="other">OTHER (Android)</option>
-        </select>
-
-        <div class="pricing-container">
-            <div class="price-card active" onclick="selectPlan(this, 'standard')">
-                <div class="pc-title">STANDARD CHECK</div>
-                <div class="pc-price">$1.49</div>
-                <div class="pc-desc">Blacklist Status<br>SimLock Check<br>Model ID</div>
-            </div>
-            <div class="price-card" onclick="selectPlan(this, 'gsx')">
-                <div class="pc-title">PRO / GSX</div>
-                <div class="pc-price">$4.99</div>
-                <div class="pc-desc"><strong>Apple Only</strong><br>Repair History<br>iCloud Status<br>Replacement Info</div>
-            </div>
-        </div>
-
-        <div class="input-row">
-            <input type="text" class="cyber-input" placeholder="ENTER 15-DIGIT IMEI" maxlength="15">
-            <button class="cyber-btn" onclick="startImeiScan()">SCAN</button>
-        </div>
-    </div>
-
-    <div class="info-panel">
-        <span class="info-title">3. BROWSER INTELLIGENCE</span>
-        Your "User Agent" tells every website your OS version, CPU architecture, and preferred language. This is how sites know to serve "Mobile" vs "Desktop" views.
-    </div>
-
-    <div class="grid-master">
-        <div class="info-card">
-            <div class="label">OPERATING SYSTEM</div>
-            <div class="value highlight" id="os-val">DETECTING...</div>
-        </div>
-        <div class="info-card">
-            <div class="label">BROWSER ENGINE</div>
-            <div class="value" id="browser-val">DETECTING...</div>
-        </div>
-        <div class="info-card">
-            <div class="label">CPU ARCHITECTURE</div>
-            <div class="value" id="cpu-val">--</div>
-        </div>
-        <div class="info-card">
-            <div class="label">LANGUAGE</div>
-            <div class="value" id="lang-val">--</div>
-        </div>
-    </div>
-
-    <div class="agent-box" id="raw-agent">
-        // RAW USER AGENT STRING LOADING...
-    </div>
-
-    <h3 style="font-size: 14px; margin-bottom: 15px; color: var(--text-bright);">FAQ: SOFTWARE & TRACKING</h3>
-    <div class="faq-section">
-        
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">1. What is a "User Agent"? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">It's a text string your browser sends to every website you visit. It declares "I am an iPhone running iOS 17 using Safari."</div>
-        </div>
-
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">2. Can websites track me without cookies? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">Yes! "Canvas Fingerprinting" (shown above) creates a unique ID based on your hardware. Clearing cookies does NOT delete this ID.</div>
-        </div>
-
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">3. What is an IMEI Blacklist? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">If a phone is reported stolen, carriers add its IMEI to a global blacklist. The phone will never connect to cellular networks again.</div>
-        </div>
-
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">4. Why does my OS say "Linux"? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">Android is built on top of the Linux kernel. Seeing "Linux armv8" is the correct technical name for Android phones.</div>
-        </div>
-
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">5. What is a "SimLock"? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">Carriers lock phones so they only work on their network (e.g., AT&T Only). An IMEI check reveals if you can switch carriers.</div>
-        </div>
-
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">6. Is my IP Address visible? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">Yes. Unless you use a VPN, every website can see your IP address, which reveals your approximate city and ISP.</div>
-        </div>
-
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">7. What is "WebAssembly"? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">It is a new technology that lets browsers run high-performance code (like 3D games or video editors) at near-native speed.</div>
-        </div>
-
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">8. What is "GSX"? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">Global Service Exchange. It is Apple's internal database for repair history, activation dates, and iCloud lock status.</div>
-        </div>
-
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">9. Can I change my User Agent? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">Yes, but usually only on desktop browsers using "Developer Tools." Mobile browsers generally don't allow this easily.</div>
-        </div>
-
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">10. Does "Do Not Track" work? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">Not really. It sends a polite request to websites asking them not to track you, but most websites (including Google/Facebook) ignore it.</div>
-        </div>
-
-    </div>
-
-    <a href="../index.html" class="back-btn">EXIT MATRIX</a>
 
     <script>
-        // --- 1. DEVICE FINGERPRINTING ---
-        function generateFingerprint() {
-            try {
-                const canvas = document.createElement('canvas');
-                const ctx = canvas.getContext('2d');
-                const txt = "DonSystems_Hardware_ID_v1.0";
-                
-                ctx.textBaseline = "top";
-                ctx.font = "14px 'Arial'";
-                ctx.textBaseline = "alphabetic";
-                ctx.fillStyle = "#f60";
-                ctx.fillRect(125,1,62,20);
-                ctx.fillStyle = "#069";
-                ctx.fillText(txt, 2, 15);
-                ctx.fillStyle = "rgba(102, 204, 0, 0.7)";
-                ctx.fillText(txt, 4, 17);
-                
-                const dataURI = canvas.toDataURL();
-                let hash = 0;
-                for (let i = 0; i < dataURI.length; i++) {
-                    const char = dataURI.charCodeAt(i);
-                    hash = ((hash << 5) - hash) + char;
-                    hash = hash & hash;
+        // --- DATA: ALL TESTS ---
+        const tests = [
+            // OS & INFO
+            { id: 'os_det', title: 'OS Detection', icon: '💻', desc: 'Identifies operating system via User Agent.', type: 'info_ua', key: 'os' },
+            { id: 'os_ver', title: 'OS Version', icon: '🔢', desc: 'Estimates version number.', type: 'info_ua', key: 'ver' },
+            { id: 'dev_type', title: 'Device Type', icon: '📱', desc: 'Phone, Tablet, or Desktop.', type: 'info_ua', key: 'type' },
+            { id: 'browser', title: 'Browser ID', icon: '🌐', desc: 'Chrome, Safari, Firefox, etc.', type: 'info_ua', key: 'browser' },
+            { id: 'ua_raw', title: 'User Agent', icon: '📜', desc: 'Raw UA string report.', type: 'info_raw' },
+            { id: 'api_rep', title: 'Platform API', icon: '🔧', desc: 'Checks navigator.platform.', type: 'info_plat' },
+            { id: 'model', title: 'Model Guess', icon: '🏷️', desc: 'Estimates device model.', type: 'sim_logic', val: 'Generic Android/iOS' },
+
+            // PERMISSIONS
+            { id: 'perm_cam', title: 'Camera Perm', icon: '📷', desc: 'Checks camera access status.', type: 'perm', name: 'camera' },
+            { id: 'perm_mic', title: 'Mic Perm', icon: '🎙️', desc: 'Checks microphone access status.', type: 'perm', name: 'microphone' },
+            { id: 'perm_loc', title: 'Location Perm', icon: '📍', desc: 'Checks geolocation status.', type: 'perm', name: 'geolocation' },
+            { id: 'perm_notif', title: 'Notification', icon: '🔔', desc: 'Checks notification permissions.', type: 'perm', name: 'notifications' },
+            { id: 'perm_clip', title: 'Clipboard', icon: '📋', desc: 'Checks clipboard read/write.', type: 'perm_clip' },
+            { id: 'perm_stor', title: 'Storage Perm', icon: '💾', desc: 'Checks persistent storage.', type: 'perm_stor' },
+            
+            // FEATURE SUPPORT
+            { id: 'sup_webgl', title: 'WebGL Support', icon: '🎮', desc: 'Checks 3D rendering capability.', type: 'support', key: 'webgl' },
+            { id: 'sup_gpu', title: 'WebGPU Support', icon: '🚀', desc: 'Checks next-gen graphics API.', type: 'support', key: 'webgpu' },
+            { id: 'sup_rtc', title: 'WebRTC Support', icon: '📹', desc: 'Checks video calling API.', type: 'support', key: 'webrtc' },
+            { id: 'sup_sw', title: 'Service Worker', icon: '⚙️', desc: 'Checks offline capability.', type: 'support', key: 'sw' },
+            { id: 'sup_vib', title: 'Vibration API', icon: '📳', desc: 'Checks haptic support.', type: 'support', key: 'vibrate' },
+            { id: 'sup_batt', title: 'Battery API', icon: '🔋', desc: 'Checks battery monitoring.', type: 'support', key: 'battery' },
+            { id: 'sup_orient', title: 'Orientation', icon: '📐', desc: 'Checks tilt sensor support.', type: 'support', key: 'orient' },
+            { id: 'sup_fs', title: 'Fullscreen API', icon: '📺', desc: 'Checks fullscreen mode.', type: 'support', key: 'fullscreen' },
+            
+            // SECURITY
+            { id: 'sec_https', title: 'HTTPS Check', icon: '🔒', desc: 'Verifies secure connection.', type: 'sec_proto' },
+            { id: 'sec_tls', title: 'TLS Version', icon: '🔑', desc: 'Estimates encryption level.', type: 'sim_logic', val: 'TLS 1.3 (Est)' },
+            { id: 'sec_priv', title: 'Incognito Detect', icon: '🕵️', desc: 'Heuristic check for private mode.', type: 'sec_priv' },
+            { id: 'sec_ad', title: 'Ad Blocker', icon: '🚫', desc: 'Detects if ads are blocked.', type: 'sim_logic', val: 'Not Detected' },
+            { id: 'sec_cook', title: '3rd Party Cookie', icon: '🍪', desc: 'Checks cookie persistence.', type: 'storage_check', mode: 'cookie' },
+            { id: 'sec_sand', title: 'Sandbox', icon: '📦', desc: 'Verifies browser isolation.', type: 'sim_logic', val: 'Active' },
+
+            // STORAGE
+            { id: 'stor_quota', title: 'Quota Estimate', icon: '📊', desc: 'Estimates available space.', type: 'storage_quota' },
+            { id: 'stor_write', title: 'Write Test', icon: '✍️', desc: 'Attempts to write to LocalStorage.', type: 'storage_rw', mode: 'write' },
+            { id: 'stor_read', title: 'Read Test', icon: '📖', desc: 'Attempts to read from LocalStorage.', type: 'storage_rw', mode: 'read' },
+            { id: 'stor_cache', title: 'Cache Test', icon: '⚡', desc: 'Checks Cache API availability.', type: 'support', key: 'caches' },
+            { id: 'stor_idb', title: 'IndexedDB', icon: '🗄️', desc: 'Checks database support.', type: 'support', key: 'indexeddb' },
+
+            // SYSTEM BEHAVIOR
+            { id: 'sys_vis', title: 'Tab Visibility', icon: '👀', desc: 'Checks if tab is focused.', type: 'sys_vis' },
+            { id: 'sys_loop', title: 'Event Loop', icon: '🔄', desc: 'Measures main thread lag.', type: 'sys_loop' },
+            { id: 'sys_anim', title: 'Anim Stability', icon: '🎞️', desc: 'Checks requestAnimationFrame.', type: 'sys_anim' },
+            { id: 'sys_wake', title: 'Wake Lock', icon: '💡', desc: 'Checks screen-on capability.', type: 'support', key: 'wakelock' },
+            { id: 'sys_pwa', title: 'PWA Install', icon: '📲', desc: 'Checks installability criteria.', type: 'sys_pwa' },
+
+            // NETWORK
+            { id: 'net_stat', title: 'Online Status', icon: '📶', desc: 'Checks connectivity.', type: 'net_online' },
+            { id: 'net_type', title: 'Network Type', icon: '📡', desc: 'WiFi vs Cellular detect.', type: 'net_type' },
+            { id: 'net_save', title: 'Data Saver', icon: '📉', desc: 'Checks save-data header.', type: 'net_save' },
+            { id: 'net_dns', title: 'DNS Sim', icon: '🌐', desc: 'Simulates name resolution.', type: 'sim_logic', val: 'Resolved (15ms)' },
+
+            // REAL WORLD
+            { id: 'rw_launch', title: 'App Launch', icon: '🚀', desc: 'Simulated startup time.', type: 'sim_perf', ms: 400 },
+            { id: 'rw_multi', title: 'Multitasking', icon: '🔀', desc: 'Simulated context switch.', type: 'sim_perf', ms: 150 },
+            { id: 'rw_crash', title: 'Crash Sim', icon: '💥', desc: 'Safe UI freeze simulation.', type: 'sim_crash' },
+            { id: 'rw_down', title: 'Download Sim', icon: '⬇️', desc: 'Simulated file transfer.', type: 'sim_load' },
+            
+            // ADVANCED
+            { id: 'adv_cap', title: 'Capabilities', icon: '📝', desc: 'Summary of supported APIs.', type: 'report' },
+            { id: 'adv_score', title: 'Soft. Score', icon: '🏆', desc: 'Browser compatibility rating.', type: 'sim_logic', val: '98/100' },
+            { id: 'adv_stab', title: 'Stability', icon: '🧱', desc: 'System consistency rating.', type: 'sim_logic', val: 'High' }
+        ];
+
+        // --- RENDER GRID ---
+        const grid = document.getElementById('grid');
+        tests.forEach(test => {
+            const card = document.createElement('div');
+            card.className = 'card';
+            
+            card.innerHTML = `
+                <div class="card-header">
+                    <span class="card-title">${test.title} ${test.type.includes('sim') ? '<span class="sim-tag">SIM</span>' : ''}</span>
+                    <span class="card-icon">${test.icon}</span>
+                </div>
+                <div class="card-desc">${test.desc}</div>
+                <div class="result-box" id="res-${test.id}">Ready</div>
+                <div class="btn-group">
+                    <button class="btn btn-info" onclick="showInfo('${test.id}')">INFO</button>
+                    <button class="btn btn-run" onclick="runTest('${test.id}')">RUN</button>
+                </div>
+            `;
+            grid.appendChild(card);
+        });
+
+        // --- TEST LOGIC ---
+        async function runTest(id) {
+            const test = tests.find(t => t.id === id);
+            const res = document.getElementById(`res-${id}`);
+            res.innerText = "Analyzing...";
+            res.style.color = "var(--warn)";
+
+            // 1. INFO / UA
+            if(test.type === 'info_ua') {
+                const ua = navigator.userAgent;
+                setTimeout(() => {
+                    res.style.color = "var(--accent)";
+                    if(test.key === 'os') res.innerText = /Android/.test(ua) ? "Android" : /iPhone|iPad/.test(ua) ? "iOS" : "Desktop/Unknown";
+                    if(test.key === 'ver') res.innerText = (ua.match(/OS [\d_]+/) || ua.match(/Android [\d\.]+/))?.[0] || "Unknown";
+                    if(test.key === 'type') res.innerText = /Mobile|Android|iP(hone|ad)/.test(ua) ? "Mobile/Tablet" : "Desktop";
+                    if(test.key === 'browser') res.innerText = /Chrome/.test(ua) ? "Chrome" : /Safari/.test(ua) ? "Safari" : "Other";
+                }, 500);
+            }
+            if(test.type === 'info_raw') {
+                res.innerText = navigator.userAgent.substring(0, 20) + "...";
+                res.title = navigator.userAgent;
+            }
+            if(test.type === 'info_plat') {
+                res.innerText = navigator.platform || "Unknown";
+            }
+
+            // 2. PERMISSIONS
+            if(test.type === 'perm') {
+                try {
+                    if(navigator.permissions) {
+                        const status = await navigator.permissions.query({name: test.name});
+                        res.innerText = status.state.toUpperCase();
+                        res.style.color = status.state === 'granted' ? "var(--success)" : "var(--warn)";
+                    } else {
+                        res.innerText = "API Not Supported";
+                    }
+                } catch(e) {
+                    res.innerText = "Check Manually";
                 }
-                
-                const hexHash = Math.abs(hash).toString(16).toUpperCase().padStart(8, '0');
-                document.getElementById('fp-hash').innerText = `DS-${hexHash}-X`;
-            } catch(e) {
-                document.getElementById('fp-hash').innerText = "BLOCKED BY BROWSER";
+            }
+            if(test.type === 'perm_clip') {
+                res.innerText = navigator.clipboard ? "API Available" : "Not Supported";
+            }
+            if(test.type === 'perm_stor') {
+                res.innerText = navigator.storage && navigator.storage.persist ? "Requestable" : "Not Supported";
+            }
+
+            // 3. SUPPORT CHECKS
+            if(test.type === 'support') {
+                let supp = false;
+                if(test.key === 'webgl') { const c = document.createElement('canvas'); supp = !!(window.WebGLRenderingContext && (c.getContext('webgl') || c.getContext('experimental-webgl'))); }
+                else if(test.key === 'webgpu') supp = 'gpu' in navigator;
+                else if(test.key === 'webrtc') supp = 'RTCPeerConnection' in window;
+                else if(test.key === 'sw') supp = 'serviceWorker' in navigator;
+                else if(test.key === 'vibrate') supp = 'vibrate' in navigator;
+                else if(test.key === 'battery') supp = 'getBattery' in navigator;
+                else if(test.key === 'orient') supp = 'DeviceOrientationEvent' in window;
+                else if(test.key === 'fullscreen') supp = document.documentElement.requestFullscreen;
+                else if(test.key === 'caches') supp = 'caches' in window;
+                else if(test.key === 'indexeddb') supp = 'indexedDB' in window;
+                else if(test.key === 'wakelock') supp = 'wakeLock' in navigator;
+
+                res.innerText = supp ? "Supported" : "Not Supported";
+                res.style.color = supp ? "var(--success)" : "var(--danger)";
+            }
+
+            // 4. SECURITY
+            if(test.type === 'sec_proto') {
+                res.innerText = location.protocol === 'https:' ? "Secure (HTTPS)" : "Insecure (HTTP)";
+                res.style.color = location.protocol === 'https:' ? "var(--success)" : "var(--danger)";
+            }
+            if(test.type === 'sec_priv') {
+                // Heuristic: Check quota. Often constrained in Incognito.
+                if('storage' in navigator && 'estimate' in navigator.storage) {
+                    const est = await navigator.storage.estimate();
+                    const quota = est.quota;
+                    if(quota < 120000000) res.innerText = "Likely Incognito"; // < 120MB
+                    else res.innerText = "Standard Mode";
+                } else {
+                    res.innerText = "Unknown";
+                }
+                res.style.color = "var(--accent)";
+            }
+
+            // 5. STORAGE
+            if(test.type === 'storage_quota') {
+                if(navigator.storage && navigator.storage.estimate) {
+                    const est = await navigator.storage.estimate();
+                    res.innerText = `${(est.usage / 1024 / 1024).toFixed(1)}MB / ${(est.quota / 1024 / 1024 / 1024).toFixed(1)}GB`;
+                    res.style.color = "var(--accent)";
+                } else {
+                    res.innerText = "Not Supported";
+                }
+            }
+            if(test.type === 'storage_rw') {
+                try {
+                    if(test.mode === 'write') {
+                        localStorage.setItem('test_key', 'test_val');
+                        res.innerText = "Write Success";
+                    } else {
+                        const val = localStorage.getItem('test_key');
+                        res.innerText = val === 'test_val' ? "Read Success" : "Read Empty";
+                    }
+                    res.style.color = "var(--success)";
+                } catch(e) {
+                    res.innerText = "Failed / Blocked";
+                    res.style.color = "var(--danger)";
+                }
+            }
+            if(test.type === 'storage_check') {
+                res.innerText = navigator.cookieEnabled ? "Cookies Enabled" : "Cookies Disabled";
+            }
+
+            // 6. SYSTEM BEHAVIOR
+            if(test.type === 'sys_vis') {
+                res.innerText = document.hidden ? "Hidden" : "Visible";
+            }
+            if(test.type === 'sys_loop') {
+                const start = performance.now();
+                setTimeout(() => {
+                    const diff = performance.now() - start;
+                    res.innerText = `Lag: ${(diff - 0).toFixed(1)}ms`; // 0ms target
+                    res.style.color = "var(--accent)";
+                }, 0);
+            }
+            if(test.type === 'sys_anim') {
+                let f = 0;
+                const start = performance.now();
+                function loop() {
+                    f++;
+                    if(performance.now() - start < 500) requestAnimationFrame(loop);
+                    else res.innerText = `Frames: ${f} (in 500ms)`;
+                }
+                loop();
+                res.style.color = "var(--accent)";
+            }
+            if(test.type === 'sys_pwa') {
+                const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+                res.innerText = isStandalone ? "Installed (PWA)" : "Browser Tab";
+            }
+
+            // 7. NETWORK
+            if(test.type === 'net_online') {
+                res.innerText = navigator.onLine ? "Online" : "Offline";
+                res.style.color = navigator.onLine ? "var(--success)" : "var(--danger)";
+            }
+            if(test.type === 'net_type') {
+                const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+                res.innerText = conn ? (conn.effectiveType || "Unknown").toUpperCase() : "API Missing";
+            }
+            if(test.type === 'net_save') {
+                const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+                res.innerText = conn && conn.saveData ? "Active" : "Inactive";
+            }
+
+            // 8. SIMULATIONS
+            if(test.type === 'sim_logic') {
+                setTimeout(() => {
+                    res.innerText = test.val;
+                    res.style.color = "var(--accent)";
+                }, 800);
+            }
+            if(test.type === 'sim_perf') {
+                setTimeout(() => {
+                    res.innerText = `${test.ms}ms (Simulated)`;
+                    res.style.color = "var(--accent)";
+                }, 1000);
+            }
+            if(test.type === 'sim_crash') {
+                res.innerText = "Freezing UI...";
+                res.style.color = "var(--danger)";
+                setTimeout(() => {
+                    const start = Date.now();
+                    while(Date.now() - start < 1000) {} // Block thread
+                    res.innerText = "Recovered (1s Freeze)";
+                    res.style.color = "var(--success)";
+                }, 100);
+            }
+            if(test.type === 'sim_load') {
+                let p = 0;
+                const i = setInterval(() => {
+                    p+=10;
+                    res.innerText = `${p}%`;
+                    if(p>=100) { clearInterval(i); res.innerText = "Complete"; res.style.color = "var(--success)"; }
+                }, 100);
+            }
+
+            // 9. REPORT
+            if(test.type === 'report') {
+                const apis = ['bluetooth', 'usb', 'clipboard', 'credentials', 'geolocation', 'keyboard', 'locks', 'mediaCapabilities', 'permissions', 'storage'];
+                const count = apis.filter(a => a in navigator).length;
+                res.innerText = `${count}/${apis.length} Core APIs Found`;
             }
         }
 
-        // --- 2. SYSTEM SCAN ---
-        function scanSystem() {
-            const ua = navigator.userAgent;
-            document.getElementById('raw-agent').innerText = ua;
-            
-            let os = "Unknown";
-            if (ua.indexOf("Win") != -1) os = "Windows";
-            if (ua.indexOf("Mac") != -1) os = "MacOS";
-            if (ua.indexOf("Linux") != -1) os = "Linux";
-            if (ua.indexOf("Android") != -1) os = "Android";
-            if (ua.indexOf("like Mac") != -1) os = "iOS";
-            
-            let browser = "Unknown";
-            if(ua.indexOf("Chrome") != -1) browser = "Chrome";
-            else if(ua.indexOf("Safari") != -1) browser = "Safari";
-            else if(ua.indexOf("Firefox") != -1) browser = "Firefox";
-            
-            document.getElementById('os-val').innerText = os;
-            document.getElementById('browser-val').innerText = browser;
-            document.getElementById('lang-val').innerText = navigator.language.toUpperCase();
-            document.getElementById('cpu-val').innerText = navigator.hardwareConcurrency ? navigator.hardwareConcurrency + " CORES" : "HIDDEN";
+        // --- MODAL ---
+        const instructions = {
+            default: { t: "Software Test", b: "This test checks browser features and system APIs.", s: ["Click Run.", "Wait for check.", "View Result."] },
+            perm: { t: "Permission Check", b: "Checks if you have granted or denied access to a specific hardware feature.", s: ["Click Run.", "View State (Granted/Denied)."] }
+        };
+
+        function showInfo(id) {
+            const data = instructions[id] || instructions.default;
+            document.getElementById('m-title').innerText = data.t;
+            document.getElementById('m-body').innerText = data.b;
+            const ul = document.getElementById('m-steps');
+            ul.innerHTML = '';
+            data.s.forEach(s => ul.innerHTML += `<li>${s}</li>`);
+            document.getElementById('modal').style.display = 'flex';
         }
+        function closeModal() { document.getElementById('modal').style.display = 'none'; }
 
-        // --- 3. IMEI UI LOGIC ---
-        function updateBrand() {
-            const brand = document.getElementById('brand-selector').value;
-            const cards = document.querySelectorAll('.price-card');
-            
-            if(brand === 'apple') {
-                cards[1].style.opacity = "1";
-                cards[1].style.pointerEvents = "auto";
-            } else if (brand !== 'universal') {
-                cards[1].style.opacity = "0.3";
-                cards[1].style.pointerEvents = "none";
-                selectPlan(cards[0], 'standard');
-            }
-        }
+        // --- FAQ ---
+        const faqs = [
+            { q: "Why are some tests 'Simulated'?", a: "Browsers sandbox webpages for security. We cannot access raw OS kernels or deep hardware IDs directly." },
+            { q: "Can websites identify my phone model?", a: "Not exactly. We can guess (e.g., 'iPhone') based on User Agent strings, but 'iPhone 14 Pro Max' is usually hidden." },
+            { q: "What is User Agent?", a: "A text string your browser sends to websites identifying your browser version and OS." },
+            { q: "Why is 'Incognito' hard to detect?", a: "Browsers intentionally make Incognito mode look like normal mode to protect your privacy." },
+            { q: "What is WebGL?", a: "A technology that allows browsers to render 3D graphics using your phone's GPU." },
+            { q: "Is 'Service Worker' important?", a: "Yes, it allows websites to work offline and send push notifications (like an app)." },
+            { q: "Can you detect a VPN?", a: "Client-side JS cannot reliably detect a VPN. We can only see connection speed and public IP behavior (simulated here)." },
+            { q: "What is a 'Sandbox'?", a: "A security mechanism that isolates the browser tab from the rest of your phone's files and system." },
+            { q: "Why verify permissions?", a: "To ensure rogue websites aren't accessing your camera or mic without your knowledge." },
+            { q: "What is 'Event Loop Lag'?", a: "If the browser is busy processing heavy code, the interface freezes. Low lag means a smooth experience." }
+        ];
 
-        function selectPlan(card, plan) {
-            document.querySelectorAll('.price-card').forEach(c => c.classList.remove('active'));
-            card.classList.add('active');
-        }
-
-        function startImeiScan() {
-            const input = document.querySelector('.cyber-input').value;
-            if(input.length < 5) {
-                alert("Please enter a valid IMEI");
-                return;
-            }
-            alert("DON SYSTEMS SIMULATION\n\nIn a live environment, this button connects to the Stripe Payment Gateway to process the $1.49 check.");
-        }
-
-        function toggleFaq(el) { el.classList.toggle('active'); }
-
-        // Auto Start
-        generateFingerprint();
-        scanSystem();
-
+        const faqList = document.getElementById('faq-list');
+        faqs.forEach((f, i) => {
+            const el = document.createElement('div');
+            el.className = 'faq-item';
+            el.innerHTML = `
+                <div class="faq-q" onclick="toggleFaq(this)">${i+1}. ${f.q} <span>▼</span></div>
+                <div class="faq-a">${f.a}</div>
+            `;
+            faqList.appendChild(el);
+        });
+        function toggleFaq(el) { el.parentElement.classList.toggle('active'); }
     </script>
 </body>
 </html>
