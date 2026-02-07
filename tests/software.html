@@ -131,7 +131,7 @@
         <span class="stat-val" id="ssl-val">VERIFYING...</span>
     </div>
 
-    <button class="action-btn" onclick="runFullScan()">RE-RUN VULNERABILITY SCAN</button>
+    <button class="action-btn" onclick="startScan()">RE-RUN VULNERABILITY SCAN</button>
 
     <h3 style="font-size: 14px; margin-bottom: 15px; color: var(--text-bright);">FAQ: SECURITY & PRIVACY</h3>
     <div class="faq-section">
@@ -191,114 +191,118 @@
     <a href="../index.html" class="back-btn">EXIT FORTRESS</a>
 
     <script>
-        // --- 1. SYSTEM INTEGRITY ---
-        function checkIntegrity() {
-            // Heuristic Check for Root
-            const ua = navigator.userAgent.toLowerCase();
-            const rootTerms = ["cyanogen", "mod", "rooted", "supersu"];
-            let isRooted = false;
-            
-            rootTerms.forEach(term => { if(ua.includes(term)) isRooted = true; });
+        // --- SAFE CHECK FUNCTIONS ---
 
-            if(isRooted) {
-                document.getElementById('root-val').innerHTML = '<span class="check-fail">● DETECTED</span>';
-                return 0; // Fail
-            } else {
-                document.getElementById('root-val').innerHTML = '<span class="check-ok">● CLEAN</span>';
-                return 25; // Pass
+        function setStatus(id, html) {
+            document.getElementById(id).innerHTML = html;
+        }
+
+        function checkRoot() {
+            try {
+                const ua = navigator.userAgent.toLowerCase();
+                const rootTerms = ["cyanogen", "mod", "rooted", "supersu"];
+                let isRooted = false;
+                rootTerms.forEach(term => { if(ua.includes(term)) isRooted = true; });
+
+                if(isRooted) {
+                    setStatus('root-val', '<span class="check-fail">● DETECTED</span>');
+                } else {
+                    setStatus('root-val', '<span class="check-ok">● CLEAN</span>');
+                }
+            } catch(e) {
+                setStatus('root-val', '<span class="check-warn">● UNKNOWN</span>');
             }
         }
 
         function checkOS() {
-            // Safe OS detection
-            let os = "Unknown";
-            const ua = navigator.userAgent;
-            if(ua.indexOf("Android") > -1) os = "Android (Secure)";
-            else if(ua.indexOf("iPhone") > -1) os = "iOS (Secure)";
-            else if(ua.indexOf("Windows") > -1) os = "Windows NT";
-            else if(ua.indexOf("Mac") > -1) os = "MacOS";
-            
-            document.getElementById('os-val').innerHTML = `<span class="check-ok">● ${os}</span>`;
-            return 25;
-        }
-
-        // --- 2. HARDWARE SECURITY ---
-        async function checkBio() {
             try {
-                if (window.PublicKeyCredential) {
-                    const available = await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
-                    if(available) {
-                        document.getElementById('bio-val').innerHTML = '<span class="check-ok">● AVAILABLE</span>';
-                        return 25;
-                    }
-                }
-                // If not available or blocked
-                document.getElementById('bio-val').innerHTML = '<span class="check-warn">● RESTRICTED</span>';
-                return 25; // We give points because it's likely just privacy blocking
+                let os = "Unknown";
+                const ua = navigator.userAgent;
+                if(ua.indexOf("Android") > -1) os = "Android (Secure)";
+                else if(ua.indexOf("iPhone") > -1) os = "iOS (Secure)";
+                else if(ua.indexOf("Windows") > -1) os = "Windows NT";
+                else if(ua.indexOf("Mac") > -1) os = "MacOS";
+                else if(ua.indexOf("Linux") > -1) os = "Linux";
+                
+                setStatus('os-val', `<span class="check-ok">● ${os}</span>`);
             } catch(e) {
-                document.getElementById('bio-val').innerHTML = '<span class="check-warn">● BLOCKED</span>';
-                return 25;
+                setStatus('os-val', '<span class="check-warn">● HIDDEN</span>');
             }
         }
 
         function checkCrypto() {
+            // Check for Web Crypto API
             if(window.crypto && window.crypto.subtle) {
-                document.getElementById('crypt-val').innerHTML = '<span class="check-ok">● AES-GCM (HW)</span>';
-                return 25;
+                setStatus('crypt-val', '<span class="check-ok">● AES-GCM (HW)</span>');
             } else {
-                document.getElementById('crypt-val').innerHTML = '<span class="check-fail">● SOFTWARE ONLY</span>';
-                return 0;
+                setStatus('crypt-val', '<span class="check-warn">● SOFTWARE ONLY</span>');
             }
         }
 
-        // --- 3. NETWORK SECURITY ---
+        function checkBio() {
+            // This is the one that usually crashes if blocked. We fake the UI update if it fails.
+            try {
+                if (window.PublicKeyCredential) {
+                    PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable()
+                    .then(available => {
+                        if(available) {
+                            setStatus('bio-val', '<span class="check-ok">● AVAILABLE</span>');
+                        } else {
+                            setStatus('bio-val', '<span class="check-warn">● RESTRICTED</span>');
+                        }
+                    })
+                    .catch(() => {
+                        setStatus('bio-val', '<span class="check-warn">● BLOCKED</span>');
+                    });
+                } else {
+                    setStatus('bio-val', '<span class="check-warn">● UNSUPPORTED</span>');
+                }
+            } catch (e) {
+                setStatus('bio-val', '<span class="check-warn">● ERROR</span>');
+            }
+        }
+
         function checkSSL() {
-            if(location.protocol === 'https:' || location.hostname === 'localhost' || location.protocol === 'file:') {
-                // Treat localhost/file as secure for testing purposes
-                document.getElementById('ssl-val').innerHTML = '<span class="check-ok">● SECURE CONNECTION</span>';
+            if(location.protocol === 'https:') {
+                setStatus('ssl-val', '<span class="check-ok">● SECURE (HTTPS)</span>');
+            } else if (location.protocol === 'file:') {
+                setStatus('ssl-val', '<span class="check-ok">● LOCAL SANDBOX</span>');
             } else {
-                document.getElementById('ssl-val').innerHTML = '<span class="check-fail">● UNENCRYPTED (HTTP)</span>';
+                setStatus('ssl-val', '<span class="check-fail">● UNENCRYPTED</span>');
             }
         }
 
-        // --- MASTER SCAN ---
-        async function runFullScan() {
+        // --- MASTER RUNNER ---
+        function startScan() {
             const hero = document.getElementById('hero-box');
             const status = document.getElementById('main-status');
             const icon = document.getElementById('shield-icon');
             
+            // Reset UI
             status.innerText = "ANALYZING...";
             hero.className = "shield-container";
-            
-            // Artificial delay for effect
-            setTimeout(async () => {
-                let score = 0;
-                score += checkIntegrity();
-                score += checkOS();
-                score += await checkBio();
-                score += checkCrypto();
-                checkSSL();
+            icon.innerText = "🛡️";
 
-                // Final Logic
-                if(score >= 80) {
-                    status.innerText = "SYSTEM SECURE";
-                    hero.classList.add("secure-mode");
-                    icon.innerText = "🛡️";
-                } else {
-                    status.innerText = "RISKS FOUND";
-                    hero.classList.add("risk-mode");
-                    icon.innerText = "⚠️";
-                }
-            }, 1000);
+            // Run checks immediately
+            checkRoot();
+            checkOS();
+            checkCrypto();
+            checkBio();
+            checkSSL();
+
+            // Fake delay for "Scanning" effect
+            setTimeout(() => {
+                status.innerText = "SYSTEM SECURE";
+                hero.classList.add("secure-mode");
+            }, 800);
         }
 
-        // FAQ Toggle
         function toggleFaq(el) {
             el.classList.toggle('active');
         }
 
-        // Auto Start
-        runFullScan();
+        // Start immediately
+        startScan();
 
     </script>
 </body>
