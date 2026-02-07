@@ -2,366 +2,344 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Audio Diagnostics | CheckThisPhone</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Don Systems Audio Studio</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --bg-dark: #0f172a;
-            --surface-dark: #1e293b;
-            --accent: #8b5cf6; /* Violet for Audio */
-            --accent-glow: rgba(139, 92, 246, 0.4);
-            --text-main: #f8fafc;
-            --text-dim: #94a3b8;
-            --success: #10b981;
-            --danger: #ef4444;
+        :root { 
+            --bg: #050505; 
+            --panel: #0f1218; 
+            --border: #2d3748; 
+            --text: #a0aec0; 
+            --text-bright: #e2e8f0;
+            --accent: #f000ff; /* Neon Purple */
+            --success: #00ff9d; 
+            --warn: #ffb700; 
         }
-
-        body {
-            background-color: var(--bg-dark);
-            color: var(--text-main);
-            font-family: 'Inter', sans-serif;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-        }
-
-        .container {
-            width: 100%;
-            max-width: 600px;
-        }
-
+        
+        * { box-sizing: border-box; }
+        body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; padding: 20px; margin: 0; min-height: 100vh; font-size: 14px; overflow-x: hidden; }
+        
         /* HEADER */
-        .header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 25px;
-        }
-        .back-btn {
-            background: none;
-            border: none;
-            color: var(--text-dim);
-            font-size: 24px;
-            cursor: pointer;
-            padding: 0;
-            margin-right: 15px;
-        }
-        .page-title { font-size: 20px; font-weight: 700; margin: 0; }
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 15px; margin-bottom: 20px; }
+        .logo { font-family: 'JetBrains Mono', monospace; font-weight: 800; font-size: 18px; color: var(--text-bright); letter-spacing: -1px; }
+        .logo span { color: var(--accent); }
+        .live-badge { display: flex; align-items: center; gap: 6px; font-size: 10px; color: var(--success); font-weight: 700; background: rgba(0, 255, 157, 0.1); padding: 4px 8px; border-radius: 4px; border: 1px solid rgba(0, 255, 157, 0.2); }
+        .blink { animation: blink 1s infinite; width: 6px; height: 6px; background: var(--success); border-radius: 50%; }
+        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0; } 100% { opacity: 1; } }
 
         /* VISUALIZER HERO */
-        .visualizer-box {
-            background: #000;
-            height: 120px;
-            border-radius: 12px;
-            border: 1px solid #334155;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 25px;
-            position: relative;
-            overflow: hidden;
+        .scope-container { 
+            background: #000; border: 1px solid var(--border); border-radius: 16px; height: 200px; position: relative; overflow: hidden; margin-bottom: 20px;
+            box-shadow: inset 0 0 50px rgba(0,0,0,0.8);
         }
+        canvas { width: 100%; height: 100%; display: block; }
+        .hz-display { position: absolute; top: 15px; left: 20px; font-family: 'JetBrains Mono', monospace; font-size: 24px; color: var(--accent); font-weight: 800; text-shadow: 0 0 10px var(--accent); }
+        .db-display { position: absolute; top: 15px; right: 20px; font-family: 'JetBrains Mono', monospace; font-size: 14px; color: var(--text); }
+
+        /* CONTROLS */
+        .control-panel { display: flex; flex-direction: column; gap: 15px; margin-bottom: 20px; }
         
-        .bar-container {
-            display: flex;
-            gap: 4px;
-            align-items: flex-end;
-            height: 60px;
-        }
+        /* SLIDER */
+        .slider-box { background: var(--panel); padding: 20px; border-radius: 12px; border: 1px solid var(--border); }
+        .range-label { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 12px; font-weight: 700; color: var(--text-bright); }
+        input[type=range] { width: 100%; -webkit-appearance: none; background: transparent; }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 20px; width: 20px; border-radius: 50%; background: var(--accent); cursor: pointer; margin-top: -8px; box-shadow: 0 0 10px var(--accent); }
+        input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 4px; cursor: pointer; background: var(--border); border-radius: 2px; }
+
+        /* BUTTON GRID */
+        .btn-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .btn-audio { background: var(--panel); border: 1px solid var(--border); color: var(--text-bright); padding: 15px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 11px; text-align: center; transition: 0.2s; display: flex; flex-direction: column; align-items: center; gap: 5px; }
+        .btn-audio:active { transform: scale(0.95); background: var(--border); }
+        .btn-audio.active { border-color: var(--success); color: var(--success); background: rgba(0, 255, 157, 0.05); }
+        .btn-icon { font-size: 18px; margin-bottom: 2px; }
+
+        /* MIC MODE */
+        .mic-active { border-color: var(--warn) !important; color: var(--warn) !important; box-shadow: 0 0 15px rgba(255, 183, 0, 0.2); }
+
+        /* TERMINAL */
+        .terminal { background: #000; border: 1px solid var(--border); border-radius: 8px; padding: 10px; height: 100px; overflow: hidden; font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--success); position: relative; }
+        .log-line { margin-bottom: 2px; opacity: 0.8; }
+        .terminal::after { content: ""; position: absolute; bottom: 0; left: 0; width: 100%; height: 20px; background: linear-gradient(to top, #000, transparent); }
+
+        .back-btn { display: block; text-align: center; margin-top: 20px; color: var(--text); text-decoration: none; font-weight: 700; padding: 15px; background: var(--panel); border-radius: 12px; }
         
-        .anim-bar {
-            width: 6px;
-            background: var(--accent);
-            border-radius: 3px;
-            height: 10px;
-            animation: bounce 0.5s infinite ease-in-out alternate;
-        }
-        
-        /* Different timings for bars to look random */
-        .anim-bar:nth-child(1) { animation-duration: 0.4s; }
-        .anim-bar:nth-child(2) { animation-duration: 0.6s; }
-        .anim-bar:nth-child(3) { animation-duration: 0.3s; }
-        .anim-bar:nth-child(4) { animation-duration: 0.5s; }
-        .anim-bar:nth-child(5) { animation-duration: 0.7s; }
-
-        @keyframes bounce { 0% { height: 10px; opacity: 0.5; } 100% { height: 50px; opacity: 1; } }
-
-        /* TEST MODULES */
-        .module-card {
-            background: var(--surface-dark);
-            border: 1px solid #334155;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-        
-        .module-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-        .module-title { font-weight: 600; font-size: 15px; }
-        .module-status { font-size: 11px; color: var(--text-dim); background: rgba(255,255,255,0.05); padding: 4px 8px; border-radius: 4px; }
-
-        /* STEREO BUTTONS */
-        .stereo-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-        .btn-test {
-            background: var(--surface-dark);
-            border: 1px solid var(--accent);
-            color: var(--accent);
-            padding: 12px;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        .btn-test:active { background: var(--accent); color: white; }
-
-        /* MIC RECORDER */
-        .mic-controls { display: flex; gap: 10px; }
-        .btn-record { 
-            flex: 1; 
-            background: var(--danger); 
-            color: white; border: none; 
-            padding: 12px; border-radius: 8px; font-weight: 700; cursor: pointer;
-        }
-        .btn-play { 
-            flex: 1; 
-            background: var(--success); 
-            color: white; border: none; 
-            padding: 12px; border-radius: 8px; font-weight: 700; cursor: pointer;
-            opacity: 0.5; pointer-events: none; /* Disabled initially */
-        }
-        .btn-play.active { opacity: 1; pointer-events: auto; }
-
-        /* WATER EJECT */
-        .water-btn {
-            width: 100%;
-            background: linear-gradient(135deg, #0ea5e9, #0284c7);
-            color: white;
-            border: none;
-            padding: 15px;
-            border-radius: 8px;
-            font-weight: 700;
-            cursor: pointer;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
-        }
-        .water-btn:active { transform: scale(0.98); }
-
+        /* WARNING OVERLAY */
+        #start-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 999; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px; }
+        .start-btn { background: var(--accent); color: white; border: none; padding: 20px 40px; border-radius: 50px; font-size: 16px; font-weight: 800; cursor: pointer; margin-top: 20px; box-shadow: 0 0 30px var(--accent); animation: pulseBtn 2s infinite; }
+        @keyframes pulseBtn { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
     </style>
 </head>
 <body>
 
-<div class="container">
+    <div id="start-overlay">
+        <h1 style="color:white; margin-bottom: 10px;">AUDIO SYSTEM INITIALIZATION</h1>
+        <p style="color:var(--text);">WARNING: Loud sounds may occur.<br>Set volume to 50%.</p>
+        <button class="start-btn" onclick="initAudioContext()">ENGAGE AUDIO ENGINE</button>
+    </div>
+
     <div class="header">
-        <button class="back-btn" onclick="window.location.href='index.html'">←</button>
-        <h1 class="page-title">Audio & Speaker</h1>
+        <div class="logo">DON<span>SYSTEMS</span></div>
+        <div class="live-badge"><div class="blink"></div> DAC ONLINE</div>
     </div>
 
-    <div class="visualizer-box">
-        <div class="bar-container" id="visualizer-bars" style="opacity: 0.2;">
-            <div class="anim-bar"></div><div class="anim-bar"></div><div class="anim-bar"></div>
-            <div class="anim-bar"></div><div class="anim-bar"></div>
-        </div>
-        <div style="position: absolute; font-size: 12px; color: #64748b;">Audio Output Inactive</div>
+    <div class="scope-container">
+        <div class="hz-display" id="hz-val">OFF</div>
+        <div class="db-display" id="db-val">-∞ dB</div>
+        <canvas id="scopeCanvas"></canvas>
     </div>
 
-    <div class="module-card">
-        <div class="module-header">
-            <span class="module-title">🔊 Stereo Separation</span>
-            <span class="module-status">Check Channels</span>
-        </div>
-        <div class="stereo-grid">
-            <button class="btn-test" onclick="playTone('left')">LEFT Speaker</button>
-            <button class="btn-test" onclick="playTone('right')">RIGHT Speaker</button>
-        </div>
-        <button class="btn-test" style="width: 100%; margin-top: 10px; border-color: #334155; color: var(--text-main);" onclick="playSweep()">
-            Frequency Sweep (Distortion Test)
-        </button>
-    </div>
-
-    <div class="module-card">
-        <div class="module-header">
-            <span class="module-title">🎙️ Microphone Check</span>
-            <span class="module-status" id="mic-status">Ready to Record</span>
-        </div>
-        <div class="mic-controls">
-            <button class="btn-record" id="btn-rec" onclick="startMicTest()">HOLD TO REC</button>
-            <button class="btn-play" id="btn-play" onclick="playRecording()">PLAYBACK</button>
-        </div>
-        <p style="font-size: 11px; color: var(--text-dim); margin-top: 10px; text-align: center;">
-            Records for 3 seconds then stops automatically.
-        </p>
-    </div>
-
-    <div class="module-card">
-        <div class="module-header">
-            <span class="module-title">💧 Water Eject Tool</span>
-        </div>
-        <button class="water-btn" onclick="startWaterEject()">
-            <span>START EJECTION CYCLE</span>
-        </button>
-        <p style="font-size: 11px; color: var(--text-dim); margin-top: 10px;">
-            Plays high-frequency impulse waves to push water out of grills.
-        </p>
-    </div>
-
-</div>
-
-<script>
-    // --- AUDIO CONTEXT SETUP ---
-    const AudioContext = window.AudioContext || window.webkitAudioContext;
-    let audioCtx;
-
-    function initAudio() {
-        if (!audioCtx) audioCtx = new AudioContext();
-        if (audioCtx.state === 'suspended') audioCtx.resume();
+    <div class="control-panel">
         
-        // Wake up visualizer
-        document.getElementById('visualizer-bars').style.opacity = '1';
-        document.querySelector('.visualizer-box div:last-child').innerText = "Audio Engine Active";
-    }
+        <div class="slider-box">
+            <div class="range-label">
+                <span>FREQUENCY SWEEP</span>
+                <span>20Hz - 20kHz</span>
+            </div>
+            <input type="range" id="freq-slider" min="20" max="20000" value="440" step="10" oninput="updateFreq(this.value)">
+        </div>
 
-    // --- 1. STEREO & SWEEP TESTS ---
-    function playTone(channel) {
-        initAudio();
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        const panner = audioCtx.createStereoPanner();
+        <div class="btn-grid">
+            <button class="btn-audio" onclick="toggleTone('sine')" id="btn-sine">
+                <span class="btn-icon">〰️</span> PURE SINE
+            </button>
+            <button class="btn-audio" onclick="toggleTone('square')" id="btn-square">
+                <span class="btn-icon">🟧</span> SQUARE
+            </button>
+            <button class="btn-audio" onclick="toggleTone('sawtooth')" id="btn-saw">
+                <span class="btn-icon">📐</span> SAWTOOTH
+            </button>
+            
+            <button class="btn-audio" onclick="setPan(-1)">
+                <span class="btn-icon">⬅️</span> LEFT ONLY
+            </button>
+            <button class="btn-audio" onclick="setPan(0)">
+                <span class="btn-icon">↔️</span> STEREO
+            </button>
+            <button class="btn-audio" onclick="setPan(1)">
+                <span class="btn-icon">➡️</span> RIGHT ONLY
+            </button>
 
-        osc.type = 'sine';
-        osc.frequency.value = 440; // A4 Note
-        
-        // Set Pan (-1 is Left, 1 is Right)
-        panner.pan.value = (channel === 'left') ? -1 : 1;
+            <button class="btn-audio" onclick="startSweep()">
+                <span class="btn-icon">🌊</span> AUTO SWEEP
+            </button>
+            <button class="btn-audio" onclick="toggleMic()" id="btn-mic">
+                <span class="btn-icon">🎤</span> TEST MIC
+            </button>
+            <button class="btn-audio" onclick="stopAll()">
+                <span class="btn-icon">🛑</span> STOP ALL
+            </button>
+        </div>
+    </div>
 
-        osc.connect(gain);
-        gain.connect(panner);
-        panner.connect(audioCtx.destination);
+    <div class="terminal" id="console-output">
+        <div class="log-line">> AUDIO CONTEXT... STANDBY</div>
+        <div class="log-line">> WAITING FOR USER INPUT...</div>
+    </div>
 
-        osc.start();
-        
-        // Fade out to avoid clicking sound
-        gain.gain.setValueAtTime(1, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.5);
-        osc.stop(audioCtx.currentTime + 0.5);
-    }
+    <a href="../index.html" class="back-btn">EXIT STUDIO</a>
 
-    function playSweep() {
-        initAudio();
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(150, audioCtx.currentTime); // Start Low (Bass)
-        osc.frequency.exponentialRampToValueAtTime(8000, audioCtx.currentTime + 2); // End High (Treble)
-
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-
-        osc.start();
-        osc.stop(audioCtx.currentTime + 2);
-    }
-
-
-    // --- 2. MICROPHONE LOGIC ---
-    let mediaRecorder;
-    let audioChunks = [];
-    let audioBlob;
-    let audioUrl;
-
-    async function startMicTest() {
-        const btnRec = document.getElementById('btn-rec');
-        const status = document.getElementById('mic-status');
-
-        try {
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            mediaRecorder = new MediaRecorder(stream);
-            audioChunks = [];
-
-            mediaRecorder.ondataavailable = event => {
-                audioChunks.push(event.data);
-            };
-
-            mediaRecorder.onstop = () => {
-                audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
-                audioUrl = URL.createObjectURL(audioBlob);
-                document.getElementById('btn-play').classList.add('active');
-                status.innerText = "Recording Saved";
-                btnRec.innerText = "RECORD AGAIN";
-                btnRec.style.opacity = "1";
-            };
-
-            mediaRecorder.start();
-            btnRec.innerText = "RECORDING...";
-            status.innerText = "Listening...";
-            btnRec.style.opacity = "0.7";
-
-            // Auto stop after 3 seconds
-            setTimeout(() => {
-                if(mediaRecorder.state === 'recording') mediaRecorder.stop();
-            }, 3000);
-
-        } catch(err) {
-            alert("Microphone access denied. Please allow permissions in settings.");
+    <script>
+        // --- LOGGING ---
+        function log(msg) {
+            const term = document.getElementById('console-output');
+            const line = document.createElement('div');
+            line.className = 'log-line';
+            line.innerHTML = `<span style="color:#64748b">[SYS]</span> ${msg}`;
+            term.appendChild(line);
+            if(term.children.length > 6) term.removeChild(term.children[0]);
+            term.scrollTop = term.scrollHeight;
         }
-    }
 
-    function playRecording() {
-        if(!audioUrl) return;
-        const audio = new Audio(audioUrl);
-        audio.play();
-        document.getElementById('mic-status').innerText = "Playing back...";
-        audio.onended = () => {
-             document.getElementById('mic-status').innerText = "Playback Complete";
-        };
-    }
+        // --- AUDIO ENGINE ---
+        let audioCtx;
+        let oscillator;
+        let gainNode;
+        let pannerNode;
+        let analyser;
+        let micStream;
+        let isPlaying = false;
+        let sweepInterval;
 
+        function initAudioContext() {
+            document.getElementById('start-overlay').style.display = 'none';
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            
+            // Master Chain
+            gainNode = audioCtx.createGain();
+            pannerNode = audioCtx.createStereoPanner();
+            analyser = audioCtx.createAnalyser();
+            
+            gainNode.connect(pannerNode);
+            pannerNode.connect(analyser);
+            analyser.connect(audioCtx.destination);
+            
+            analyser.fftSize = 2048;
+            gainNode.gain.value = 0.5; // Safety volume
+            
+            log("> AUDIO ENGINE STARTED (48kHz)");
+            drawScope();
+        }
 
-    // --- 3. WATER EJECT PATTERN ---
-    function startWaterEject() {
-        initAudio();
-        const status = document.querySelector('.module-card:last-child p');
-        status.innerText = "RUNNING EJECTION CYCLE... (Keep Volume Max)";
-        status.style.color = "var(--accent)";
+        // --- OSCILLATOR LOGIC ---
+        function toggleTone(type) {
+            if(!audioCtx) initAudioContext();
+            
+            // Stop existing if playing
+            if(isPlaying) {
+                oscillator.stop();
+                document.querySelectorAll('.btn-audio').forEach(b => b.classList.remove('active'));
+                if(type === currentType) { isPlaying = false; currentType = null; updateDisplay("OFF"); return; }
+            }
 
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
+            // Create new Osc
+            oscillator = audioCtx.createOscillator();
+            oscillator.type = type;
+            oscillator.frequency.value = document.getElementById('freq-slider').value;
+            
+            oscillator.connect(gainNode);
+            oscillator.start();
+            
+            isPlaying = true;
+            currentType = type;
+            
+            // UI Updates
+            if(type === 'sine') document.getElementById('btn-sine').classList.add('active');
+            if(type === 'square') document.getElementById('btn-square').classList.add('active');
+            if(type === 'sawtooth') document.getElementById('btn-saw').classList.add('active');
+            
+            updateDisplay(Math.round(oscillator.frequency.value) + " Hz");
+            log(`> GENERATING WAVE: ${type.toUpperCase()}`);
+        }
 
-        osc.type = 'sawtooth'; // Sawtooth wave is "buzzier" / moves more air
-        osc.frequency.value = 165; // The standard "eject" frequency
+        let currentType = null;
 
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
+        function updateFreq(val) {
+            if(isPlaying && oscillator) {
+                oscillator.frequency.value = val;
+                updateDisplay(val + " Hz");
+            }
+        }
 
-        osc.start();
-        
-        // Pulse volume to create "pushing" sensation
-        const now = audioCtx.currentTime;
-        gain.gain.setValueAtTime(1, now);
-        gain.gain.setValueAtTime(0, now + 0.5);
-        gain.gain.setValueAtTime(1, now + 1.0);
-        gain.gain.setValueAtTime(0, now + 1.5);
-        gain.gain.setValueAtTime(1, now + 2.0);
-        
-        osc.stop(now + 3);
+        function setPan(val) {
+            if(pannerNode) {
+                pannerNode.pan.value = val;
+                let status = "STEREO CENTER";
+                if(val === -1) status = "LEFT CHANNEL ONLY";
+                if(val === 1) status = "RIGHT CHANNEL ONLY";
+                log(`> PANNING: ${status}`);
+            }
+        }
 
-        setTimeout(() => {
-            status.innerText = "Cycle Complete.";
-            status.style.color = "var(--text-dim)";
-        }, 3000);
-    }
+        // --- AUTO SWEEP ---
+        function startSweep() {
+            if(!isPlaying) toggleTone('sine');
+            log("> INITIATING FREQUENCY SWEEP...");
+            let freq = 20;
+            const slider = document.getElementById('freq-slider');
+            
+            clearInterval(sweepInterval);
+            sweepInterval = setInterval(() => {
+                freq *= 1.05; // Exponential sweep
+                if(freq > 20000) {
+                    clearInterval(sweepInterval);
+                    log("> SWEEP COMPLETE");
+                    return;
+                }
+                slider.value = freq;
+                updateFreq(freq);
+            }, 50);
+        }
 
-</script>
+        function stopAll() {
+            if(oscillator) oscillator.stop();
+            if(micStream) {
+                micStream.getTracks().forEach(track => track.stop());
+                document.getElementById('btn-mic').classList.remove('mic-active');
+            }
+            isPlaying = false;
+            clearInterval(sweepInterval);
+            updateDisplay("OFF");
+            log("> ALL OUTPUTS SILENCED");
+            document.querySelectorAll('.btn-audio').forEach(b => b.classList.remove('active'));
+        }
 
+        function updateDisplay(text) {
+            document.getElementById('hz-val').innerText = text;
+        }
+
+        // --- MICROPHONE TEST ---
+        async function toggleMic() {
+            if(document.getElementById('btn-mic').classList.contains('mic-active')) {
+                stopAll();
+                return;
+            }
+            
+            stopAll(); // Stop tones first
+            
+            try {
+                log("> REQUESTING MIC ACCESS...");
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                micStream = stream;
+                
+                const source = audioCtx.createMediaStreamSource(stream);
+                source.connect(analyser);
+                // NOTE: We do NOT connect mic to destination (speakers) to prevent feedback loop screeching
+                
+                document.getElementById('btn-mic').classList.add('mic-active');
+                updateDisplay("MIC ON");
+                log("> MICROPHONE INPUT ACTIVE");
+            } catch (err) {
+                log("> ERROR: MIC ACCESS DENIED");
+                alert("Microphone access denied. Check browser settings.");
+            }
+        }
+
+        // --- CANVAS VISUALIZER ---
+        const canvas = document.getElementById('scopeCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function drawScope() {
+            requestAnimationFrame(drawScope);
+            
+            const bufferLength = analyser.frequencyBinCount;
+            const dataArray = new Uint8Array(bufferLength);
+            analyser.getByteTimeDomainData(dataArray);
+
+            // Clear
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Draw Line
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = '#f000ff';
+            ctx.beginPath();
+
+            const sliceWidth = canvas.width * 1.0 / bufferLength;
+            let x = 0;
+
+            for(let i = 0; i < bufferLength; i++) {
+                const v = dataArray[i] / 128.0;
+                const y = v * canvas.height / 2;
+
+                if(i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+
+                x += sliceWidth;
+            }
+
+            ctx.lineTo(canvas.width, canvas.height / 2);
+            ctx.stroke();
+        }
+
+        // Handle Resize
+        function resize() {
+            canvas.width = document.querySelector('.scope-container').offsetWidth;
+            canvas.height = document.querySelector('.scope-container').offsetHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+    </script>
 </body>
 </html>
