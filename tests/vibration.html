@@ -18,7 +18,7 @@
             --warn: #ffb700; 
         }
         
-        * { box-sizing: border-box; }
+        * { box-sizing: border-box; touch-action: manipulation; -webkit-tap-highlight-color: transparent; user-select: none; }
         body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; padding: 20px; margin: 0; min-height: 100vh; font-size: 14px; overflow-x: hidden; }
         
         /* HEADER */
@@ -29,48 +29,47 @@
         .blink { animation: blink 1s infinite; width: 6px; height: 6px; background: var(--accent); border-radius: 50%; }
         @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0; } 100% { opacity: 1; } }
 
+        /* INSTRUCTION PANELS */
+        .info-panel { background: rgba(255, 159, 67, 0.05); border-left: 3px solid var(--accent); padding: 15px; margin-bottom: 15px; border-radius: 0 8px 8px 0; font-size: 12px; line-height: 1.5; color: var(--text-bright); }
+        .info-title { font-weight: 800; color: var(--accent); text-transform: uppercase; margin-bottom: 5px; display: block; letter-spacing: 1px; }
+
         /* ENGINE CORE (VISUALIZER) */
         .engine-container { 
-            display: flex; justify-content: center; align-items: center; height: 250px; margin-bottom: 30px;
+            display: flex; justify-content: center; align-items: center; height: 220px; margin-bottom: 20px;
             background: radial-gradient(circle, rgba(255,159,67,0.05) 0%, rgba(0,0,0,0) 70%);
+            border: 1px solid var(--border); border-radius: 16px; position: relative; overflow: hidden;
         }
         
         .core-outer {
-            width: 180px; height: 180px; border: 2px dashed var(--border); border-radius: 50%;
+            width: 140px; height: 140px; border: 2px dashed var(--border); border-radius: 50%;
             display: flex; justify-content: center; align-items: center; position: relative;
-            animation: slowSpin 10s linear infinite;
+            transition: transform 0.1s;
         }
         
         .core-inner {
-            width: 120px; height: 120px; background: #000; border: 4px solid var(--accent); border-radius: 50%;
+            width: 100px; height: 100px; background: #000; border: 4px solid var(--accent); border-radius: 50%;
             display: flex; justify-content: center; align-items: center;
             box-shadow: 0 0 30px rgba(255, 159, 67, 0.2); position: relative; z-index: 2;
+            transition: all 0.1s;
         }
         
-        .core-icon { font-size: 40px; }
+        .core-icon { font-size: 32px; transition: 0.1s; }
 
-        /* VIBRATION ANIMATIONS */
-        .vibrating .core-inner { animation: shake 0.1s infinite; box-shadow: 0 0 50px var(--accent); background: var(--accent); color: black; }
-        .vibrating .core-icon { animation: shakeText 0.1s infinite; }
+        /* VIBRATION ANIMATION CLASSES */
+        .vibrating .core-inner { animation: shake 0.1s infinite; background: var(--accent); box-shadow: 0 0 60px var(--accent); border-color: #fff; }
+        .vibrating .core-icon { transform: scale(1.5); }
+        .vibrating .core-outer { animation: spin 2s linear infinite; border-color: rgba(255, 159, 67, 0.5); }
 
         @keyframes shake { 
             0% { transform: translate(1px, 1px) rotate(0deg); }
-            10% { transform: translate(-1px, -2px) rotate(-1deg); }
-            20% { transform: translate(-3px, 0px) rotate(1deg); }
-            30% { transform: translate(3px, 2px) rotate(0deg); }
-            40% { transform: translate(1px, -1px) rotate(1deg); }
-            50% { transform: translate(-1px, 2px) rotate(-1deg); }
-            60% { transform: translate(-3px, 1px) rotate(0deg); }
-            70% { transform: translate(3px, 1px) rotate(-1deg); }
-            80% { transform: translate(-1px, -1px) rotate(1deg); }
-            90% { transform: translate(1px, 2px) rotate(0deg); }
-            100% { transform: translate(1px, -2px) rotate(-1deg); }
+            50% { transform: translate(-1px, -2px) rotate(-1deg); }
+            100% { transform: translate(-3px, 0px) rotate(1deg); }
         }
-        @keyframes slowSpin { 100% { transform: rotate(360deg); } }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
 
         /* CONTROLS */
         .control-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px; }
-        .btn-haptic { background: var(--panel); border: 1px solid var(--border); color: var(--text-bright); padding: 18px; border-radius: 12px; cursor: pointer; font-weight: 700; font-size: 11px; text-align: left; display: flex; justify-content: space-between; align-items: center; transition: 0.1s; }
+        .btn-haptic { background: var(--panel); border: 1px solid var(--border); color: var(--text-bright); padding: 15px; border-radius: 12px; cursor: pointer; font-weight: 700; font-size: 11px; text-align: left; display: flex; justify-content: space-between; align-items: center; transition: 0.1s; }
         .btn-haptic:active { transform: scale(0.96); border-color: var(--accent); background: rgba(255, 159, 67, 0.1); }
         
         .btn-stop { grid-column: span 2; background: var(--secondary); color: #000; border: none; text-align: center; justify-content: center; font-size: 14px; box-shadow: 0 4px 20px rgba(255, 107, 107, 0.3); }
@@ -82,10 +81,15 @@
         input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 20px; width: 20px; border-radius: 50%; background: var(--accent); cursor: pointer; margin-top: -8px; box-shadow: 0 0 10px var(--accent); }
         input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 4px; cursor: pointer; background: var(--border); border-radius: 2px; }
 
-        /* TERMINAL */
-        .terminal { background: #000; border: 1px solid var(--border); border-radius: 8px; padding: 10px; height: 120px; overflow: hidden; font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--accent); position: relative; }
-        .log-line { margin-bottom: 2px; opacity: 0.8; }
-        .terminal::after { content: ""; position: absolute; bottom: 0; left: 0; width: 100%; height: 20px; background: linear-gradient(to top, #000, transparent); }
+        /* FAQ ACCORDION */
+        .faq-section { display: grid; gap: 10px; margin-top: 30px; }
+        .faq-item { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+        .faq-q { padding: 15px; font-weight: 700; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .faq-q:hover { color: var(--accent); }
+        .faq-a { padding: 0 15px 15px 15px; color: var(--text); font-size: 12px; line-height: 1.5; display: none; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px; }
+        .faq-icon { font-size: 10px; transition: 0.2s; }
+        .faq-item.active .faq-a { display: block; }
+        .faq-item.active .faq-icon { transform: rotate(180deg); color: var(--accent); }
 
         .back-btn { display: block; text-align: center; margin-top: 20px; color: var(--text); text-decoration: none; font-weight: 700; padding: 15px; background: var(--panel); border-radius: 12px; }
     </style>
@@ -105,18 +109,17 @@
         </div>
     </div>
 
-    <div class="slider-box">
-        <div class="range-label">
-            <span>MANUAL INTENSITY (DURATION)</span>
-            <span id="dur-val">200ms</span>
-        </div>
-        <input type="range" id="duration" min="50" max="2000" value="200" step="50" oninput="updateDur(this.value)">
-        <button class="btn-haptic" style="width:100%; margin-top:15px; justify-content:center;" onclick="manualPulse()">TEST MANUAL PULSE</button>
+    <div class="info-panel">
+        <span class="info-title">1. MOTOR TECHNOLOGY</span>
+        
+        There are two types of vibration motors:<br>
+        <strong>1. ERM (Old):</strong> A spinning weight. Slow to start/stop. Feels "Rumbly."<br>
+        <strong>2. LRA (New):</strong> A magnetic mass on a spring. Instant response. Feels "Crisp." (e.g., Apple Taptic Engine).
     </div>
 
     <div class="control-grid">
         <button class="btn-haptic" onclick="playPattern('tick')">
-            <span>CRISP TICK</span> <span>⚡</span>
+            <span>CRISP TICK (UI)</span> <span>⚡</span>
         </button>
         <button class="btn-haptic" onclick="playPattern('double')">
             <span>DOUBLE TAP</span> <span>⚡⚡</span>
@@ -131,7 +134,7 @@
             <span>SOS SIGNAL</span> <span>🆘</span>
         </button>
         <button class="btn-haptic" onclick="playPattern('stress')">
-            <span>STRESS TEST</span> <span>🔥</span>
+            <span>MAX POWER</span> <span>🔥</span>
         </button>
         
         <button class="btn-haptic btn-stop" onclick="stopVibrate()">
@@ -139,116 +142,130 @@
         </button>
     </div>
 
-    <div class="terminal" id="console-output">
-        <div class="log-line">> HAPTIC ENGINE INIT...</div>
-        <div class="log-line">> CHECKING API SUPPORT...</div>
+    <div class="info-panel">
+        <span class="info-title">2. MANUAL CALIBRATION</span>
+        Use this slider to test the "Spin Up" time of your motor. If short bursts (50ms) feel weak, you likely have an older ERM motor.
+    </div>
+
+    <div class="slider-box">
+        <div class="range-label">
+            <span>PULSE DURATION</span>
+            <span id="dur-val">200ms</span>
+        </div>
+        <input type="range" id="duration" min="50" max="2000" value="200" step="50" oninput="updateDur(this.value)">
+        <button class="btn-haptic" style="width:100%; margin-top:15px; justify-content:center;" onclick="manualPulse()">TEST PULSE</button>
+    </div>
+
+    <h3 style="font-size: 14px; margin-bottom: 15px; color: var(--text-bright);">FAQ: HAPTICS & VIBRATION</h3>
+    <div class="faq-section">
+        
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">1. Why doesn't it work on iPhone? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">Apple blocks the `navigator.vibrate` API in Safari to prevent websites from creating annoying ads. It only works on Android.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">2. What is "Phantom Vibration Syndrome"? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">A psychological phenomenon where you think your phone vibrated, but it didn't. Your brain misinterprets muscle spasms as notifications.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">3. Does vibration drain battery? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">Very minimally. A vibration motor uses about 0.95% - 4% of battery over a full day. The screen uses 100x more power.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">4. What is the "Taptic Engine"? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">Apple's brand name for a Linear Resonant Actuator (LRA). It can reach peak vibration in 10ms, vs 50ms for older motors.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">5. Can strong vibration damage my phone? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">Generally no. However, extreme prolonged vibration *can* sometimes de-stabilize optical image stabilization (OIS) in cameras (common on motorcycles).</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">6. Why does my phone make a rattling noise? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">This indicates a loose component (like a camera lens or button) vibrating against the chassis, or a failing motor bearing.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">7. What is "Haptic Feedback"? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">"Haptic" refers to touch. It's the tiny vibration you feel when typing or pressing a button to confirm the action was registered.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">8. Why is the "Tick" pattern so weak? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">Short pulses (20-30ms) require a high-end LRA motor. On older phones, the motor can't spin up fast enough to be felt.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">9. Can I increase vibration strength? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">Only in your system settings. Web apps cannot control intensity, only duration (Time On / Time Off).</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">10. What is an "SOS" pattern? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">It is Morse Code: 3 Short, 3 Long, 3 Short (... --- ...). This is the universal distress signal.</div>
+        </div>
+
     </div>
 
     <a href="../index.html" class="back-btn">EXIT HAPTIC LAB</a>
 
     <script>
-        // --- LOGGING ---
-        function log(msg) {
-            const term = document.getElementById('console-output');
-            const line = document.createElement('div');
-            line.className = 'log-line';
-            line.innerHTML = `<span style="color:#64748b">[MOT]</span> ${msg}`;
-            term.appendChild(line);
-            if(term.children.length > 6) term.removeChild(term.children[0]);
-            term.scrollTop = term.scrollHeight;
-        }
-
-        // --- CHECK SUPPORT ---
+        // --- 1. CAPABILITY CHECK ---
         const canVibrate = "vibrate" in navigator;
-        if(canVibrate) {
-            log("> NAVIGATOR.VIBRATE: SUPPORTED");
-        } else {
-            log("> NAVIGATOR.VIBRATE: UNSUPPORTED (iOS?)");
-            alert("NOTE: Apple iOS blocks web vibration. This test works best on Android.");
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+        if(isIOS) {
+            alert("SYSTEM NOTICE:\n\nApple iOS blocks web vibration capabilities.\nThis test will show visual feedback only.");
         }
 
-        // --- VISUALIZER ---
+        // --- 2. VISUALIZER ---
         function triggerVisual(duration) {
             const viz = document.getElementById('visualizer');
             viz.classList.add('vibrating');
-            
-            // Remove class after duration
             setTimeout(() => {
                 viz.classList.remove('vibrating');
             }, duration);
         }
 
-        // --- MANUAL ---
-        function updateDur(val) {
-            document.getElementById('dur-val').innerText = val + "ms";
+        // --- 3. PATTERN ENGINE ---
+        function playPattern(type) {
+            let pattern = [];
+            let vizDur = 500;
+
+            if(type === 'tick') { pattern = [20]; vizDur = 100; }
+            if(type === 'double') { pattern = [50, 50, 50]; vizDur = 200; }
+            if(type === 'heavy') { pattern = [800]; vizDur = 800; }
+            if(type === 'heart') { pattern = [100, 100, 100, 600]; vizDur = 1000; }
+            if(type === 'sos') { 
+                pattern = [100,50,100,50,100, 300, 300,100,300,100,300, 300, 100,50,100,50,100]; 
+                vizDur = 3000; 
+            }
+            if(type === 'stress') { pattern = [2000]; vizDur = 2000; }
+
+            if(canVibrate) navigator.vibrate(pattern);
+            triggerVisual(vizDur);
         }
 
         function manualPulse() {
             const dur = parseInt(document.getElementById('duration').value);
-            log(`> MANUAL PULSE: ${dur}ms`);
-            
             if(canVibrate) navigator.vibrate(dur);
             triggerVisual(dur);
         }
 
-        // --- PATTERNS ---
-        function playPattern(type) {
-            let pattern = [];
-            let name = "";
-            let vizDur = 500;
-
-            if(type === 'tick') {
-                pattern = [30];
-                name = "CRISP TICK";
-                vizDur = 100;
-            }
-            if(type === 'double') {
-                pattern = [50, 50, 50]; // Vib, Pause, Vib
-                name = "DOUBLE TAP";
-                vizDur = 200;
-            }
-            if(type === 'heavy') {
-                pattern = [1000];
-                name = "HEAVY HUM";
-                vizDur = 1000;
-            }
-            if(type === 'heart') {
-                pattern = [100, 100, 100, 500]; // Dum-Dum... Dum-Dum...
-                name = "HEARTBEAT RHYTHM";
-                vizDur = 800;
-            }
-            if(type === 'sos') {
-                // ... --- ...
-                pattern = [
-                    100,50,100,50,100, // S
-                    200, 
-                    300,100,300,100,300, // O
-                    200, 
-                    100,50,100,50,100 // S
-                ]; 
-                name = "SOS DISTRESS SIGNAL";
-                vizDur = 2000;
-            }
-            if(type === 'stress') {
-                pattern = [50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50]; // Machine gun
-                name = "STRESS TEST (RAPID)";
-                vizDur = 1500;
-            }
-
-            log(`> PATTERN: ${name}`);
-            
-            if(canVibrate) navigator.vibrate(pattern);
-            
-            // Visualizer needs to pulse differently for patterns
-            // We just trigger a long shake for complex patterns for simplicity
-            triggerVisual(vizDur);
-        }
-
         function stopVibrate() {
             if(canVibrate) navigator.vibrate(0);
-            log("> EMERGENCY STOP TRIGGERED");
             document.getElementById('visualizer').classList.remove('vibrating');
         }
+
+        function updateDur(val) {
+            document.getElementById('dur-val').innerText = val + "ms";
+        }
+
+        function toggleFaq(el) { el.classList.toggle('active'); }
 
     </script>
 </body>
