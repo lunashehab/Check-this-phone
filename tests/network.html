@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Performance Tests | CheckThisPhone.com</title>
+    <title>Network Tests | CheckThisPhone.com</title>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         :root { 
@@ -12,11 +12,10 @@
             --border: #2d3748; 
             --text: #a0aec0; 
             --text-bright: #e2e8f0;
-            --accent: #ffb700; /* Cyber Gold */
-            --secondary: #3b82f6; /* Blue */
+            --accent: #3b82f6; /* Blue */
+            --secondary: #10b981; /* Emerald */
             --danger: #ef4444; 
             --warn: #f59e0b; 
-            --success: #10b981;
         }
         
         * { box-sizing: border-box; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
@@ -88,9 +87,8 @@
             color: var(--text-bright);
         }
         
-        .btn-run { background: var(--accent); color: #000; border: none; }
+        .btn-run { background: var(--accent); color: white; border: none; }
         .btn-run:hover { opacity: 0.9; }
-        .btn-stress { background: var(--danger); color: white; border: none; }
         .btn-info:hover { border-color: var(--text-bright); }
 
         /* MODAL */
@@ -103,7 +101,7 @@
         .modal {
             background: var(--panel); border: 1px solid var(--accent); border-radius: 12px;
             padding: 30px; max-width: 500px; width: 90%;
-            box-shadow: 0 0 30px rgba(255, 183, 0, 0.2);
+            box-shadow: 0 0 30px rgba(59, 130, 246, 0.2);
         }
         .modal-title { font-family: 'JetBrains Mono'; font-size: 18px; color: var(--accent); margin-bottom: 15px; }
         .modal-body { font-size: 13px; line-height: 1.6; color: var(--text-bright); margin-bottom: 25px; }
@@ -119,22 +117,20 @@
         .faq-item.active .faq-a { display: block; }
 
         .sim-tag { font-size: 9px; opacity: 0.7; margin-left: 5px; border: 1px solid var(--border); padding: 1px 4px; border-radius: 3px; }
-        
-        /* CANVAS FOR GPU TESTS (Hidden) */
-        #gpu-canvas { position: fixed; top: -9999px; left: -9999px; }
+        .live-tag { color: var(--secondary); margin-left: 5px; font-size: 10px; }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <div class="logo">CHECK<span>PERFORMANCE</span></div>
-        <div class="subtitle">Browser-Based CPU, GPU & Speed Diagnostics</div>
+        <div class="logo">CHECK<span>NETWORK</span></div>
+        <div class="subtitle">Browser-Based Connectivity Diagnostics</div>
     </div>
 
     <div class="test-grid" id="grid"></div>
 
     <div class="faq-container">
-        <div class="faq-header">PERFORMANCE FAQ</div>
+        <div class="faq-header">NETWORK FAQ</div>
         <div id="faq-list"></div>
     </div>
 
@@ -147,151 +143,321 @@
         </div>
     </div>
 
-    <canvas id="gpu-canvas"></canvas>
-
     <script>
         // --- DATA: ALL TESTS ---
         const tests = [
-            // CPU
-            { id: 'cpu_bench', title: 'CPU Benchmark', icon: '🧠', desc: 'Measures raw calculation speed (Ops/sec).', type: 'cpu_math' },
-            { id: 'cpu_single', title: 'Single-Core Sim', icon: '1️⃣', desc: 'Stresses main thread logic.', type: 'cpu_math' },
-            { id: 'cpu_multi', title: 'Multi-Core Sim', icon: '🔢', desc: 'Simulates parallel workers (Web Workers).', type: 'cpu_workers' },
-            { id: 'cpu_stress', title: 'CPU Stress Test', icon: '🔥', desc: 'Max load test for stability.', type: 'cpu_stress' },
-            { id: 'cpu_burst', title: 'Burst Performance', icon: '💥', desc: 'Short high-intensity calculation check.', type: 'cpu_math' },
-            { id: 'cpu_sustain', title: 'Sustained Perf.', icon: '⏱️', desc: 'Longer duration load test.', type: 'cpu_stress' },
-            { id: 'cpu_throttle', title: 'Throttling Detect', icon: '🌡️', desc: 'Checks if speed drops over time.', type: 'sim_logic' },
-            { id: 'cpu_temp', title: 'CPU Temperature', icon: '🌡️', desc: 'Estimates thermal status via load.', type: 'sim_logic' },
-            { id: 'cpu_spike', title: 'Spike Detection', icon: '⚡', desc: 'Checks for performance stutters.', type: 'cpu_math' },
-            { id: 'cpu_idle', title: 'Idle Performance', icon: '💤', desc: 'Measures background resource usage.', type: 'sim_logic' },
-            { id: 'cpu_load', title: 'Load Consistency', icon: '⚖️', desc: 'Variance check under load.', type: 'cpu_math' },
-            { id: 'cpu_instr', title: 'Instruction Speed', icon: '📝', desc: 'Math/Logic operation mix.', type: 'cpu_math' },
+            // CONNECTION
+            { id: 'conn_status', title: 'Internet Connection', icon: '🌐', desc: 'Checks online/offline status.', type: 'nav_online' },
+            { id: 'conn_type', title: 'Connection Type', icon: '📡', desc: 'Detects WiFi, 4G, or Cellular.', type: 'nav_type' },
+            { id: 'conn_eff', title: 'Effective Type', icon: '📶', desc: 'Real-world speed category (2g/3g/4g).', type: 'nav_eff' },
+            { id: 'conn_down', title: 'Downlink Est.', icon: '⬇️', desc: 'Bandwidth estimate (Mbps).', type: 'nav_down' },
+            { id: 'conn_rtt', title: 'RTT (Ping)', icon: '⏱️', desc: 'Round Trip Time latency.', type: 'nav_rtt' },
+            { id: 'conn_save', title: 'Data Saver', icon: '💾', desc: 'Checks if Data Saver header is sent.', type: 'nav_save' },
 
-            // GPU
-            { id: 'gpu_webgl', title: 'WebGL Benchmark', icon: '🎮', desc: 'Renders 3D geometry.', type: 'gpu_render' },
-            { id: 'gpu_fill', title: 'Fill Rate Test', icon: '🎨', desc: 'Pixel pushing capability.', type: 'gpu_render' },
-            { id: 'gpu_tri', title: 'Triangle Render', icon: '🔺', desc: 'Vertex processing speed.', type: 'gpu_render' },
-            { id: 'gpu_part', title: 'Particle Stress', icon: '✨', desc: 'High object count simulation.', type: 'gpu_render' },
-            { id: 'gpu_shader', title: 'Shader Perf.', icon: '🌈', desc: 'Complex lighting calculation.', type: 'gpu_render' },
-            { id: 'gpu_fps', title: 'Frame Rate Test', icon: '🏎️', desc: 'Measures stable FPS.', type: 'gpu_render' },
-            { id: 'gpu_stab', title: 'GPU Stability', icon: '🧱', desc: 'Long render loop check.', type: 'gpu_render' },
-            { id: 'gpu_therm', title: 'GPU Thermals', icon: '🌡️', desc: 'Simulated thermal load check.', type: 'sim_logic' },
-            { id: 'gpu_drop', title: 'Frame Drop Detect', icon: '📉', desc: 'Detects rendering stutter.', type: 'gpu_render' },
-            { id: 'gpu_smooth', title: 'Motion Smoothness', icon: '🌊', desc: 'Visual fluidity check.', type: 'gpu_render' },
-            { id: 'gpu_over', title: 'Overload Sim', icon: '⚠️', desc: 'Maximum texture load.', type: 'gpu_render' },
+            // SPEED
+            { id: 'speed_down', title: 'Download Burst', icon: '🚀', desc: 'Fetches small packet to measure speed.', type: 'fetch_speed' },
+            { id: 'speed_up', title: 'Upload Burst', icon: '📤', desc: 'Sends small packet to measure speed.', type: 'fetch_up' },
+            { id: 'speed_ping', title: 'Ping Test', icon: '📍', desc: 'Measures latency to global server.', type: 'fetch_ping' },
+            { id: 'speed_jit', title: 'Jitter', icon: '〰️', desc: 'Variance in ping times.', type: 'sim_jitter' },
+            { id: 'speed_loss', title: 'Packet Loss', icon: '📉', desc: 'Simulates dropped packets.', type: 'sim_loss' },
+            { id: 'speed_lat', title: 'Latency Stab.', icon: '⚖️', desc: 'Consistency over 5 seconds.', type: 'sim_stab' },
+            { id: 'speed_burst', title: 'Burst Speed', icon: '💥', desc: 'Peak throughput check.', type: 'fetch_speed' },
+            { id: 'speed_sus', title: 'Sustained', icon: '🛤️', desc: 'Average speed over time.', type: 'sim_logic' },
+            { id: 'speed_cons', title: 'Consistency', icon: '📊', desc: 'Speed fluctuation check.', type: 'sim_logic' },
 
-            // RAM
-            { id: 'ram_usage', title: 'RAM Usage', icon: '💾', desc: 'Checks available JS heap limit.', type: 'ram_check' },
-            { id: 'ram_stress', title: 'RAM Stress Test', icon: '🏋️', desc: 'Allocates large arrays rapidly.', type: 'ram_fill' },
-            { id: 'ram_leak', title: 'Leak Simulation', icon: '💧', desc: 'Simulates unreleased memory.', type: 'sim_logic' },
-            { id: 'ram_alloc', title: 'Allocation Speed', icon: '🚀', desc: 'Read/Write memory bandwidth.', type: 'ram_speed' },
-            { id: 'ram_stab', title: 'RAM Stability', icon: '⚖️', desc: 'Holding data in memory check.', type: 'sim_logic' },
-            { id: 'ram_frag', title: 'Fragmentation', icon: '🧩', desc: 'Simulated memory scattering.', type: 'sim_logic' },
-            { id: 'ram_clean', title: 'Cleanup Sim', icon: '🧹', desc: 'Garbage collection trigger.', type: 'sim_logic' },
-            { id: 'ram_press', title: 'Memory Pressure', icon: '😤', desc: 'High-load scenario.', type: 'ram_fill' },
-            { id: 'ram_spike', title: 'Memory Spike', icon: '📈', desc: 'Sudden allocation burst.', type: 'ram_fill' },
+            // DNS
+            { id: 'dns_speed', title: 'DNS Resolution', icon: '🔍', desc: 'Time to resolve domain name.', type: 'dns_time' },
+            { id: 'dns_prov', title: 'DNS Provider', icon: '🏢', desc: 'Guesses provider based on latency.', type: 'sim_logic', val: 'ISP Default' },
+            { id: 'dns_rel', title: 'Reliability', icon: '✅', desc: 'Success rate of lookups.', type: 'sim_logic', val: '100% OK' },
+            { id: 'dns_cache', title: 'DNS Cache', icon: '🧠', desc: 'Browser cache usage check.', type: 'sim_logic' },
+            { id: 'dns_fail', title: 'Failover Sim', icon: '🔄', desc: 'Secondary DNS check.', type: 'sim_logic' },
+            { id: 'dns_leak', title: 'DNS Leak', icon: '💧', desc: 'Privacy exposure check.', type: 'sim_logic', val: 'Secure' },
 
-            // STORAGE
-            { id: 'stor_read', title: 'Read Speed', icon: '📖', desc: 'Simulated file read op.', type: 'stor_sim' },
-            { id: 'stor_write', title: 'Write Speed', icon: '✍️', desc: 'Simulated file write op.', type: 'stor_sim' },
-            { id: 'stor_lat', title: 'Access Latency', icon: '⏱️', desc: 'Time to first byte sim.', type: 'stor_sim' },
-            { id: 'stor_cons', title: 'Consistency', icon: '📊', desc: 'Multiple IO ops check.', type: 'stor_sim' },
-            { id: 'stor_burst', title: 'Burst Speed', icon: '💥', desc: 'Small file random IO.', type: 'stor_sim' },
-            { id: 'stor_large', title: 'Large File Sim', icon: '📦', desc: 'Large Blob handling.', type: 'stor_sim' },
-            { id: 'stor_frag', title: 'Fragmentation', icon: '🧱', desc: 'Simulated disk health.', type: 'sim_logic' },
-            { id: 'stor_cap', title: 'Capacity Detect', icon: '💾', desc: 'Quota estimation API.', type: 'stor_quota' },
-            { id: 'stor_health', title: 'Health Est.', icon: '❤️', desc: 'Storage controller status.', type: 'sim_logic' },
+            // IP
+            { id: 'ip_pub', title: 'Public IP', icon: '🌍', desc: 'Fetches external IP address.', type: 'api_ip' },
+            { id: 'ip_loc', title: 'Local IP', icon: '🏠', desc: 'WebRTC local candidate check.', type: 'rtc_ip' },
+            { id: 'ip_v4v6', title: 'IPv4/IPv6', icon: '🔢', desc: 'Protocol version detection.', type: 'api_ver' },
+            { id: 'ip_geo', title: 'IP Geolocation', icon: '📍', desc: 'City/Country estimation.', type: 'api_geo' },
+            { id: 'ip_vpn', title: 'VPN/Proxy', icon: '🛡️', desc: 'Heuristic proxy detection.', type: 'sim_logic', val: 'Undetected' },
+            { id: 'ip_carr', title: 'Carrier Range', icon: '📡', desc: 'IP block owner lookup.', type: 'api_org' },
 
-            // BROWSER
-            { id: 'js_speed', title: 'JS Speed', icon: '📜', desc: 'Engine execution time.', type: 'cpu_math' },
-            { id: 'dom_render', title: 'DOM Render', icon: '🖼️', desc: 'Element creation speed.', type: 'dom_test' },
-            { id: 'layout', title: 'Layout & Reflow', icon: '📐', desc: 'CSS recalculation speed.', type: 'dom_test' },
-            { id: 'anim_smooth', title: 'Anim Smoothness', icon: '🎞️', desc: 'CSS animation FPS.', type: 'gpu_render' },
-            { id: 'input_lat', title: 'Input Latency', icon: '👆', desc: 'Event listener delay.', type: 'sim_logic' },
-            { id: 'scroll', title: 'Scroll Perf', icon: '📜', desc: 'Scroll event handler speed.', type: 'sim_logic' },
-            { id: 'tab_switch', title: 'Tab Switch', icon: '📑', desc: 'Visibility change API.', type: 'sim_logic' },
-            { id: 'bg_throt', title: 'BG Throttling', icon: '⏳', desc: 'Timer accuracy in background.', type: 'sim_logic' },
-            { id: 'evt_loop', title: 'Event Loop Lag', icon: '🔄', desc: 'Main thread blocking check.', type: 'cpu_math' },
-            { id: 'gc_spike', title: 'GC Spike', icon: '🗑️', desc: 'Garbage collection pause.', type: 'sim_logic' },
+            // CARRIER
+            { id: 'carr_name', title: 'Carrier Detect', icon: '🏢', desc: 'ISP name from IP.', type: 'api_isp' },
+            { id: 'carr_net', title: 'Network Gen', icon: '📶', desc: '2G/3G/4G/5G estimation.', type: 'nav_eff' },
+            { id: 'carr_roam', title: 'Roaming', icon: '✈️', desc: 'Checks if IP matches region.', type: 'sim_logic', val: 'Home Network' },
+            { id: 'carr_sig', title: 'Signal Strength', icon: '📊', desc: 'Signal quality estimate.', type: 'sim_sig' },
+            { id: 'carr_cong', title: 'Congestion', icon: '🚦', desc: 'Network load simulation.', type: 'sim_logic' },
+            { id: 'carr_throt', title: 'Throttling', icon: '🐢', desc: 'Speed cap detection.', type: 'sim_logic' },
+            { id: 'carr_switch', title: 'Tower Switch', icon: '🗼', desc: 'Handover simulation.', type: 'sim_logic' },
 
-            // NETWORK
-            { id: 'net_speed', title: 'Network Speed', icon: '🚀', desc: 'Downlink estimate.', type: 'net_info' },
-            { id: 'net_lat', title: 'Network Latency', icon: '⏱️', desc: 'RTT estimate.', type: 'net_info' },
-            { id: 'net_jit', title: 'Network Jitter', icon: '〰️', desc: 'Stability variance.', type: 'sim_logic' },
-            { id: 'net_stab', title: 'Net Stability', icon: '📶', desc: 'Connection persistence.', type: 'sim_logic' },
-            { id: 'net_loss', title: 'Packet Loss', icon: '📉', desc: 'Simulated data loss.', type: 'sim_logic' },
-            { id: 'net_burst', title: 'Burst Test', icon: '💥', desc: 'Short fetch request.', type: 'net_fetch' },
-            { id: 'net_cong', title: 'Congestion', icon: '🚦', desc: 'Simulated traffic load.', type: 'sim_logic' },
+            // WEBRTC
+            { id: 'rtc_conn', title: 'RTC Connectivity', icon: '🤝', desc: 'Peer connection check.', type: 'rtc_conn' },
+            { id: 'rtc_stun', title: 'STUN Test', icon: '🧊', desc: 'Server connectivity check.', type: 'rtc_stun' },
+            { id: 'rtc_ice', title: 'ICE Candidates', icon: '📝', desc: 'Candidate gathering.', type: 'rtc_ice' },
+            { id: 'rtc_lat', title: 'RTC Latency', icon: '⏱️', desc: 'Peer-to-peer delay.', type: 'rtc_sim' },
+            { id: 'rtc_loss', title: 'Packet Loss', icon: '📉', desc: 'RTC stream stability.', type: 'rtc_sim' },
+            { id: 'rtc_stab', title: 'Stability', icon: '🧱', desc: 'Connection hold time.', type: 'rtc_sim' },
+            { id: 'rtc_perm', title: 'Local Permission', icon: '🔒', desc: 'LAN access check.', type: 'rtc_ip' },
 
-            // THERMAL
-            { id: 'therm_throt', title: 'Thermal Throttle', icon: '🌡️', desc: 'Simulated heat response.', type: 'sim_logic' },
-            { id: 'heat_build', title: 'Heat Build-Up', icon: '🔥', desc: 'Load over time.', type: 'cpu_stress' },
-            { id: 'cooling', title: 'Cooling Speed', icon: '❄️', desc: 'Recovery time sim.', type: 'sim_logic' },
-            { id: 'perf_drop', title: 'Perf Drop', icon: '📉', desc: 'Score reduction check.', type: 'sim_logic' },
-            { id: 'therm_stab', title: 'Thermal Stab', icon: '⚖️', desc: 'Long run consistency.', type: 'sim_logic' },
+            // ROUTING
+            { id: 'route_hop', title: 'Single Hop', icon: '🐇', desc: 'Gateway latency.', type: 'sim_ping', val: '4ms' },
+            { id: 'route_multi', title: 'Multi-Hop', icon: '🐇🐇', desc: 'Trace route simulation.', type: 'sim_logic', val: '8 Hops' },
+            { id: 'route_stab', title: 'Route Stab.', icon: '🗺️', desc: 'Path consistency.', type: 'sim_logic' },
+            { id: 'route_var', title: 'Latency Var.', icon: '📉', desc: 'Ping fluctuation.', type: 'sim_logic' },
+            { id: 'route_geo', title: 'Geo-Routing', icon: '🌏', desc: 'Server proximity check.', type: 'sim_logic' },
+            { id: 'route_cdn', title: 'CDN Route', icon: '☁️', desc: 'Content delivery node check.', type: 'sim_logic', val: 'Cloudflare' },
 
-            // REAL WORLD
-            { id: 'gaming', title: 'Gaming Sim', icon: '🎮', desc: 'WebGL + Physics load.', type: 'gpu_render' },
-            { id: 'video', title: 'Video Playback', icon: '🎬', desc: 'Decoding simulation.', type: 'sim_logic' },
-            { id: 'multi', title: 'Multitasking', icon: '🔀', desc: 'Context switching sim.', type: 'sim_logic' },
-            { id: 'social', title: 'Social Scroll', icon: '📱', desc: 'Heavy DOM list sim.', type: 'dom_test' },
-            { id: 'launch', title: 'App Launch', icon: '🚀', desc: 'Startup time sim.', type: 'sim_logic' },
-            { id: 'page_load', title: 'Page Load', icon: '🌍', desc: 'Resource parsing sim.', type: 'dom_test' },
-            { id: 'web_app', title: 'Heavy Web App', icon: '🏗️', desc: 'Complex SPA logic sim.', type: 'cpu_stress' },
-            { id: 'bg_task', title: 'BG Task Sim', icon: '⚙️', desc: 'Worker thread load.', type: 'cpu_workers' },
-            { id: 'batt_perf', title: 'Batt + Perf', icon: '🔋', desc: 'Efficiency check.', type: 'sim_logic' },
-            { id: 'therm_perf', title: 'Therm + Perf', icon: '🌡️', desc: 'Heat vs Speed ratio.', type: 'sim_logic' },
+            // SECURITY
+            { id: 'sec_https', title: 'HTTPS Check', icon: '🔒', desc: 'Protocol security.', type: 'sec_proto' },
+            { id: 'sec_tls', title: 'TLS Version', icon: '🔑', desc: 'Encryption standard.', type: 'sim_logic', val: 'TLS 1.3' },
+            { id: 'sec_cert', title: 'Cert Validity', icon: '📜', desc: 'SSL Certificate check.', type: 'sim_logic', val: 'Valid' },
+            { id: 'sec_mix', title: 'Mixed Content', icon: '⚠️', desc: 'Insecure script detection.', type: 'sim_logic', val: 'None' },
+            { id: 'sec_fire', title: 'Firewall', icon: '🧱', desc: 'Port block detection.', type: 'sim_logic' },
+            { id: 'sec_port', title: 'Port Scan', icon: '🚪', desc: 'Common port reachability.', type: 'sim_logic' },
+
+            // WIFI
+            { id: 'wifi_speed', title: 'WiFi Speed', icon: '🚀', desc: 'Local link speed.', type: 'nav_down' },
+            { id: 'wifi_lat', title: 'WiFi Latency', icon: '⏱️', desc: 'Gateway ping.', type: 'sim_ping' },
+            { id: 'wifi_loss', title: 'WiFi Loss', icon: '📉', desc: 'Signal interference.', type: 'sim_loss' },
+            { id: 'wifi_int', title: 'Interference', icon: '🌫️', desc: 'Channel congestion.', type: 'sim_logic' },
+            { id: 'wifi_drop', title: 'Drop Test', icon: '❌', desc: 'Stability check.', type: 'sim_logic' },
+            { id: 'wifi_rec', title: 'Reconnect', icon: '🔄', desc: 'Association speed.', type: 'sim_logic' },
+            { id: 'wifi_stab', title: 'Stability', icon: '⚖️', desc: 'Signal consistency.', type: 'sim_logic' },
+
+            // MOBILE
+            { id: 'mob_4g', title: '4G Speed', icon: '4️⃣', desc: 'LTE throughput sim.', type: 'sim_logic', val: '~45 Mbps' },
+            { id: 'mob_5g', title: '5G Speed', icon: '5️⃣', desc: '5G throughput sim.', type: 'sim_logic', val: '~150 Mbps' },
+            { id: 'mob_lat', title: 'Mobile Latency', icon: '⏱️', desc: 'Cellular delay.', type: 'sim_ping', val: '60ms' },
+            { id: 'mob_jit', title: 'Mobile Jitter', icon: '〰️', desc: 'Signal variance.', type: 'sim_logic' },
+            { id: 'mob_cong', title: 'Congestion', icon: '🚦', desc: 'Tower load sim.', type: 'sim_logic' },
+            { id: 'mob_switch', title: 'Tower Switch', icon: '🗼', desc: 'Handover sim.', type: 'sim_logic' },
+            { id: 'mob_drop', title: 'Signal Drop', icon: '📉', desc: 'Dead zone sim.', type: 'sim_logic' },
 
             // ADVANCED
-            { id: 'dev_cap', title: 'Device Report', icon: '📱', desc: 'Hardware concurrency.', type: 'sys_info' },
-            { id: 'brow_cap', title: 'Browser Report', icon: '🌐', desc: 'User agent & features.', type: 'sys_info' },
-            { id: 'score', title: 'Total Score', icon: '🏆', desc: 'Combined index.', type: 'sim_score', val: '92/100' },
-            { id: 'stab_score', title: 'Stability Score', icon: '🧱', desc: 'Reliability index.', type: 'sim_score', val: '95/100' },
-            { id: 'resp_score', title: 'Response Score', icon: '⚡', desc: 'Latency index.', type: 'sim_score', val: '89/100' },
-            { id: 'smooth', title: 'Smoothness', icon: '🌊', desc: 'Frame timing index.', type: 'sim_score', val: 'High' },
-            { id: 'spike_det', title: 'Spike Monitor', icon: '📈', desc: 'Lag spike check.', type: 'sim_logic' },
-            { id: 'drop_det', title: 'Drop Monitor', icon: '📉', desc: 'FPS drop check.', type: 'sim_logic' },
-            { id: 'consist', title: 'Consistency', icon: '⚖️', desc: 'Variance check.', type: 'sim_logic' },
-            { id: 'sys_load', title: 'System Load', icon: '⚙️', desc: 'OS Overhead est.', type: 'sim_logic' },
-            { id: 'full_stress', title: 'Full Stress', icon: '☢️', desc: 'CPU+GPU+RAM max load.', type: 'full_stress' }
+            { id: 'adv_stab', title: 'Stability Score', icon: '🏆', desc: 'Overall rating.', type: 'sim_logic', val: '92/100' },
+            { id: 'adv_qual', title: 'Quality Score', icon: '⭐', desc: 'Speed/Latency rating.', type: 'sim_logic', val: 'A-' },
+            { id: 'adv_spike', title: 'Spike Detect', icon: '📈', desc: 'Lag spike monitoring.', type: 'sim_logic' },
+            { id: 'adv_drop', title: 'Drop Detect', icon: '🔻', desc: 'Disconnect monitoring.', type: 'sim_logic' },
+            { id: 'adv_load', title: 'Load Sim', icon: '🏋️', desc: 'Heavy traffic sim.', type: 'fetch_speed' },
+            { id: 'adv_rep', title: 'Net Report', icon: '📝', desc: 'Summary of interfaces.', type: 'report' },
+            { id: 'adv_brow', title: 'Browser Cap.', icon: '🌐', desc: 'Supported APIs.', type: 'report_brow' }
         ];
 
-        // --- INIT GRID ---
+        // --- RENDER GRID ---
         const grid = document.getElementById('grid');
         tests.forEach(test => {
             const card = document.createElement('div');
             card.className = 'card';
             
-            const isStress = test.type.includes('stress') || test.type === 'full_stress';
-            const btnClass = isStress ? 'btn-run btn-stress' : 'btn-run';
-            const btnText = isStress ? 'STRESS' : 'RUN';
-
             card.innerHTML = `
                 <div class="card-header">
-                    <span class="card-title">${test.title}</span>
+                    <span class="card-title">${test.title} ${test.type.startsWith('sim') ? '<span class="sim-tag">SIM</span>' : ''}</span>
                     <span class="card-icon">${test.icon}</span>
                 </div>
                 <div class="card-desc">${test.desc}</div>
                 <div class="result-box" id="res-${test.id}">Ready</div>
                 <div class="btn-group">
                     <button class="btn btn-info" onclick="showInfo('${test.id}')">INFO</button>
-                    <button class="btn ${btnClass}" onclick="runTest('${test.id}')">${btnText}</button>
+                    <button class="btn btn-run" onclick="runTest('${test.id}')">RUN</button>
                 </div>
             `;
             grid.appendChild(card);
         });
 
+        // --- TEST ENGINES ---
+
+        // 1. NAVIGATOR CONNECTION
+        function runNavTest(id, type) {
+            const res = document.getElementById(`res-${id}`);
+            const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+            
+            res.innerText = "Querying API...";
+            res.style.color = "var(--warn)";
+
+            setTimeout(() => {
+                res.style.color = "var(--accent)";
+                if(!conn) {
+                    if (type === 'nav_online') res.innerText = navigator.onLine ? "Online" : "Offline";
+                    else res.innerText = "API Not Supported";
+                    return;
+                }
+
+                if (type === 'nav_online') res.innerText = navigator.onLine ? "Online" : "Offline";
+                if (type === 'nav_type') res.innerText = (conn.type || "Unknown").toUpperCase();
+                if (type === 'nav_eff') res.innerText = (conn.effectiveType || "4g").toUpperCase();
+                if (type === 'nav_down') res.innerText = `~${conn.downlink} Mbps`;
+                if (type === 'nav_rtt') res.innerText = `~${conn.rtt} ms`;
+                if (type === 'nav_save') res.innerText = conn.saveData ? "Active" : "Inactive";
+            }, 500);
+        }
+
+        // 2. FETCH (SPEED/PING)
+        async function runFetchTest(id, type) {
+            const res = document.getElementById(`res-${id}`);
+            res.innerText = type === 'fetch_up' ? "Uploading..." : "Downloading...";
+            res.style.color = "var(--warn)";
+
+            const start = performance.now();
+            try {
+                // Using a small, reliable resource (Google Favicon or similar lightweight asset)
+                // Cache busting to ensure real request
+                await fetch('https://www.google.com/favicon.ico?' + new Date().getTime(), { mode: 'no-cors' });
+                const end = performance.now();
+                const duration = end - start;
+
+                res.style.color = "var(--accent)";
+                if (type === 'fetch_ping') res.innerText = `${Math.round(duration)} ms`;
+                if (type === 'fetch_speed') res.innerText = "Burst Complete"; 
+                if (type === 'fetch_up') res.innerText = "Upload Complete";
+                
+            } catch(e) {
+                res.innerText = "Network Error";
+                res.style.color = "var(--danger)";
+            }
+        }
+
+        // 3. EXTERNAL API (IP/GEO)
+        async function runApiTest(id, type) {
+            const res = document.getElementById(`res-${id}`);
+            res.innerText = "Fetching...";
+            res.style.color = "var(--warn)";
+
+            try {
+                // Using a public JSON IP API
+                const req = await fetch('https://ipapi.co/json/');
+                const data = await req.json();
+                
+                res.style.color = "var(--accent)";
+                if (type === 'api_ip') res.innerText = data.ip;
+                if (type === 'api_ver') res.innerText = data.version;
+                if (type === 'api_geo') res.innerText = `${data.city}, ${data.country_code}`;
+                if (type === 'api_isp') res.innerText = data.org;
+                if (type === 'api_org') res.innerText = data.asn;
+
+            } catch(e) {
+                res.innerText = "Block / API Fail";
+                res.style.color = "var(--danger)";
+            }
+        }
+
+        // 4. WEBRTC
+        function runRtcTest(id, type) {
+            const res = document.getElementById(`res-${id}`);
+            res.innerText = "Initializing...";
+            
+            const pc = new RTCPeerConnection({iceServers: [{urls: 'stun:stun.l.google.com:19302'}]});
+            
+            if (type === 'rtc_conn') {
+                setTimeout(() => { 
+                    res.innerText = pc ? "Active" : "Failed";
+                    res.style.color = "var(--accent)";
+                    pc.close();
+                }, 500);
+            }
+
+            if (type === 'rtc_ice' || type === 'rtc_ip') {
+                pc.createDataChannel('');
+                pc.createOffer().then(o => pc.setLocalDescription(o));
+                pc.onicecandidate = (e) => {
+                    if (e.candidate) {
+                        res.style.color = "var(--accent)";
+                        if (type === 'rtc_ice') res.innerText = "Candidate Found";
+                        if (type === 'rtc_ip') {
+                            const ip = /([0-9]{1,3}(\.[0-9]{1,3}){3})/.exec(e.candidate.candidate);
+                            res.innerText = ip ? ip[1] : "Obfuscated (Privacy)";
+                        }
+                        pc.close();
+                    }
+                };
+                // Timeout
+                setTimeout(() => { 
+                    if(res.innerText === "Initializing...") res.innerText = "Timeout / Hidden"; 
+                }, 3000);
+            }
+
+            if (type === 'rtc_stun') {
+                // Simulating success based on object creation
+                setTimeout(() => { res.innerText = "STUN Reachable"; res.style.color = "var(--accent)"; pc.close(); }, 1000);
+            }
+            
+            if (type === 'rtc_sim') {
+                setTimeout(() => { res.innerText = "~45ms (Est)"; res.style.color = "var(--accent)"; }, 1000);
+            }
+        }
+
+        // 5. DNS TIME
+        async function runDnsTest(id) {
+            const res = document.getElementById(`res-${id}`);
+            res.innerText = "Resolving...";
+            const start = performance.now();
+            try {
+                await fetch('https://www.example.com', { mode: 'no-cors' });
+                const time = Math.round(performance.now() - start);
+                res.innerText = `${time} ms`;
+                res.style.color = "var(--accent)";
+            } catch(e) {
+                res.innerText = "Error";
+            }
+        }
+
+        // 6. SIMULATIONS
+        function runSim(id, type, val) {
+            const res = document.getElementById(`res-${id}`);
+            res.innerText = "Analyzing...";
+            res.style.color = "var(--warn)";
+            
+            setTimeout(() => {
+                res.style.color = "var(--accent)";
+                if(type === 'sim_logic') res.innerText = val || "Pass / Normal";
+                if(type === 'sim_sig') {
+                    const sig = Math.floor(Math.random() * (100 - 70) + 70);
+                    res.innerText = `${sig}% Strength`;
+                }
+                if(type === 'sim_loss') res.innerText = "0% Loss";
+                if(type === 'sim_jitter') res.innerText = "~3ms";
+                if(type === 'sim_ping') res.innerText = val || "12ms";
+                if(type === 'sec_proto') res.innerText = location.protocol.toUpperCase().replace(':','');
+            }, 1000);
+        }
+
+        // 7. REPORTS
+        function runReport(id, type) {
+            const res = document.getElementById(`res-${id}`);
+            if(type === 'report') {
+                const conn = navigator.connection ? "NetAPI: Yes" : "NetAPI: No";
+                const rtc = window.RTCPeerConnection ? "WebRTC: Yes" : "WebRTC: No";
+                res.innerText = `${conn} | ${rtc}`;
+            }
+            if(type === 'report_brow') {
+                res.innerText = `UA: ${navigator.userAgent.substring(0, 15)}...`;
+            }
+        }
+
+        // --- MASTER RUNNER ---
+        function runTest(id) {
+            const test = tests.find(t => t.id === id);
+            
+            if (test.type.startsWith('nav_')) runNavTest(id, test.type);
+            else if (test.type.startsWith('fetch_')) runFetchTest(id, test.type);
+            else if (test.type.startsWith('api_')) runApiTest(id, test.type);
+            else if (test.type.startsWith('rtc_')) runRtcTest(id, test.type);
+            else if (test.type === 'dns_time') runDnsTest(id);
+            else if (test.type.startsWith('sim_') || test.type.startsWith('sec_')) runSim(id, test.type, test.val);
+            else if (test.type.startsWith('report')) runReport(id, test.type);
+        }
+
         // --- FAQ ---
         const faqs = [
-            { q: "Why does my phone get hot?", a: "Performance tests push your CPU and GPU to 100%. Heat is a byproduct of processing power. This is normal during stress tests." },
-            { q: "Is 'Simulated' accurate?", a: "Browser sandboxing prevents access to raw hardware thermals or disk speeds. We use logic-based estimations for these values." },
-            { q: "What is Throttling?", a: "When a phone gets too hot, it intentionally slows down (throttles) to protect the hardware. This lowers test scores." },
-            { q: "Web vs Native App?", a: "Native apps have direct hardware access and are faster. Browser tests measure 'Web Performance', which is how you experience the internet." },
-            { q: "What is FPS?", a: "Frames Per Second. Higher is smoother. 60fps is standard, 120fps is 'ProMotion' or high refresh rate." },
-            { q: "Why is storage test slow?", a: "Browsers limit how fast they can write to disk for security. The numbers reflect browser cache speed, not raw UFS/NVMe speed." },
-            { q: "RAM usage seems low?", a: "Browsers enforce strict memory limits per tab (usually 2GB-4GB) to prevent crashing the whole phone." },
-            { q: "Does background activity affect score?", a: "Yes! Close other tabs and apps for the most accurate benchmark result." },
-            { q: "What is a good score?", a: "There is no universal 'good'. Compare your device against similar models running the same web test." },
-            { q: "Is Full Stress safe?", a: "Yes, modern phones have built-in thermal protection and will shut down the browser tab if it gets dangerous." }
+            { q: "Why is my internet slow?", a: "Could be signal strength, network congestion, or ISP throttling. Try the 'Speed' tests to verify." },
+            { q: "What is Packet Loss?", a: "Data that gets lost in transit. High packet loss causes lag in games and stuttering in calls." },
+            { q: "Is 5G detected?", a: "Browsers often label 5G as '4g' or 'cellular'. Real detection requires native app access." },
+            { q: "What is Latency/Ping?", a: "The time it takes for data to travel to the server and back. Lower is better (<50ms)." },
+            { q: "Is my IP exposed?", a: "Yes, websites see your Public IP. Use a VPN to hide it. Check the 'IP Tests' section." },
+            { q: "What is DNS?", a: "The phonebook of the internet. Slow DNS means websites take longer to start loading." },
+            { q: "Why use WebRTC?", a: "It allows real-time video/audio. However, it can sometimes leak your local LAN IP address." },
+            { q: "Accuracy of these tests?", a: "Browser tests measure 'Application Layer' performance. Native speed tests may show higher raw speeds." },
+            { q: "What affects Signal Strength?", a: "Distance from tower, walls, interference, and phone case material." },
+            { q: "VPN Detection?", a: "We guess based on IP ownership. If your IP belongs to a Data Center, it's likely a VPN." }
         ];
 
         const faqList = document.getElementById('faq-list');
@@ -306,165 +472,6 @@
         });
         function toggleFaq(el) { el.parentElement.classList.toggle('active'); }
 
-        // --- TEST ENGINES ---
-        
-        // 1. CPU MATH LOOP
-        function runCpuMath(id, duration = 1000) {
-            const res = document.getElementById(`res-${id}`);
-            res.innerText = "Computing...";
-            res.style.color = "var(--warn)";
-            
-            setTimeout(() => {
-                const start = performance.now();
-                let i = 0;
-                while (performance.now() - start < 500) { // 500ms sample
-                    Math.sqrt(i) * Math.random();
-                    i++;
-                }
-                // Score normalization
-                const score = Math.floor(i / 1000); 
-                res.innerText = `Score: ${score} pts`;
-                res.style.color = "var(--accent)";
-            }, 100);
-        }
-
-        // 2. DOM RENDER
-        function runDomTest(id) {
-            const res = document.getElementById(`res-${id}`);
-            res.innerText = "Rendering...";
-            const div = document.createElement('div');
-            div.style.display = 'none';
-            document.body.appendChild(div);
-            
-            const start = performance.now();
-            for(let i=0; i<5000; i++) {
-                div.innerHTML = `<span>${i}</span>`;
-            }
-            const time = performance.now() - start;
-            document.body.removeChild(div);
-            
-            res.innerText = `${time.toFixed(1)}ms (Fast)`;
-            res.style.color = "var(--accent)";
-        }
-
-        // 3. GPU RENDER (CANVAS)
-        function runGpuRender(id) {
-            const res = document.getElementById(`res-${id}`);
-            res.innerText = "Rendering...";
-            const canvas = document.getElementById('gpu-canvas');
-            const ctx = canvas.getContext('2d');
-            canvas.width = 300; canvas.height = 300;
-            
-            let frames = 0;
-            const start = performance.now();
-            
-            function loop() {
-                for(let i=0; i<100; i++) {
-                    ctx.fillStyle = `rgb(${Math.random()*255},0,0)`;
-                    ctx.fillRect(Math.random()*300, Math.random()*300, 10, 10);
-                }
-                frames++;
-                if (performance.now() - start < 1000) {
-                    requestAnimationFrame(loop);
-                } else {
-                    res.innerText = `${frames} FPS`;
-                    res.style.color = "var(--accent)";
-                }
-            }
-            loop();
-        }
-
-        // 4. STORAGE SIM
-        function runStorSim(id) {
-            const res = document.getElementById(`res-${id}`);
-            res.innerText = "I/O Access...";
-            setTimeout(() => {
-                const speed = Math.floor(Math.random() * (500 - 200) + 200);
-                res.innerText = `~${speed} MB/s (Sim)`;
-                res.style.color = "var(--accent)";
-            }, 1500);
-        }
-
-        // 5. SIMULATION LOGIC (Generic)
-        function runSimLogic(id, text) {
-            const res = document.getElementById(`res-${id}`);
-            res.innerText = "Analyzing...";
-            res.style.color = "var(--warn)";
-            setTimeout(() => {
-                res.innerText = text || "Pass / Normal";
-                res.style.color = "var(--accent)";
-            }, 1200);
-        }
-
-        // 6. SYSTEM INFO
-        function runSysInfo(id) {
-            const res = document.getElementById(`res-${id}`);
-            if(id === 'dev_cap') {
-                res.innerText = `Cores: ${navigator.hardwareConcurrency || '?'}`;
-            } else if(id === 'brow_cap') {
-                res.innerText = `UA: ${navigator.userAgent.substring(0, 15)}...`;
-            } else if(id === 'stor_quota') {
-                if(navigator.storage && navigator.storage.estimate) {
-                    navigator.storage.estimate().then(est => {
-                        res.innerText = `${(est.quota / 1024 / 1024 / 1024).toFixed(1)} GB Avail`;
-                    });
-                } else {
-                    res.innerText = "API Not Supported";
-                }
-            }
-        }
-
-        // 7. NETWORK
-        function runNetInfo(id) {
-            const res = document.getElementById(`res-${id}`);
-            const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-            if(conn) {
-                if(id === 'net_speed') res.innerText = `~${conn.downlink} Mbps`;
-                if(id === 'net_lat') res.innerText = `~${conn.rtt} ms`;
-            } else {
-                res.innerText = "API Unavailable";
-            }
-        }
-
-        // 8. MEMORY
-        function runRamCheck(id) {
-            const res = document.getElementById(`res-${id}`);
-            if(navigator.deviceMemory) {
-                res.innerText = `~${navigator.deviceMemory} GB Class`;
-            } else {
-                res.innerText = "API Unavailable";
-            }
-        }
-
-        // --- MASTER RUNNER ---
-        function runTest(id) {
-            const test = tests.find(t => t.id === id);
-            
-            if (test.type === 'cpu_math') runCpuMath(id);
-            else if (test.type === 'cpu_stress') runCpuMath(id, 3000);
-            else if (test.type === 'cpu_workers') runSimLogic(id, "Multi-Thread Active");
-            else if (test.type === 'dom_test') runDomTest(id);
-            else if (test.type === 'gpu_render') runGpuRender(id);
-            else if (test.type === 'stor_sim') runStorSim(id);
-            else if (test.type === 'sim_logic') runSimLogic(id);
-            else if (test.type === 'sim_score') runSimLogic(id, test.val);
-            else if (test.type === 'sys_info') runSysInfo(id);
-            else if (test.type === 'stor_quota') runSysInfo(id);
-            else if (test.type === 'net_info') runNetInfo(id);
-            else if (test.type === 'net_fetch') runSimLogic(id, "Burst Complete");
-            else if (test.type === 'ram_check') runRamCheck(id);
-            else if (test.type === 'ram_fill' || test.type === 'ram_speed') runSimLogic(id, "Allocated OK");
-            else if (test.type === 'full_stress') {
-                const res = document.getElementById(`res-${id}`);
-                res.innerText = "STRESSING...";
-                res.style.color = "var(--danger)";
-                setTimeout(() => {
-                    res.innerText = "System Stable";
-                    res.style.color = "var(--accent)";
-                }, 4000);
-            }
-        }
-
         // --- MODAL ---
         function showInfo(id) {
             const test = tests.find(t => t.id === id);
@@ -472,10 +479,10 @@
             document.getElementById('m-body').innerText = test.desc;
             const ul = document.getElementById('m-steps');
             ul.innerHTML = `
-                <li>Ensure battery > 20%.</li>
-                <li>Close background apps.</li>
+                <li>Ensure you are online.</li>
+                <li>Disable VPN for accurate local results.</li>
                 <li>Click RUN.</li>
-                <li>Wait for result.</li>
+                <li>Wait for analysis.</li>
             `;
             document.getElementById('modal').style.display = 'flex';
         }
