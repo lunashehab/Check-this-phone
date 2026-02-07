@@ -41,24 +41,22 @@
             display: flex; justify-content: center; align-items: center; font-size: 40px; box-shadow: 0 0 30px rgba(255, 107, 107, 0.2);
             position: relative; z-index: 2;
         }
-        .circuit-line {
-            position: absolute; background: var(--border); z-index: 1;
-        }
+        .circuit-line { position: absolute; background: var(--border); z-index: 1; }
         .cl-1 { width: 2px; height: 100%; top: 0; left: 50%; }
         .cl-2 { width: 100%; height: 2px; top: 50%; left: 0; }
-        
         .chip-label { margin-top: 15px; font-family: 'JetBrains Mono'; font-size: 12px; color: var(--accent); font-weight: 700; z-index: 2; background: #000; padding: 4px 8px; border: 1px solid var(--accent); border-radius: 4px; }
+
+        /* INSTRUCTION PANELS */
+        .info-panel { background: rgba(255, 107, 107, 0.05); border-left: 3px solid var(--accent); padding: 15px; margin-bottom: 15px; border-radius: 0 8px 8px 0; font-size: 12px; line-height: 1.5; color: var(--text-bright); }
+        .info-title { font-weight: 800; color: var(--accent); text-transform: uppercase; margin-bottom: 5px; display: block; letter-spacing: 1px; }
 
         /* DATA GRID */
         .grid-master { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
-        
         .info-card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 15px; }
         .label { font-size: 10px; color: var(--text); text-transform: uppercase; margin-bottom: 5px; letter-spacing: 1px; }
         .value { font-family: 'JetBrains Mono', monospace; font-size: 14px; color: var(--text-bright); font-weight: 700; word-break: break-word; }
         .value.highlight { color: var(--accent); }
         .value.mem { color: var(--secondary); }
-
-        /* GPU BOX */
         .gpu-box { grid-column: span 2; border-color: var(--accent); background: rgba(255, 107, 107, 0.05); }
 
         /* PERIPHERAL LIST */
@@ -71,13 +69,17 @@
         .storage-track { width: 100%; height: 6px; background: #1a202c; border-radius: 3px; margin-top: 8px; overflow: hidden; }
         .storage-fill { height: 100%; width: 0%; background: var(--secondary); transition: width 1s ease-out; }
 
-        /* TERMINAL */
-        .terminal { background: #000; border: 1px solid var(--border); border-radius: 8px; padding: 10px; height: 120px; overflow: hidden; font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--accent); position: relative; }
-        .log-line { margin-bottom: 2px; opacity: 0.8; }
-        .terminal::after { content: ""; position: absolute; bottom: 0; left: 0; width: 100%; height: 20px; background: linear-gradient(to top, #000, transparent); }
+        /* FAQ ACCORDION */
+        .faq-section { display: grid; gap: 10px; margin-top: 30px; }
+        .faq-item { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+        .faq-q { padding: 15px; font-weight: 700; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .faq-q:hover { color: var(--accent); }
+        .faq-a { padding: 0 15px 15px 15px; color: var(--text); font-size: 12px; line-height: 1.5; display: none; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px; }
+        .faq-icon { font-size: 10px; transition: 0.2s; }
+        .faq-item.active .faq-a { display: block; }
+        .faq-item.active .faq-icon { transform: rotate(180deg); color: var(--accent); }
 
         .back-btn { display: block; text-align: center; margin-top: 20px; color: var(--text); text-decoration: none; font-weight: 700; padding: 15px; background: var(--panel); border-radius: 12px; }
-        
         .action-btn { background: var(--panel); border: 1px solid var(--border); color: var(--text-bright); width: 100%; padding: 15px; border-radius: 12px; font-weight: 700; margin-bottom: 20px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: 0.2s; }
         .action-btn:hover { border-color: var(--accent); color: var(--accent); }
     </style>
@@ -96,35 +98,47 @@
         <div class="chip-label">SILICON ID READY</div>
     </div>
 
+    <div class="info-panel">
+        <span class="info-title">1. SILICON (CPU/GPU)</span>
+        We detect the specific graphics renderer used by your device. <br>
+        <strong>APPLE:</strong> "Apple GPU" (A-Series / M-Series) <br>
+        <strong>ANDROID:</strong> "Adreno" (Snapdragon) or "Mali" (Exynos/MediaTek)
+    </div>
+
     <div class="grid-master">
-        
         <div class="info-card gpu-box">
             <div class="label">GRAPHICS PROCESSING UNIT (GPU)</div>
             <div class="value highlight" id="gpu-name">ANALYZING RENDERER...</div>
             <div style="font-size: 10px; color: var(--text); margin-top: 5px;" id="gpu-vendor">Vendor: --</div>
         </div>
-
-        <div class="info-card">
-            <div class="label">SYSTEM MEMORY (RAM)</div>
-            <div class="value mem" id="ram-val">-- GB</div>
-        </div>
-
         <div class="info-card">
             <div class="label">LOGICAL CORES</div>
             <div class="value" id="cpu-cores">--</div>
         </div>
-
-        <div class="info-card" style="grid-column: span 2;">
-            <div style="display: flex; justify-content: space-between;">
-                <div class="label">STORAGE QUOTA</div>
-                <div class="label" id="storage-text">-- / --</div>
-            </div>
-            <div class="storage-track"><div class="storage-fill" id="storage-bar"></div></div>
+        <div class="info-card">
+            <div class="label">SYSTEM RAM</div>
+            <div class="value mem" id="ram-val">-- GB</div>
         </div>
-
     </div>
 
-    <h3 style="font-size: 12px; margin-bottom: 10px; color: var(--text); text-transform: uppercase;">PERIPHERAL BUS SCAN</h3>
+    <div class="info-panel">
+        <span class="info-title">2. STORAGE QUOTA</span>
+        Shows the *usable* space available to the browser. Note: "System Files" (OS) take up 15-20GB, so a 128GB phone often only shows ~110GB here.
+    </div>
+
+    <div class="info-card" style="margin-bottom: 20px;">
+        <div style="display: flex; justify-content: space-between;">
+            <div class="label">BROWSER STORAGE POOL</div>
+            <div class="label" id="storage-text">-- / --</div>
+        </div>
+        <div class="storage-track"><div class="storage-fill" id="storage-bar"></div></div>
+    </div>
+
+    <div class="info-panel">
+        <span class="info-title">3. PERIPHERALS</span>
+        Scans for connected hardware via Bluetooth, USB-C, or Lightning ports.
+    </div>
+    
     <div class="peri-list">
         <div class="peri-item">
             <span>GAMEPAD / CONTROLLER</span>
@@ -132,7 +146,8 @@
         </div>
         <div class="peri-item">
             <span>KEYBOARD INPUT</span>
-            <div class="status-dot active" id="dot-kb"></div> </div>
+            <div class="status-dot active" id="dot-kb"></div> 
+        </div>
         <div class="peri-item">
             <span>USB DEVICE (WEBUSB)</span>
             <div class="status-dot" id="dot-usb"></div>
@@ -142,30 +157,68 @@
             <div class="status-dot" id="dot-vr"></div>
         </div>
     </div>
-    <br>
 
-    <button class="action-btn" onclick="rescanHardware()">REFRESH HARDWARE TABLE</button>
+    <button class="action-btn" style="margin-top: 20px;" onclick="rescanHardware()">REFRESH HARDWARE TABLE</button>
 
-    <div class="terminal" id="console-output">
-        <div class="log-line">> HARDWARE ABSTRACTION LAYER...</div>
-        <div class="log-line">> QUERYING WEBGL CONTEXT...</div>
+    <h3 style="font-size: 14px; margin-bottom: 15px; color: var(--text-bright);">FAQ: HARDWARE SPECS</h3>
+    <div class="faq-section">
+        
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">1. Why does my GPU say "Adreno"? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">Adreno is the graphics chip used in Qualcomm Snapdragon processors (Samsung S-series, Pixel, etc.). It means you have a high-end Android device.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">2. Why is my storage lower than advertised? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">A "128GB" phone loses about 20GB to the Operating System (Android/iOS) and pre-installed apps. You usually only get ~100GB of real space.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">3. What is a "Logical Core"? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">Modern CPUs have multiple processing units (Cores). 8 Cores is standard for smartphones. It allows multitasking without slowing down.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">4. Why does RAM say "~8GB" (Approx)? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">Browsers round down memory for privacy security (to prevent fingerprinting). If you have 12GB, it might still report as 8GB.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">5. What is "WebXR"? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">It is the technology that detects VR Headsets (like Quest) or AR glasses connected to your phone.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">6. Why is my GPU "Masked"? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">Some privacy browsers hide the exact model name of your graphics card to prevent websites from tracking your specific device ID.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">7. Does this test drain battery? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">Slightly. Querying the GPU requires waking up the graphics processor, but the impact is minimal (less than playing a game).</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">8. What is "Mali" GPU? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">Mali GPUs are found in MediaTek or Exynos chips. They are common in mid-range phones or non-US Samsung models.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">9. Can I upgrade my RAM? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">No. On smartphones, RAM is soldered directly to the motherboard and cannot be upgraded like a PC.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">10. Why is the Gamepad dot gray? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">You must press a button on your controller for the browser to detect it. Connect Bluetooth, then press 'A' or 'X'.</div>
+        </div>
+
     </div>
 
     <a href="../index.html" class="back-btn">EXIT COMPONENT ID</a>
 
     <script>
-        // --- LOGGING ---
-        function log(msg) {
-            const term = document.getElementById('console-output');
-            const line = document.createElement('div');
-            line.className = 'log-line';
-            line.innerHTML = `<span style="color:#64748b">[HW]</span> ${msg}`;
-            term.appendChild(line);
-            if(term.children.length > 6) term.removeChild(term.children[0]);
-            term.scrollTop = term.scrollHeight;
-        }
-
-        // --- 1. GPU IDENTIFICATION (WEBGL HACK) ---
+        // --- 1. GPU IDENTIFICATION ---
         function getGPU() {
             try {
                 const canvas = document.createElement('canvas');
@@ -178,13 +231,11 @@
                     
                     document.getElementById('gpu-name').innerText = renderer;
                     document.getElementById('gpu-vendor').innerText = `Vendor: ${vendor}`;
-                    log(`> GPU ID: ${renderer}`);
                 } else {
                     document.getElementById('gpu-name').innerText = "GENERIC / MASKED";
-                    log("> GPU ID BLOCKED BY BROWSER");
                 }
             } catch (e) {
-                log("> ERROR: WEBGL UNSUPPORTED");
+                document.getElementById('gpu-name').innerText = "UNSUPPORTED";
             }
         }
 
@@ -193,7 +244,6 @@
             // RAM
             if(navigator.deviceMemory) {
                 document.getElementById('ram-val').innerText = `~${navigator.deviceMemory} GB`;
-                log(`> RAM DETECTED: ${navigator.deviceMemory} GB`);
             } else {
                 document.getElementById('ram-val').innerText = "HIDDEN";
             }
@@ -207,14 +257,17 @@
         // --- 3. STORAGE ESTIMATE ---
         async function checkStorage() {
             if (navigator.storage && navigator.storage.estimate) {
-                const quota = await navigator.storage.estimate();
-                const used = (quota.usage / 1024 / 1024 / 1024).toFixed(1);
-                const total = (quota.quota / 1024 / 1024 / 1024).toFixed(1);
-                const percent = (quota.usage / quota.quota) * 100;
+                try {
+                    const quota = await navigator.storage.estimate();
+                    const used = (quota.usage / 1024 / 1024 / 1024).toFixed(1);
+                    const total = (quota.quota / 1024 / 1024 / 1024).toFixed(1);
+                    const percent = (quota.usage / quota.quota) * 100;
 
-                document.getElementById('storage-text').innerText = `${used}GB Used / ${total}GB Total`;
-                document.getElementById('storage-bar').style.width = `${percent}%`;
-                log(`> DISK QUOTA: ${total} GB`);
+                    document.getElementById('storage-text').innerText = `${used}GB Used / ${total}GB Total`;
+                    document.getElementById('storage-bar').style.width = `${percent}%`;
+                } catch(e) {
+                    document.getElementById('storage-text').innerText = "Restricted";
+                }
             } else {
                 document.getElementById('storage-text').innerText = "Access Denied";
             }
@@ -225,10 +278,9 @@
             // Gamepad
             window.addEventListener("gamepadconnected", (e) => {
                 document.getElementById('dot-gamepad').classList.add('active');
-                log("> GAMEPAD CONNECTED");
             });
             
-            // Check existing gamepads
+            // Check existing
             const gps = navigator.getGamepads ? navigator.getGamepads() : [];
             if(gps[0]) document.getElementById('dot-gamepad').classList.add('active');
 
@@ -238,23 +290,17 @@
                     if(supported) document.getElementById('dot-vr').classList.add('active');
                 });
             }
-
-            // USB (Check support only, can't list without permission)
-            if(navigator.usb) {
-                // If API exists, we mark dot as potential/ready (yellowish logic handled by user action usually)
-                // For this visual, we leave it off unless triggered
-            }
         }
 
         function rescanHardware() {
-            log("> RE-SCANNING HARDWARE BUS...");
             document.getElementById('gpu-name').innerText = "SCANNING...";
             setTimeout(() => {
                 getGPU();
                 checkStorage();
-                log("> SCAN COMPLETE");
-            }, 1000);
+            }, 800);
         }
+
+        function toggleFaq(el) { el.classList.toggle('active'); }
 
         // Auto Start
         getGPU();
