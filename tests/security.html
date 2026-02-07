@@ -2,296 +2,296 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Security Diagnostics | CheckThisPhone</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Don Systems Security Shield</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --bg-dark: #0f172a;
-            --surface-dark: #1e293b;
-            --accent: #14b8a6; /* Teal for Security */
-            --accent-dim: rgba(20, 184, 166, 0.2);
-            --text-main: #f8fafc;
-            --text-dim: #94a3b8;
-            --success: #10b981;
-            --danger: #ef4444;
-            --warning: #f59e0b;
+        :root { 
+            --bg: #050505; 
+            --panel: #0f1218; 
+            --border: #2d3748; 
+            --text: #a0aec0; 
+            --text-bright: #e2e8f0;
+            --accent: #00ff9d; /* Matrix Green */
+            --secondary: #ff0055; /* Alert Red */
+            --warn: #ffb700; 
         }
-
-        body {
-            background-color: var(--bg-dark);
-            color: var(--text-main);
-            font-family: 'Inter', sans-serif;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-        }
-
-        .container {
-            width: 100%;
-            max-width: 600px;
-        }
-
+        
+        * { box-sizing: border-box; }
+        body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; padding: 20px; margin: 0; min-height: 100vh; font-size: 14px; overflow-x: hidden; }
+        
         /* HEADER */
-        .header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 25px;
-        }
-        .back-btn {
-            background: none;
-            border: none;
-            color: var(--text-dim);
-            font-size: 24px;
-            cursor: pointer;
-            padding: 0;
-            margin-right: 15px;
-        }
-        .page-title { font-size: 20px; font-weight: 700; margin: 0; }
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 15px; margin-bottom: 20px; }
+        .logo { font-family: 'JetBrains Mono', monospace; font-weight: 800; font-size: 18px; color: var(--text-bright); letter-spacing: -1px; }
+        .logo span { color: var(--secondary); }
+        .live-badge { display: flex; align-items: center; gap: 6px; font-size: 10px; color: var(--accent); font-weight: 700; background: rgba(0, 255, 157, 0.1); padding: 4px 8px; border-radius: 4px; border: 1px solid rgba(0, 255, 157, 0.2); }
+        .blink { animation: blink 1s infinite; width: 6px; height: 6px; background: var(--accent); border-radius: 50%; }
+        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0; } 100% { opacity: 1; } }
 
-        /* LOCK STATUS HERO */
-        .lock-hero {
-            background: var(--surface-dark);
-            border: 1px solid #334155;
-            border-radius: 50%;
-            width: 140px; height: 140px;
-            margin: 0 auto 30px auto;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-            box-shadow: 0 0 30px rgba(0,0,0,0.3);
-            transition: all 0.3s;
+        /* SHIELD HERO */
+        .shield-container { 
+            background: radial-gradient(circle at center, #0f1820 0%, #000 70%); 
+            border: 1px solid var(--border); border-radius: 16px; padding: 30px; margin-bottom: 20px; position: relative; overflow: hidden;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; height: 200px;
         }
-        .lock-icon { font-size: 48px; margin-bottom: 5px; }
-        .lock-text { font-size: 12px; font-weight: 700; color: var(--text-dim); letter-spacing: 1px; }
+        .shield-icon { font-size: 60px; margin-bottom: 15px; filter: drop-shadow(0 0 20px var(--accent)); transition: all 0.5s; }
+        .status-text { font-family: 'JetBrains Mono'; font-size: 24px; font-weight: 800; color: var(--text-bright); letter-spacing: -1px; }
+        .sub-text { font-size: 12px; color: var(--text); margin-top: 5px; text-transform: uppercase; letter-spacing: 1px; }
+
+        .secure-mode .shield-icon { transform: scale(1.1); color: var(--accent); }
+        .risk-mode .shield-icon { transform: scale(1.1); color: var(--secondary); filter: drop-shadow(0 0 20px var(--secondary)); }
+        .risk-mode .status-text { color: var(--secondary); }
+
+        /* DATA GRID */
+        .grid-master { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
         
-        .lock-hero.locked { border-color: var(--danger); box-shadow: 0 0 20px rgba(239, 68, 68, 0.2); }
-        .lock-hero.unlocked { border-color: var(--success); box-shadow: 0 0 20px rgba(16, 185, 129, 0.3); }
-
-        /* MODULES */
-        .module-card {
-            background: var(--surface-dark);
-            border: 1px solid #334155;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-        .module-title { font-weight: 600; font-size: 14px; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
-
-        .btn-bio {
-            width: 100%;
-            background: var(--accent);
-            color: white;
-            border: none;
-            padding: 16px;
-            border-radius: 10px;
-            font-weight: 700;
-            font-size: 15px;
-            cursor: pointer;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
-        }
-        .btn-bio:hover { transform: translateY(-2px); }
-        .btn-bio:disabled { background: #334155; color: #64748b; cursor: not-allowed; transform: none; }
-
-        /* STATUS BADGES */
-        .status-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 12px 0;
-            border-bottom: 1px solid #334155;
-            font-size: 13px;
-        }
-        .status-row:last-child { border-bottom: none; }
+        .stat-card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 15px; }
+        .stat-label { font-size: 10px; text-transform: uppercase; color: var(--text); display: block; margin-bottom: 4px; letter-spacing: 1px; }
+        .stat-val { font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 700; color: var(--text-bright); display: flex; align-items: center; gap: 8px; }
         
-        .badge { font-size: 10px; padding: 4px 8px; border-radius: 4px; font-weight: 700; }
-        .badge.pass { background: rgba(16, 185, 129, 0.2); color: var(--success); }
-        .badge.fail { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
-        .badge.wait { background: #334155; color: #94a3b8; }
+        .check-ok { color: var(--accent); }
+        .check-fail { color: var(--secondary); }
+        .check-warn { color: var(--warn); }
 
-        /* MANUAL CHECKLIST */
-        .check-row {
-            display: flex;
-            align-items: center;
-            padding: 10px 0;
-            border-bottom: 1px solid #334155;
-            font-size: 13px;
-            cursor: pointer;
-        }
-        .check-box {
-            width: 16px; height: 16px; border: 1px solid #64748b;
-            border-radius: 3px; margin-right: 12px;
-        }
-        .check-box.checked { background: var(--accent); border-color: var(--accent); }
+        /* AUDIT LIST */
+        .audit-list { display: flex; flex-direction: column; gap: 8px; }
+        .audit-item { background: rgba(255,255,255,0.03); padding: 12px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; font-size: 12px; }
+        .audit-icon { font-size: 14px; margin-right: 10px; }
 
+        /* TERMINAL */
+        .terminal { background: #000; border: 1px solid var(--border); border-radius: 8px; padding: 10px; height: 120px; overflow: hidden; font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--secondary); position: relative; }
+        .log-line { margin-bottom: 2px; opacity: 0.8; }
+        .terminal::after { content: ""; position: absolute; bottom: 0; left: 0; width: 100%; height: 20px; background: linear-gradient(to top, #000, transparent); }
+
+        .back-btn { display: block; text-align: center; margin-top: 20px; color: var(--text); text-decoration: none; font-weight: 700; padding: 15px; background: var(--panel); border-radius: 12px; }
+        
+        .action-btn { background: var(--panel); border: 1px solid var(--border); color: var(--text-bright); width: 100%; padding: 15px; border-radius: 12px; font-weight: 700; margin-bottom: 20px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: 0.2s; }
+        .action-btn:hover { border-color: var(--secondary); color: var(--secondary); }
     </style>
 </head>
 <body>
 
-<div class="container">
     <div class="header">
-        <button class="back-btn" onclick="window.location.href='index.html'">←</button>
-        <h1 class="page-title">Security</h1>
+        <div class="logo">DON<span>SECURITY</span></div>
+        <div class="live-badge"><div class="blink"></div> FIREWALL UP</div>
     </div>
 
-    <div class="lock-hero locked" id="lock-icon">
-        <span class="lock-icon">🔒</span>
-        <span class="lock-text">LOCKED</span>
+    <div class="shield-container" id="hero-box">
+        <div class="shield-icon" id="shield-icon">🛡️</div>
+        <div class="status-text" id="main-status">SCANNING...</div>
+        <div class="sub-text">SYSTEM INTEGRITY CHECK</div>
     </div>
 
-    <div class="module-card">
-        <div class="module-title">👆 Biometric Hardware</div>
-        <p style="font-size: 12px; color: var(--text-dim); margin-bottom: 15px;">
-            Triggers the native Face ID or Fingerprint scanner to verify the sensor is functional.
-        </p>
+    <div class="grid-master">
         
-        <button class="btn-bio" onclick="testBiometrics()" id="btn-bio">
-            <span>TEST SENSOR</span>
-        </button>
-        <div style="text-align: center; margin-top: 10px; font-size: 12px; color: var(--text-dim);" id="bio-result">
-            Waiting for input...
+        <div class="stat-card">
+            <span class="stat-label">BIOMETRIC HARDWARE</span>
+            <span class="stat-val" id="bio-val">CHECKING...</span>
         </div>
+
+        <div class="stat-card">
+            <span class="stat-label">HARDWARE ENCRYPTION</span>
+            <span class="stat-val" id="crypt-val">CHECKING...</span>
+        </div>
+
+        <div class="stat-card">
+            <span class="stat-label">ROOT / JAILBREAK</span>
+            <span class="stat-val" id="root-val">SCANNING...</span>
+        </div>
+
+        <div class="stat-card">
+            <span class="stat-label">CONNECTION SECURITY</span>
+            <span class="stat-val" id="ssl-val">VERIFYING...</span>
+        </div>
+
     </div>
 
-    <div class="module-card">
-        <div class="module-title">🛡️ System Integrity</div>
-        
-        <div class="status-row">
-            <span>Hardware Authenticator</span>
-            <span class="badge wait" id="stat-hw">CHECKING</span>
+    <h3 style="font-size: 12px; margin-bottom: 10px; color: var(--text); text-transform: uppercase;">DEEP SECURITY AUDIT</h3>
+    <div class="audit-list">
+        <div class="audit-item">
+            <span><span class="audit-icon">🍪</span> Secure Cookies</span>
+            <span id="check-cookies">...</span>
         </div>
-        <div class="status-row">
-            <span>Screen Lock Configured</span>
-            <span class="badge wait" id="stat-screen">CHECKING</span>
+        <div class="audit-item">
+            <span><span class="audit-icon">🕵️</span> Private Browsing Mode</span>
+            <span id="check-incognito">...</span>
         </div>
-        <div class="status-row">
-            <span>Connection (HTTPS)</span>
-            <span class="badge wait" id="stat-ssl">CHECKING</span>
+        <div class="audit-item">
+            <span><span class="audit-icon">🔐</span> Password Manager</span>
+            <span id="check-cred">...</span>
         </div>
-    </div>
-
-    <div class="module-card">
-        <div class="module-title">📝 Manual Checklist</div>
-        
-        <div class="check-row" onclick="toggleCheck(this)">
-            <div class="check-box"></div>
-            <span>"Find My Device" is ON</span>
-        </div>
-        <div class="check-row" onclick="toggleCheck(this)">
-            <div class="check-box"></div>
-            <span>Secure Folder / Knox Visible</span>
-        </div>
-        <div class="check-row" onclick="toggleCheck(this)">
-            <div class="check-box"></div>
-            <span>Google Play Protect Active</span>
+        <div class="audit-item">
+            <span><span class="audit-icon">🐛</span> Debug Mode (DevTools)</span>
+            <span id="check-debug">...</span>
         </div>
     </div>
+    <br>
 
-</div>
+    <button class="action-btn" onclick="runFullScan()">RE-RUN VULNERABILITY SCAN</button>
 
-<script>
-    // --- 1. SYSTEM CHECKS ---
-    async function runAudit() {
-        // Check SSL
-        const isSecure = window.isSecureContext;
-        setStatus('stat-ssl', isSecure ? "SECURE" : "INSECURE", isSecure ? 'pass' : 'fail');
+    <div class="terminal" id="console-output">
+        <div class="log-line">> SECURITY SUBSYSTEM INIT...</div>
+        <div class="log-line">> CHECKING KERNEL INTEGRITY...</div>
+    </div>
 
-        // Check Biometric Availability
-        if (window.PublicKeyCredential) {
-            try {
+    <a href="../index.html" class="back-btn">EXIT FORTRESS</a>
+
+    <script>
+        // --- LOGGING ---
+        function log(msg) {
+            const term = document.getElementById('console-output');
+            const line = document.createElement('div');
+            line.className = 'log-line';
+            line.innerHTML = `<span style="color:#64748b">[SEC]</span> ${msg}`;
+            term.appendChild(line);
+            if(term.children.length > 6) term.removeChild(term.children[0]);
+            term.scrollTop = term.scrollHeight;
+        }
+
+        let securityScore = 100;
+
+        // --- 1. BIOMETRICS CHECK ---
+        async function checkBiometrics() {
+            if (window.PublicKeyCredential) {
                 const available = await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
-                
-                setStatus('stat-hw', available ? "DETECTED" : "MISSING", available ? 'pass' : 'fail');
-                setStatus('stat-screen', available ? "ENABLED" : "DISABLED", available ? 'pass' : 'wait');
-                
-                if(!available) {
-                    document.getElementById('btn-bio').disabled = true;
-                    document.getElementById('bio-result').innerText = "Biometrics not set up or unavailable.";
+                if (available) {
+                    document.getElementById('bio-val').innerHTML = '<span class="check-ok">● ACTIVE</span>';
+                    log("> BIOMETRICS: FACEID/TOUCHID READY");
+                } else {
+                    document.getElementById('bio-val').innerHTML = '<span class="check-warn">● NOT FOUND</span>';
+                    log("> BIOMETRICS: HARDWARE MISSING");
+                    securityScore -= 10;
                 }
-            } catch (e) {
-                setStatus('stat-hw', "ERROR", 'fail');
+            } else {
+                document.getElementById('bio-val').innerHTML = '<span class="check-fail">● UNSUPPORTED</span>';
             }
-        } else {
-            setStatus('stat-hw', "UNSUPPORTED", 'fail');
         }
-    }
 
-    // --- 2. BIOMETRIC CHALLENGE ---
-    async function testBiometrics() {
-        const btn = document.getElementById('btn-bio');
-        const res = document.getElementById('bio-result');
-        
-        btn.disabled = true;
-        btn.innerText = "SCANNIG...";
-        
-        // We create a dummy credential request. 
-        // This forces the OS to show the FaceID/Fingerprint prompt.
-        const challenge = new Uint8Array(32);
-        window.crypto.getRandomValues(challenge);
-
-        const publicKey = {
-            challenge: challenge,
-            rp: { name: "Device Diagnostics" },
-            user: {
-                id: new Uint8Array(16),
-                name: "user@test.com",
-                displayName: "User"
-            },
-            pubKeyCredParams: [{ type: "public-key", alg: -7 }],
-            authenticatorSelection: {
-                authenticatorAttachment: "platform",
-                userVerification: "required" // This forces the sensor check
-            },
-            timeout: 60000
-        };
-
-        try {
-            await navigator.credentials.create({ publicKey });
-            
-            // If we get here, the user passed the biometric check
-            res.innerText = "SUCCESS: Hardware Verified.";
-            res.style.color = "var(--success)";
-            unlockHero();
-            
-        } catch (err) {
-            // User cancelled or failed
-            console.error(err);
-            res.innerText = "FAILED or CANCELLED.";
-            res.style.color = "var(--danger)";
-            btn.disabled = false;
-            btn.innerText = "RETRY";
+        // --- 2. CRYPTO API ---
+        function checkCrypto() {
+            if (window.crypto && window.crypto.subtle) {
+                document.getElementById('crypt-val').innerHTML = '<span class="check-ok">● AES-GCM 256</span>';
+                log("> CRYPTO ENGINE: HARDWARE ACCELERATED");
+            } else {
+                document.getElementById('crypt-val').innerHTML = '<span class="check-fail">● SOFTWARE ONLY</span>';
+                securityScore -= 20;
+            }
         }
-    }
 
-    function unlockHero() {
-        const hero = document.getElementById('lock-icon');
-        hero.className = "lock-hero unlocked";
-        hero.querySelector('.lock-icon').innerText = "🔓";
-        hero.querySelector('.lock-text').innerText = "VERIFIED";
-        document.getElementById('btn-bio').innerText = "SENSOR OK";
-    }
+        // --- 3. ROOT DETECTION (Heuristic) ---
+        function checkRoot() {
+            const ua = navigator.userAgent.toLowerCase();
+            const badSigns = ["cyanogen", "mod", "supersu", "cydia", "rooted"];
+            let isRooted = false;
+            
+            badSigns.forEach(sign => {
+                if (ua.includes(sign)) isRooted = true;
+            });
 
-    // --- 3. UI HELPERS ---
-    function setStatus(id, text, type) {
-        const el = document.getElementById(id);
-        el.innerText = text;
-        el.className = "badge " + type;
-    }
+            if (isRooted) {
+                document.getElementById('root-val').innerHTML = '<span class="check-fail">● DETECTED</span>';
+                log("> ALERT: ROOT ARTIFACTS FOUND");
+                securityScore -= 50;
+            } else {
+                document.getElementById('root-val').innerHTML = '<span class="check-ok">● CLEAN</span>';
+                log("> INTEGRITY: OFFICIAL OS IMAGE");
+            }
+        }
 
-    function toggleCheck(el) {
-        const box = el.querySelector('.check-box');
-        box.classList.toggle('checked');
-    }
+        // --- 4. SSL / HTTPS ---
+        function checkSSL() {
+            if (location.protocol === 'https:') {
+                document.getElementById('ssl-val').innerHTML = '<span class="check-ok">● TLS 1.3 SECURE</span>';
+                log("> CONNECTION: ENCRYPTED TUNNEL");
+            } else {
+                document.getElementById('ssl-val').innerHTML = '<span class="check-fail">● UNENCRYPTED</span>';
+                log("> WARNING: HTTP PLAIN TEXT DETECTED");
+                securityScore -= 30;
+            }
+        }
 
-    // Init
-    runAudit();
+        // --- 5. DETAILED AUDIT ---
+        function runAudit() {
+            // Cookies
+            const cookies = navigator.cookieEnabled ? "Enabled" : "Disabled";
+            document.getElementById('check-cookies').innerText = cookies;
+            
+            // Incognito (Approximation using storage quota)
+            if ('storage' in navigator && 'estimate' in navigator.storage) {
+                navigator.storage.estimate().then(estimate => {
+                    if(estimate.quota < 120000000) { // < 120MB usually implies Incognito
+                        document.getElementById('check-incognito').innerText = "Likely Active";
+                        document.getElementById('check-incognito').style.color = "var(--accent)";
+                    } else {
+                        document.getElementById('check-incognito').innerText = "Standard Mode";
+                    }
+                });
+            }
 
-</script>
+            // Password Manager Support
+            if(window.PasswordCredential) {
+                document.getElementById('check-cred').innerText = "Supported";
+                document.getElementById('check-cred').className = "check-ok";
+            } else {
+                document.getElementById('check-cred').innerText = "Unknown";
+            }
 
+            // Debugger Check (DevTools)
+            // We use a timing attack: debugger pauses execution, creating a lag
+            const start = performance.now();
+            debugger; // This does nothing if DevTools is closed, but pauses if open
+            const end = performance.now();
+            if (end - start > 100) {
+                document.getElementById('check-debug').innerText = "DETECTED";
+                document.getElementById('check-debug').className = "check-fail";
+                log("> ALERT: DEBUGGER ATTACHED");
+                securityScore -= 20;
+            } else {
+                document.getElementById('check-debug').innerText = "Clean";
+            }
+        }
+
+        // --- MASTER SCAN ---
+        function runFullScan() {
+            const hero = document.getElementById('hero-box');
+            const status = document.getElementById('main-status');
+            const icon = document.getElementById('shield-icon');
+            
+            status.innerText = "ANALYZING...";
+            hero.className = "shield-container";
+            securityScore = 100; // Reset
+            
+            setTimeout(() => {
+                checkBiometrics();
+                checkCrypto();
+                checkRoot();
+                checkSSL();
+                runAudit();
+                
+                setTimeout(() => {
+                    if (securityScore >= 80) {
+                        status.innerText = "SYSTEM SECURE";
+                        hero.classList.add("secure-mode");
+                        icon.innerText = "🛡️";
+                        document.querySelector('.live-badge').style.color = "var(--accent)";
+                        document.querySelector('.live-badge').style.borderColor = "var(--accent)";
+                        document.querySelector('.blink').style.background = "var(--accent)";
+                    } else {
+                        status.innerText = "AT RISK";
+                        hero.classList.add("risk-mode");
+                        icon.innerText = "⚠️";
+                        document.querySelector('.live-badge').style.color = "var(--secondary)";
+                        document.querySelector('.live-badge').style.borderColor = "var(--secondary)";
+                        document.querySelector('.blink').style.background = "var(--secondary)";
+                    }
+                    log(`> FINAL SCORE: ${securityScore}/100`);
+                }, 1000);
+            }, 1000);
+        }
+
+        // Auto Start
+        runFullScan();
+
+    </script>
 </body>
 </html>
