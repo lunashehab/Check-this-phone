@@ -44,35 +44,38 @@
         .ring-svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; transform: rotate(-90deg); pointer-events: none; }
         .ring-circle { fill: none; stroke: var(--accent); stroke-width: 8; stroke-dasharray: 600; stroke-dashoffset: 600; transition: stroke-dashoffset 0.5s; stroke-linecap: round; }
 
+        /* INSTRUCTION PANELS */
+        .info-panel { background: rgba(255, 183, 0, 0.05); border-left: 3px solid var(--accent); padding: 15px; margin-bottom: 15px; border-radius: 0 8px 8px 0; font-size: 12px; line-height: 1.5; color: var(--text-bright); }
+        .info-title { font-weight: 800; color: var(--accent); text-transform: uppercase; margin-bottom: 5px; display: block; letter-spacing: 1px; }
+
         /* STATS GRID */
         .grid-master { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
         .stat-card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 15px; }
         .stat-label { font-size: 10px; text-transform: uppercase; color: var(--text); display: block; margin-bottom: 4px; }
         .stat-val { font-family: 'JetBrains Mono', monospace; font-size: 16px; font-weight: 700; color: var(--text-bright); }
-        .unit { font-size: 10px; color: var(--text); font-weight: 400; }
-        
-        /* VISUALIZER BAR */
         .load-bar { width: 100%; height: 4px; background: #1a202c; margin-top: 10px; border-radius: 2px; overflow: hidden; }
         .load-fill { height: 100%; width: 0%; background: var(--secondary); transition: width 0.2s; }
 
-        /* CONTROL BUTTONS */
-        .btn-test { background: var(--panel); border: 1px solid var(--border); color: var(--text-bright); width: 100%; padding: 18px; border-radius: 12px; font-weight: 700; margin-bottom: 12px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: 0.2s; display: flex; justify-content: space-between; align-items: center; }
-        .btn-test:hover { border-color: var(--accent); color: var(--accent); }
-        .btn-icon { font-size: 18px; }
-
-        /* TERMINAL */
-        .terminal { background: #000; border: 1px solid var(--border); border-radius: 8px; padding: 10px; height: 120px; overflow: hidden; font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--accent); position: relative; }
-        .log-line { margin-bottom: 2px; opacity: 0.8; }
-        .terminal::after { content: ""; position: absolute; bottom: 0; left: 0; width: 100%; height: 20px; background: linear-gradient(to top, #000, transparent); }
+        /* FAQ ACCORDION */
+        .faq-section { display: grid; gap: 10px; margin-top: 30px; }
+        .faq-item { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+        .faq-q { padding: 15px; font-weight: 700; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .faq-q:hover { color: var(--accent); }
+        .faq-a { padding: 0 15px 15px 15px; color: var(--text); font-size: 12px; line-height: 1.5; display: none; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px; }
+        .faq-icon { font-size: 10px; transition: 0.2s; }
+        .faq-item.active .faq-a { display: block; }
+        .faq-item.active .faq-icon { transform: rotate(180deg); color: var(--accent); }
 
         .back-btn { display: block; text-align: center; margin-top: 20px; color: var(--text); text-decoration: none; font-weight: 700; padding: 15px; background: var(--panel); border-radius: 12px; }
+        .action-btn { background: var(--panel); border: 1px solid var(--border); color: var(--text-bright); width: 100%; padding: 15px; border-radius: 12px; font-weight: 700; margin-bottom: 20px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: 0.2s; }
+        .action-btn:hover { border-color: var(--accent); color: var(--accent); }
     </style>
 </head>
 <body>
 
     <div class="header">
         <div class="logo">DON<span>REACTOR</span></div>
-        <div class="live-badge"><div class="blink"></div> SYSTEM IDLE</div>
+        <div class="live-badge"><div class="blink"></div> IDLE STATE</div>
     </div>
 
     <div class="gauge-container">
@@ -81,87 +84,129 @@
         <div class="score-label">BENCHMARK SCORE</div>
     </div>
 
+    <div class="info-panel">
+        <span class="info-title">1. LOGIC GATES (CPU)</span>
+        We test "Single Core" speed by forcing the chip to calculate prime numbers. This mimics app launching and interface responsiveness. <br>
+        <strong>GOAL:</strong> &gt; 50,000 Ops/Sec.
+    </div>
+
     <div class="grid-master">
         <div class="stat-card">
-            <span class="stat-label">CPU LOGIC</span>
+            <span class="stat-label">CPU SCORE</span>
             <span class="stat-val" id="cpu-score">--</span>
             <div class="load-bar"><div class="load-fill" id="bar-cpu"></div></div>
         </div>
         <div class="stat-card">
-            <span class="stat-label">MEMORY I/O</span>
-            <span class="stat-val" id="mem-score">--</span>
-            <div class="load-bar"><div class="load-fill" id="bar-mem"></div></div>
-        </div>
-        <div class="stat-card">
-            <span class="stat-label">PHYSICS (FPS)</span>
-            <span class="stat-val" id="gpu-score">--</span>
-            <div class="load-bar"><div class="load-fill" id="bar-gpu"></div></div>
-        </div>
-        <div class="stat-card">
-            <span class="stat-label">CORES DETECTED</span>
+            <span class="stat-label">ACTIVE CORES</span>
             <span class="stat-val" id="core-count">--</span>
         </div>
     </div>
 
-    <button class="btn-test" onclick="runBenchmark()">
-        <span>RUN FULL BENCHMARK</span> <span class="btn-icon">🚀</span>
-    </button>
-    <button class="btn-test" onclick="runStressTest()">
-        <span>STRESS TEST (5 SEC)</span> <span class="btn-icon">🔥</span>
-    </button>
+    <div class="info-panel">
+        <span class="info-title">2. MEMORY BANDWIDTH (RAM)</span>
+        We allocate a massive array of data and sort it randomly. This tests how fast your phone can "multitask" and switch between apps.
+    </div>
 
-    <div class="terminal" id="console-output">
-        <div class="log-line">> CORE REACTOR INIT...</div>
-        <div class="log-line">> WAITING FOR COMMAND...</div>
+    <div class="stat-card" style="margin-bottom: 15px;">
+        <span class="stat-label">MEMORY READ/WRITE SCORE</span>
+        <span class="stat-val" id="mem-score">--</span>
+        <div class="load-bar"><div class="load-fill" id="bar-mem"></div></div>
+    </div>
+
+    <div class="info-panel">
+        <span class="info-title">3. GRAPHICS (GPU)</span>
+        We render a 3D particle simulation. If the Frame Rate (FPS) drops, your phone is "Throttling" (slowing down to prevent overheating).
+    </div>
+
+    <div class="stat-card" style="margin-bottom: 20px;">
+        <span class="stat-label">PHYSICS SIMULATION (FPS)</span>
+        <span class="stat-val" id="gpu-score">--</span>
+        <div class="load-bar"><div class="load-fill" id="bar-gpu"></div></div>
+    </div>
+
+    <button class="action-btn" onclick="runBenchmark()">RUN FULL BENCHMARK</button>
+
+    <h3 style="font-size: 14px; margin-bottom: 15px; color: var(--text-bright);">FAQ: SPEED & HEAT</h3>
+    <div class="faq-section">
+        
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">1. What is "Thermal Throttling"? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">When your processor gets too hot (>45°C), it intentionally slows down to cool off. This causes lag in games after 10 minutes of play.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">2. Why is my score lower than my friend's? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">Benchmarks are affected by background apps, battery level, and heat. If your phone was hot *before* starting, your score will be lower.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">3. What is "FLOPS"? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">Floating Point Operations Per Second. It measures raw math speed. Modern phones can do trillions of calculations per second.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">4. Does higher RAM speed matter? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">Yes. Faster RAM allows apps to open instantly. Capacity (8GB vs 12GB) lets you keep *more* apps open, but speed determines responsiveness.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">5. What is "Geekbench" vs this test? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">Geekbench is a native app test. This is a "Web Benchmark" running inside your browser. It tests how well your phone handles websites and web apps.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">6. Does "Game Mode" help? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">Yes. It tells the OS to prioritize the game (or this benchmark) over background emails/notifications, boosting performance.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">7. Why did my phone get warm? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">We pushed all 8 cores to 100% usage. Energy = Heat. A warm phone means the heat dissipation system is working correctly!</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">8. What is Single-Core vs Multi-Core? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">Single-Core handles simple taps (opening Instagram). Multi-Core handles heavy tasks (Video Editing, Gaming).</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">9. Can I overclock my phone? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">Generally no, unless you "Root" it. Manufacturers lock the speed to ensure the battery lasts all day.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">10. Is 120Hz related to speed? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">120Hz is the screen refresh rate (smoothness). It requires a fast GPU to maintain, but they are separate metrics.</div>
+        </div>
+
     </div>
 
     <a href="../index.html" class="back-btn">EXIT REACTOR</a>
 
     <script>
-        // --- LOGGING ---
-        function log(msg) {
-            const term = document.getElementById('console-output');
-            const line = document.createElement('div');
-            line.className = 'log-line';
-            line.innerHTML = `<span style="color:#64748b">[CPU]</span> ${msg}`;
-            term.appendChild(line);
-            if(term.children.length > 6) term.removeChild(term.children[0]);
-            term.scrollTop = term.scrollHeight;
-        }
-
         // --- HARDWARE DETECT ---
         const cores = navigator.hardwareConcurrency || 4;
         document.getElementById('core-count').innerText = cores;
-        log(`> DETECTED ${cores} LOGICAL CORES`);
 
-        // --- 1. CPU MATH TEST (Primes) ---
+        // --- 1. CPU TEST ---
         function testCPU() {
             return new Promise(resolve => {
                 const start = performance.now();
                 let count = 0;
-                // Heavy math loop
-                for(let i=0; i<3000000; i++) {
-                    count += Math.sqrt(i) * Math.tan(i);
-                }
+                for(let i=0; i<3000000; i++) { count += Math.sqrt(i) * Math.tan(i); }
                 const end = performance.now();
                 const duration = end - start;
-                // Score: Lower time is better. 
-                // Baseline: 500ms = 1000 pts.
                 let score = Math.round(100000 / duration);
                 resolve(score);
             });
         }
 
-        // --- 2. MEMORY TEST (Array Fill) ---
+        // --- 2. MEMORY TEST ---
         function testMemory() {
             return new Promise(resolve => {
                 const start = performance.now();
                 const arr = [];
-                // Alloc 5MB array
-                for(let i=0; i<500000; i++) {
-                    arr.push({id: i, val: Math.random()});
-                }
-                // Read/Sort
+                for(let i=0; i<500000; i++) { arr.push({id: i, val: Math.random()}); }
                 arr.sort((a,b) => a.val - b.val);
                 const end = performance.now();
                 const duration = end - start;
@@ -170,7 +215,7 @@
             });
         }
 
-        // --- 3. GPU/PHYSICS TEST (FPS Simulation) ---
+        // --- 3. GPU TEST (FPS) ---
         function testGPU() {
             return new Promise(resolve => {
                 let frames = 0;
@@ -179,10 +224,10 @@
                 function loop() {
                     const now = performance.now();
                     if (now - start >= 1000) {
-                        resolve(frames); // Return FPS count
+                        resolve(frames);
                         return;
                     }
-                    // Simulate work
+                    // Load Sim
                     for(let j=0; j<5000; j++) { Math.random(); }
                     frames++;
                     requestAnimationFrame(loop);
@@ -191,14 +236,12 @@
             });
         }
 
-        // --- MAIN BENCHMARK RUNNER ---
+        // --- MAIN RUNNER ---
         async function runBenchmark() {
-            log("> STARTING BENCHMARK SEQUENCE...");
             document.querySelector('.ring-circle').style.stroke = "var(--warn)";
             document.querySelector('.ring-circle').style.strokeDashoffset = "600";
             
             // 1. CPU
-            log("> TESTING LOGIC GATES...");
             document.getElementById('bar-cpu').style.width = "50%";
             const cpu = await testCPU();
             document.getElementById('cpu-score').innerText = cpu;
@@ -206,7 +249,6 @@
             document.querySelector('.ring-circle').style.strokeDashoffset = "400";
 
             // 2. MEMORY
-            log("> TESTING RAM BANDWIDTH...");
             document.getElementById('bar-mem').style.width = "50%";
             const mem = await testMemory();
             document.getElementById('mem-score').innerText = mem;
@@ -214,7 +256,6 @@
             document.querySelector('.ring-circle').style.strokeDashoffset = "200";
 
             // 3. GPU
-            log("> TESTING GRAPHICS PIPELINE...");
             document.getElementById('bar-gpu').style.width = "50%";
             const fps = await testGPU();
             document.getElementById('gpu-score').innerText = fps;
@@ -224,50 +265,19 @@
             // TOTAL
             const total = Math.round((cpu + mem + (fps*10)) / 3);
             
-            // Animation for score
             let current = 0;
             const timer = setInterval(() => {
                 current += Math.round(total / 20);
                 if(current >= total) {
                     current = total;
                     clearInterval(timer);
-                    log(`> BENCHMARK COMPLETE: ${total} PTS`);
                     document.querySelector('.ring-circle').style.stroke = "var(--success)";
                 }
                 document.getElementById('total-score').innerText = current;
             }, 20);
         }
 
-        // --- STRESS TEST ---
-        function runStressTest() {
-            log("> WARNING: MAX LOAD APPLIED...");
-            const btn = document.querySelectorAll('.btn-test')[1];
-            btn.style.background = "var(--secondary)";
-            
-            const start = Date.now();
-            const duration = 5000; // 5s
-            
-            function burn() {
-                const now = Date.now();
-                if(now - start < duration) {
-                    // Block main thread for 20ms chunks (simulated lag)
-                    const block = Date.now();
-                    while(Date.now() - block < 20) { Math.random(); }
-                    
-                    // Update visual
-                    const progress = ((now - start) / duration) * 100;
-                    document.querySelector('.ring-circle').style.stroke = "var(--secondary)";
-                    document.querySelector('.ring-circle').style.strokeDashoffset = 600 - (6 * progress);
-                    
-                    requestAnimationFrame(burn);
-                } else {
-                    log("> STRESS TEST PASSED");
-                    btn.style.background = "";
-                    document.querySelector('.ring-circle').style.strokeDashoffset = 600;
-                }
-            }
-            burn();
-        }
+        function toggleFaq(el) { el.classList.toggle('active'); }
 
     </script>
 </body>
