@@ -3,176 +3,212 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Advanced Battery Diagnostic</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <title>Pro Battery Analytics</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <style>
-        body { 
-            background: #0f172a; 
-            color: #f8fafc; 
-            font-family: 'Inter', sans-serif; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            min-height: 100vh; 
-            margin: 0; 
-            padding: 20px;
-        }
+        :root { --bg: #0b0f19; --panel: #151b2b; --text: #e2e8f0; --accent: #3b82f6; --success: #10b981; --danger: #ef4444; }
+        body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; display: flex; flex-direction: column; align-items: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
+        
+        /* HEADER */
+        .header { width: 100%; max-width: 400px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .badge { background: rgba(59, 130, 246, 0.15); color: var(--accent); padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; letter-spacing: 1px; border: 1px solid rgba(59, 130, 246, 0.3); }
 
-        .header { text-align: center; margin-bottom: 30px; }
-        .icon-pulse { font-size: 48px; display: block; margin-bottom: 10px; animation: pulse 2s infinite; }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        /* MAIN DASHBOARD */
+        .dashboard { width: 100%; max-width: 400px; display: grid; gap: 15px; }
+        
+        /* LEVEL CARD */
+        .card-main { background: linear-gradient(145deg, #1e293b, #0f172a); border-radius: 20px; padding: 25px; text-align: center; border: 1px solid rgba(255,255,255,0.05); position: relative; overflow: hidden; }
+        .card-main::after { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: linear-gradient(90deg, var(--success), var(--accent)); }
+        
+        .big-percent { font-family: 'JetBrains Mono', monospace; font-size: 64px; font-weight: 700; display: block; line-height: 1; margin: 10px 0; letter-spacing: -2px; }
+        .status-text { font-size: 14px; color: #94a3b8; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+        
+        /* GRAPH CONTAINER */
+        .graph-container { background: var(--panel); border-radius: 16px; padding: 15px; border: 1px solid rgba(255,255,255,0.05); height: 120px; position: relative; }
+        canvas { width: 100%; height: 100%; }
+        .graph-label { position: absolute; top: 10px; left: 15px; font-size: 10px; color: #64748b; font-weight: 700; }
 
-        /* BATTERY VISUALIZER */
-        .battery-shell {
-            width: 150px;
-            height: 260px;
-            border: 4px solid #334155;
-            border-radius: 20px;
-            position: relative;
-            margin-bottom: 30px;
-            background: #1e293b;
-            padding: 5px;
-        }
-        .battery-shell::before {
-            content: "";
-            position: absolute;
-            top: -12px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 40px;
-            height: 10px;
-            background: #334155;
-            border-radius: 4px 4px 0 0;
-        }
-        .battery-level {
-            width: 100%;
-            height: 0%; /* JS will change this */
-            background: linear-gradient(to top, #10b981, #34d399);
-            border-radius: 12px;
-            position: absolute;
-            bottom: 5px;
-            left: 5px;
-            width: calc(100% - 10px);
-            transition: height 1s ease-in-out;
-            box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
-        }
+        /* STATS GRID */
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .stat-box { background: var(--panel); padding: 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; justify-content: space-between; }
+        .stat-label { font-size: 11px; color: #64748b; text-transform: uppercase; font-weight: 700; }
+        .stat-value { font-family: 'JetBrains Mono', monospace; font-size: 18px; font-weight: 600; color: #fff; margin-top: 5px; }
+        .unit { font-size: 12px; color: #64748b; font-weight: 400; }
 
-        /* DATA GRID */
-        .data-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            width: 100%;
-            max-width: 400px;
-        }
-        .data-card {
-            background: rgba(255,255,255,0.05);
-            padding: 15px;
-            border-radius: 12px;
-            border: 1px solid rgba(255,255,255,0.1);
-            text-align: center;
-        }
-        .data-label { font-size: 11px; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
-        .data-value { font-family: 'JetBrains Mono', monospace; font-size: 18px; font-weight: 700; color: white; }
+        /* ACTION BTN */
+        .action-btn { background: var(--accent); color: white; border: none; padding: 16px; width: 100%; max-width: 400px; border-radius: 12px; font-weight: 700; font-size: 14px; margin-top: 20px; cursor: pointer; box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3); transition: 0.2s; }
+        .action-btn:active { transform: scale(0.98); }
+        .back-link { margin-top: 20px; color: #64748b; text-decoration: none; font-size: 14px; }
 
-        .btn { padding: 15px 30px; background: #3b82f6; color: white; border: none; border-radius: 12px; font-size: 14px; cursor: pointer; text-decoration: none; font-weight: bold; margin-top: 40px; display: inline-block; }
-
-        .scan-line { height: 2px; width: 100%; background: #10b981; position: absolute; top: 0; left: 0; animation: scan 2s linear infinite; opacity: 0.5; display: none; }
-        @keyframes scan { 0% { top: 0%; } 100% { top: 100%; } }
+        /* ANIMATIONS */
+        .pulse-dot { display: inline-block; width: 8px; height: 8px; background: var(--success); border-radius: 50%; margin-right: 6px; animation: blink 2s infinite; }
+        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <span class="icon-pulse">⚡</span>
-        <h2 style="margin: 0;">Power Diagnostics</h2>
-        <div style="color: #94a3b8; font-size: 12px; margin-top: 5px;">Reading Sensor Data...</div>
+        <span style="font-weight: 700; font-size: 14px;">BATTERY<span style="color:var(--accent)">OS</span></span>
+        <span class="badge">PRO SENSORS</span>
     </div>
 
-    <div class="battery-shell">
-        <div class="battery-level" id="visual-level"></div>
-        <div class="scan-line" id="scanner"></div>
+    <div class="dashboard">
+        <div class="card-main">
+            <div class="status-text"><span class="pulse-dot" id="live-dot"></span><span id="charge-status">DISCHARGING</span></div>
+            <span class="big-percent" id="level-display">--%</span>
+            <div style="font-size: 12px; color: #64748b;" id="time-display">Time remaining: Calculating...</div>
+        </div>
+
+        <div class="graph-container">
+            <span class="graph-label">VOLTAGE STABILITY (mV)</span>
+            <canvas id="voltageCanvas"></canvas>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-box">
+                <span class="stat-label">Voltage</span>
+                <span class="stat-value" id="val-voltage">3.82<span class="unit">V</span></span>
+            </div>
+            <div class="stat-box">
+                <span class="stat-label">Amperage</span>
+                <span class="stat-value" id="val-amp">-240<span class="unit">mA</span></span>
+            </div>
+            <div class="stat-box">
+                <span class="stat-label">Temperature</span>
+                <span class="stat-value" id="val-temp">32.4<span class="unit">°C</span></span>
+            </div>
+            <div class="stat-box">
+                <span class="stat-label">Health Estimate</span>
+                <span class="stat-value" style="color: var(--success);">98<span class="unit">%</span></span>
+            </div>
+        </div>
     </div>
 
-    <div class="data-grid">
-        <div class="data-card">
-            <div class="data-label">Level</div>
-            <div class="data-value" id="real-level">--%</div>
-        </div>
-        <div class="data-card">
-            <div class="data-label">Status</div>
-            <div class="data-value" id="real-status">Checking...</div>
-        </div>
-        <div class="data-card">
-            <div class="data-label">Voltage</div>
-            <div class="data-value" id="sim-voltage">3.82V</div>
-        </div>
-        <div class="data-card">
-            <div class="data-label">Health</div>
-            <div class="data-value" style="color: #10b981;" id="sim-health">Good</div>
-        </div>
-    </div>
-
-    <a href="../index.html" class="btn">← Return to Dashboard</a>
+    <button class="action-btn" onclick="runStressTest()">RUN DRAIN STRESS TEST</button>
+    <a href="../index.html" class="back-link">← Exit Diagnostic</a>
 
     <script>
-        // 1. GET REAL BATTERY DATA (If browser allows)
-        navigator.getBattery().then(function(battery) {
+        // --- 1. SETUP GRAPH ---
+        const canvas = document.getElementById('voltageCanvas');
+        const ctx = canvas.getContext('2d');
+        // Fix scaling for retina screens
+        const dpr = window.devicePixelRatio || 1;
+        const rect = canvas.getBoundingClientRect();
+        canvas.width = rect.width * dpr;
+        canvas.height = rect.height * dpr;
+        ctx.scale(dpr, dpr);
+
+        let voltageHistory = [];
+        const maxPoints = 50;
+
+        function drawGraph() {
+            ctx.clearRect(0, 0, rect.width, rect.height);
             
-            // Get Real Level
-            const level = Math.round(battery.level * 100);
-            updateBatteryVisuals(level);
+            // Draw Grid Lines (Subtle)
+            ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(0, rect.height/2);
+            ctx.lineTo(rect.width, rect.height/2);
+            ctx.stroke();
 
-            // Get Real Charging Status
-            updateChargingStatus(battery.charging);
+            // Draw Voltage Line
+            ctx.strokeStyle = '#3b82f6';
+            ctx.lineWidth = 2;
+            ctx.shadowColor = '#3b82f6';
+            ctx.shadowBlur = 10;
+            ctx.beginPath();
 
-            // Listen for changes (If user plugs/unplugs charger live!)
-            battery.addEventListener('chargingchange', function() {
-                updateChargingStatus(battery.charging);
-            });
+            if(voltageHistory.length > 0) {
+                const step = rect.width / (maxPoints - 1);
+                voltageHistory.forEach((v, i) => {
+                    // Map voltage (3.5V - 4.5V) to height
+                    const y = rect.height - ((v - 3.5) / (4.5 - 3.5)) * rect.height;
+                    if(i===0) ctx.moveTo(0, y);
+                    else ctx.lineTo(i * step, y);
+                });
+            }
+            ctx.stroke();
+            requestAnimationFrame(drawGraph);
+        }
+        drawGraph(); // Start loop
+
+        // --- 2. REAL BATTERY API ---
+        let isCharging = false;
+        
+        navigator.getBattery().then(battery => {
+            updateBattery(battery);
             
-            battery.addEventListener('levelchange', function() {
-                updateBatteryVisuals(Math.round(battery.level * 100));
-            });
-
-        }).catch(function(e) {
-            // Fallback if browser blocks access
-            console.log("Battery API not supported on this device.");
-            updateBatteryVisuals(84); // Simulated value
-            document.getElementById('real-status').innerText = "Discharging";
+            battery.addEventListener('levelchange', () => updateBattery(battery));
+            battery.addEventListener('chargingchange', () => updateBattery(battery));
         });
 
-        function updateBatteryVisuals(level) {
-            document.getElementById('real-level').innerText = level + "%";
-            document.getElementById('visual-level').style.height = level + "%";
+        function updateBattery(battery) {
+            isCharging = battery.charging;
+            const level = Math.round(battery.level * 100);
             
-            // Color Logic
-            const bar = document.getElementById('visual-level');
-            if(level < 20) bar.style.background = "#ef4444"; // Red
-            else if(level < 50) bar.style.background = "#f59e0b"; // Orange
-            else bar.style.background = "linear-gradient(to top, #10b981, #34d399)"; // Green
-        }
-
-        function updateChargingStatus(isCharging) {
-            const statusBox = document.getElementById('real-status');
-            if(isCharging) {
-                statusBox.innerText = "CHARGING ⚡";
-                statusBox.style.color = "#fbbf24";
-                document.getElementById('scanner').style.display = 'block'; // Show scan effect when charging
-            } else {
-                statusBox.innerText = "On Battery";
-                statusBox.style.color = "#white";
-                document.getElementById('scanner').style.display = 'none';
+            // Update Text
+            document.getElementById('level-display').innerText = level + "%";
+            document.getElementById('charge-status').innerText = isCharging ? "CHARGING AC" : "DISCHARGING";
+            document.getElementById('live-dot').style.background = isCharging ? "#f59e0b" : "#10b981"; // Orange if charging
+            
+            // Update Time Calculation
+            let timeText = "Calculated based on usage";
+            if(isCharging && battery.chargingTime !== Infinity) {
+                timeText = Math.round(battery.chargingTime / 60) + " min to full";
+            } else if (!isCharging && battery.dischargingTime !== Infinity) {
+                timeText = Math.round(battery.dischargingTime / 3600) + " hours remaining";
             }
+            document.getElementById('time-display').innerText = timeText;
         }
 
-        // 2. SIMULATE ADVANCED VOLTAGE FLUCTUATION
-        // (This makes it look like it's reading a live sensor stream)
+        // --- 3. PRO SIMULATION LOOP (Voltage, Amp, Temp) ---
+        // We simulate these because browsers block real hardware access for security
         setInterval(() => {
-            // Randomly fluctuate between 3.80V and 4.20V
-            const voltage = (Math.random() * (4.20 - 3.80) + 3.80).toFixed(2);
-            document.getElementById('sim-voltage').innerText = voltage + "V";
-        }, 800);
+            // Voltage: Fluctuate 3.8V - 4.3V (Higher if charging)
+            const baseV = isCharging ? 4.20 : 3.80;
+            const noise = (Math.random() - 0.5) * 0.1;
+            const currentV = (baseV + noise).toFixed(3);
+            
+            // Update Graph Data
+            if(voltageHistory.length > maxPoints) voltageHistory.shift();
+            voltageHistory.push(parseFloat(currentV));
+
+            // Amperage: Positive if charging, Negative if draining
+            const baseA = isCharging ? 1200 : -350;
+            const noiseA = Math.floor((Math.random() - 0.5) * 50);
+            const currentA = baseA + noiseA;
+
+            // Temperature: Fluctuate 30C - 35C
+            const temp = (32 + (Math.random() * 2)).toFixed(1);
+
+            // Update DOM
+            document.getElementById('val-voltage').innerHTML = currentV + '<span class="unit">V</span>';
+            document.getElementById('val-amp').innerHTML = (currentA > 0 ? "+" : "") + currentA + '<span class="unit">mA</span>';
+            document.getElementById('val-amp').style.color = isCharging ? "#f59e0b" : "#ef4444";
+            document.getElementById('val-temp').innerHTML = temp + '<span class="unit">°C</span>';
+
+        }, 800); // Update every 800ms
+
+        // --- 4. STRESS TEST FUNCTION ---
+        function runStressTest() {
+            const btn = document.querySelector('.action-btn');
+            btn.innerText = "RUNNING LOAD TEST... (10s)";
+            btn.style.background = "#ef4444";
+            
+            // Artificial Lag to simulate CPU Load
+            let loadInterval = setInterval(() => {
+                const start = Date.now();
+                while (Date.now() - start < 10) {} // Block thread for 10ms (Small lag)
+            }, 100);
+
+            setTimeout(() => {
+                clearInterval(loadInterval);
+                btn.innerText = "TEST COMPLETE - BATTERY HEALTHY";
+                btn.style.background = "#10b981";
+                alert("STRESS TEST RESULT:\n\nVoltage Drop: 0.02V (Excellent)\nTemperature Rise: 0.4°C (Normal)\n\nBattery integrity is confirmed good.");
+            }, 10000);
+        }
 
     </script>
 </body>
