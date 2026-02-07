@@ -2,78 +2,58 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vibration Diagnostics | CheckThisPhone</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Don Systems Haptic Lab</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --bg-dark: #0f172a;
-            --surface-dark: #1e293b;
-            --accent: #d946ef; /* Fuchsia for Haptics */
-            --accent-glow: rgba(217, 70, 239, 0.4);
-            --text-main: #f8fafc;
-            --text-dim: #94a3b8;
+        :root { 
+            --bg: #050505; 
+            --panel: #0f1218; 
+            --border: #2d3748; 
+            --text: #a0aec0; 
+            --text-bright: #e2e8f0;
+            --accent: #ff9f43; /* Neon Orange */
+            --secondary: #ff6b6b; /* Warm Red */
+            --success: #00ff9d; 
+            --warn: #ffb700; 
         }
-
-        body {
-            background-color: var(--bg-dark);
-            color: var(--text-main);
-            font-family: 'Inter', sans-serif;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-        }
-
-        .container {
-            width: 100%;
-            max-width: 600px;
-        }
-
+        
+        * { box-sizing: border-box; }
+        body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; padding: 20px; margin: 0; min-height: 100vh; font-size: 14px; overflow-x: hidden; }
+        
         /* HEADER */
-        .header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 40px;
-        }
-        .back-btn {
-            background: none;
-            border: none;
-            color: var(--text-dim);
-            font-size: 24px;
-            cursor: pointer;
-            padding: 0;
-            margin-right: 15px;
-        }
-        .page-title { font-size: 20px; font-weight: 700; margin: 0; }
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 15px; margin-bottom: 20px; }
+        .logo { font-family: 'JetBrains Mono', monospace; font-weight: 800; font-size: 18px; color: var(--text-bright); letter-spacing: -1px; }
+        .logo span { color: var(--accent); }
+        .live-badge { display: flex; align-items: center; gap: 6px; font-size: 10px; color: var(--accent); font-weight: 700; background: rgba(255, 159, 67, 0.1); padding: 4px 8px; border-radius: 4px; border: 1px solid rgba(255, 159, 67, 0.2); }
+        .blink { animation: blink 1s infinite; width: 6px; height: 6px; background: var(--accent); border-radius: 50%; }
+        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0; } 100% { opacity: 1; } }
 
-        /* HERO ANIMATION */
-        .vibe-hero {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-bottom: 50px;
-            height: 150px;
-            position: relative;
+        /* ENGINE CORE (VISUALIZER) */
+        .engine-container { 
+            display: flex; justify-content: center; align-items: center; height: 250px; margin-bottom: 30px;
+            background: radial-gradient(circle, rgba(255,159,67,0.05) 0%, rgba(0,0,0,0) 70%);
         }
-
-        .phone-icon {
-            font-size: 80px;
-            position: relative;
-            z-index: 2;
+        
+        .core-outer {
+            width: 180px; height: 180px; border: 2px dashed var(--border); border-radius: 50%;
+            display: flex; justify-content: center; align-items: center; position: relative;
+            animation: slowSpin 10s linear infinite;
         }
-
-        .ripple {
-            position: absolute;
-            width: 100px; height: 100px;
-            border-radius: 50%;
-            border: 2px solid var(--accent);
-            opacity: 0;
-            z-index: 1;
+        
+        .core-inner {
+            width: 120px; height: 120px; background: #000; border: 4px solid var(--accent); border-radius: 50%;
+            display: flex; justify-content: center; align-items: center;
+            box-shadow: 0 0 30px rgba(255, 159, 67, 0.2); position: relative; z-index: 2;
         }
+        
+        .core-icon { font-size: 40px; }
 
-        /* Animations */
-        @keyframes shake {
+        /* VIBRATION ANIMATIONS */
+        .vibrating .core-inner { animation: shake 0.1s infinite; box-shadow: 0 0 50px var(--accent); background: var(--accent); color: black; }
+        .vibrating .core-icon { animation: shakeText 0.1s infinite; }
+
+        @keyframes shake { 
             0% { transform: translate(1px, 1px) rotate(0deg); }
             10% { transform: translate(-1px, -2px) rotate(-1deg); }
             20% { transform: translate(-3px, 0px) rotate(1deg); }
@@ -86,193 +66,190 @@
             90% { transform: translate(1px, 2px) rotate(0deg); }
             100% { transform: translate(1px, -2px) rotate(-1deg); }
         }
+        @keyframes slowSpin { 100% { transform: rotate(360deg); } }
 
-        @keyframes ripple-effect {
-            0% { transform: scale(0.8); opacity: 1; }
-            100% { transform: scale(2.5); opacity: 0; }
-        }
-
-        .shaking { animation: shake 0.5s infinite; color: var(--accent); }
-        .rippling { animation: ripple-effect 1s infinite linear; }
-
-        /* CONTROLS GRID */
-        .grid-buttons {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-
-        .vibe-btn {
-            background: var(--surface-dark);
-            border: 1px solid #334155;
-            color: var(--text-main);
-            padding: 20px;
-            border-radius: 12px;
-            font-size: 14px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: 0.1s;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-        }
+        /* CONTROLS */
+        .control-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px; }
+        .btn-haptic { background: var(--panel); border: 1px solid var(--border); color: var(--text-bright); padding: 18px; border-radius: 12px; cursor: pointer; font-weight: 700; font-size: 11px; text-align: left; display: flex; justify-content: space-between; align-items: center; transition: 0.1s; }
+        .btn-haptic:active { transform: scale(0.96); border-color: var(--accent); background: rgba(255, 159, 67, 0.1); }
         
-        .vibe-btn:active {
-            background: var(--accent);
-            transform: scale(0.96);
-            border-color: var(--accent);
-        }
+        .btn-stop { grid-column: span 2; background: var(--secondary); color: #000; border: none; text-align: center; justify-content: center; font-size: 14px; box-shadow: 0 4px 20px rgba(255, 107, 107, 0.3); }
 
-        .btn-stop {
-            width: 100%;
-            background: #ef4444;
-            color: white;
-            border: none;
-            padding: 15px;
-            border-radius: 12px;
-            font-weight: 700;
-            margin-top: 20px;
-            cursor: pointer;
-        }
+        /* INTENSITY SLIDER */
+        .slider-box { background: var(--panel); padding: 20px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 20px; }
+        .range-label { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 12px; font-weight: 700; color: var(--text-bright); }
+        input[type=range] { width: 100%; -webkit-appearance: none; background: transparent; }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 20px; width: 20px; border-radius: 50%; background: var(--accent); cursor: pointer; margin-top: -8px; box-shadow: 0 0 10px var(--accent); }
+        input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 4px; cursor: pointer; background: var(--border); border-radius: 2px; }
 
-        .info-text {
-            text-align: center;
-            font-size: 12px;
-            color: var(--text-dim);
-            margin-top: 30px;
-            line-height: 1.6;
-            background: rgba(255,255,255,0.05);
-            padding: 15px;
-            border-radius: 8px;
-        }
+        /* TERMINAL */
+        .terminal { background: #000; border: 1px solid var(--border); border-radius: 8px; padding: 10px; height: 120px; overflow: hidden; font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--accent); position: relative; }
+        .log-line { margin-bottom: 2px; opacity: 0.8; }
+        .terminal::after { content: ""; position: absolute; bottom: 0; left: 0; width: 100%; height: 20px; background: linear-gradient(to top, #000, transparent); }
 
+        .back-btn { display: block; text-align: center; margin-top: 20px; color: var(--text); text-decoration: none; font-weight: 700; padding: 15px; background: var(--panel); border-radius: 12px; }
     </style>
 </head>
 <body>
 
-<div class="container">
     <div class="header">
-        <button class="back-btn" onclick="window.location.href='index.html'">←</button>
-        <h1 class="page-title">Vibration & Haptics</h1>
+        <div class="logo">DON<span>HAPTICS</span></div>
+        <div class="live-badge"><div class="blink"></div> MOTOR STANDBY</div>
     </div>
 
-    <div class="vibe-hero">
-        <div class="ripple" id="ripple-ring"></div>
-        <div class="phone-icon" id="icon-target">📳</div>
+    <div class="engine-container" id="visualizer">
+        <div class="core-outer">
+            <div class="core-inner">
+                <div class="core-icon">📳</div>
+            </div>
+        </div>
     </div>
 
-    <div class="grid-buttons">
-        <button class="vibe-btn" onclick="triggerVibe([50])">
-            <span>Click</span>
-            <span style="font-weight:400; font-size:11px; color:#94a3b8;">Short Haptic</span>
+    <div class="slider-box">
+        <div class="range-label">
+            <span>MANUAL INTENSITY (DURATION)</span>
+            <span id="dur-val">200ms</span>
+        </div>
+        <input type="range" id="duration" min="50" max="2000" value="200" step="50" oninput="updateDur(this.value)">
+        <button class="btn-haptic" style="width:100%; margin-top:15px; justify-content:center;" onclick="manualPulse()">TEST MANUAL PULSE</button>
+    </div>
+
+    <div class="control-grid">
+        <button class="btn-haptic" onclick="playPattern('tick')">
+            <span>CRISP TICK</span> <span>⚡</span>
         </button>
-
-        <button class="vibe-btn" onclick="triggerVibe([400])">
-            <span>Buzz</span>
-            <span style="font-weight:400; font-size:11px; color:#94a3b8;">Medium 400ms</span>
+        <button class="btn-haptic" onclick="playPattern('double')">
+            <span>DOUBLE TAP</span> <span>⚡⚡</span>
+        </button>
+        <button class="btn-haptic" onclick="playPattern('heavy')">
+            <span>HEAVY HUM</span> <span>🔊</span>
+        </button>
+        <button class="btn-haptic" onclick="playPattern('heart')">
+            <span>HEARTBEAT</span> <span>❤️</span>
+        </button>
+        <button class="btn-haptic" onclick="playPattern('sos')">
+            <span>SOS SIGNAL</span> <span>🆘</span>
+        </button>
+        <button class="btn-haptic" onclick="playPattern('stress')">
+            <span>STRESS TEST</span> <span>🔥</span>
         </button>
         
-        <button class="vibe-btn" onclick="triggerVibe([200, 100, 200])">
-            <span>Double Tap</span>
-            <span style="font-weight:400; font-size:11px; color:#94a3b8;">Pulse - Pulse</span>
-        </button>
-
-        <button class="vibe-btn" onclick="triggerVibe([1000])">
-            <span>Long Alert</span>
-            <span style="font-weight:400; font-size:11px; color:#94a3b8;">Hold 1s</span>
-        </button>
-        
-        <button class="vibe-btn" onclick="startPattern('sos')">
-            <span>S.O.S Pattern</span>
-            <span style="font-weight:400; font-size:11px; color:#94a3b8;">... --- ...</span>
-        </button>
-
-        <button class="vibe-btn" onclick="startPattern('heavy')">
-            <span>Heavy Load</span>
-            <span style="font-weight:400; font-size:11px; color:#94a3b8;">Motor Stress Test</span>
+        <button class="btn-haptic btn-stop" onclick="stopVibrate()">
+            STOP ALL MOTORS
         </button>
     </div>
 
-    <button class="btn-stop" onclick="stopAll()">STOP ALL VIBRATION</button>
-
-    <div class="info-text">
-        Note: On iOS/iPadOS, vibration via the web is strictly blocked by Apple. 
-        This tool works on Android devices and some tablets.
+    <div class="terminal" id="console-output">
+        <div class="log-line">> HAPTIC ENGINE INIT...</div>
+        <div class="log-line">> CHECKING API SUPPORT...</div>
     </div>
 
-</div>
+    <a href="../index.html" class="back-btn">EXIT HAPTIC LAB</a>
 
-<script>
-    let intervalId = null;
+    <script>
+        // --- LOGGING ---
+        function log(msg) {
+            const term = document.getElementById('console-output');
+            const line = document.createElement('div');
+            line.className = 'log-line';
+            line.innerHTML = `<span style="color:#64748b">[MOT]</span> ${msg}`;
+            term.appendChild(line);
+            if(term.children.length > 6) term.removeChild(term.children[0]);
+            term.scrollTop = term.scrollHeight;
+        }
 
-    function triggerVibe(pattern) {
-        stopAll(); // Clear previous
-        
-        if (navigator.vibrate) {
-            navigator.vibrate(pattern);
-            animateUI(pattern);
+        // --- CHECK SUPPORT ---
+        const canVibrate = "vibrate" in navigator;
+        if(canVibrate) {
+            log("> NAVIGATOR.VIBRATE: SUPPORTED");
         } else {
-            alert("Vibration API not supported on this device.");
+            log("> NAVIGATOR.VIBRATE: UNSUPPORTED (iOS?)");
+            alert("NOTE: Apple iOS blocks web vibration. This test works best on Android.");
         }
-    }
 
-    function startPattern(type) {
-        stopAll();
-
-        if (type === 'sos') {
-            // SOS: Short Short Short, Long Long Long, Short Short Short
-            const sosPattern = [
-                100, 100, 100, 100, 100, 100, // S
-                300, 100, 300, 100, 300, 100, // O
-                100, 100, 100, 100, 100       // S
-            ];
-            navigator.vibrate(sosPattern);
-            animateUI(sosPattern);
+        // --- VISUALIZER ---
+        function triggerVisual(duration) {
+            const viz = document.getElementById('visualizer');
+            viz.classList.add('vibrating');
+            
+            // Remove class after duration
+            setTimeout(() => {
+                viz.classList.remove('vibrating');
+            }, duration);
         }
-        else if (type === 'heavy') {
-            // Rapid pulsing to stress the motor
-            intervalId = setInterval(() => {
-                navigator.vibrate(200);
-                toggleVisual(true);
-                setTimeout(() => toggleVisual(false), 150);
-            }, 250);
+
+        // --- MANUAL ---
+        function updateDur(val) {
+            document.getElementById('dur-val').innerText = val + "ms";
         }
-    }
 
-    function stopAll() {
-        if (intervalId) clearInterval(intervalId);
-        navigator.vibrate(0); // Kill hardware motor
-        toggleVisual(false);
-    }
-
-    // --- VISUAL SYNC ---
-    function animateUI(pattern) {
-        // This is a simple visualizer that shakes the icon for the total duration
-        // Sum up duration
-        const totalTime = pattern.reduce((a, b) => a + b, 0);
-        
-        toggleVisual(true);
-        setTimeout(() => {
-            toggleVisual(false);
-        }, totalTime);
-    }
-
-    function toggleVisual(isActive) {
-        const icon = document.getElementById('icon-target');
-        const ripple = document.getElementById('ripple-ring');
-        
-        if (isActive) {
-            icon.classList.add('shaking');
-            ripple.classList.add('rippling');
-        } else {
-            icon.classList.remove('shaking');
-            ripple.classList.remove('rippling');
+        function manualPulse() {
+            const dur = parseInt(document.getElementById('duration').value);
+            log(`> MANUAL PULSE: ${dur}ms`);
+            
+            if(canVibrate) navigator.vibrate(dur);
+            triggerVisual(dur);
         }
-    }
 
-</script>
+        // --- PATTERNS ---
+        function playPattern(type) {
+            let pattern = [];
+            let name = "";
+            let vizDur = 500;
 
+            if(type === 'tick') {
+                pattern = [30];
+                name = "CRISP TICK";
+                vizDur = 100;
+            }
+            if(type === 'double') {
+                pattern = [50, 50, 50]; // Vib, Pause, Vib
+                name = "DOUBLE TAP";
+                vizDur = 200;
+            }
+            if(type === 'heavy') {
+                pattern = [1000];
+                name = "HEAVY HUM";
+                vizDur = 1000;
+            }
+            if(type === 'heart') {
+                pattern = [100, 100, 100, 500]; // Dum-Dum... Dum-Dum...
+                name = "HEARTBEAT RHYTHM";
+                vizDur = 800;
+            }
+            if(type === 'sos') {
+                // ... --- ...
+                pattern = [
+                    100,50,100,50,100, // S
+                    200, 
+                    300,100,300,100,300, // O
+                    200, 
+                    100,50,100,50,100 // S
+                ]; 
+                name = "SOS DISTRESS SIGNAL";
+                vizDur = 2000;
+            }
+            if(type === 'stress') {
+                pattern = [50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50]; // Machine gun
+                name = "STRESS TEST (RAPID)";
+                vizDur = 1500;
+            }
+
+            log(`> PATTERN: ${name}`);
+            
+            if(canVibrate) navigator.vibrate(pattern);
+            
+            // Visualizer needs to pulse differently for patterns
+            // We just trigger a long shake for complex patterns for simplicity
+            triggerVisual(vizDur);
+        }
+
+        function stopVibrate() {
+            if(canVibrate) navigator.vibrate(0);
+            log("> EMERGENCY STOP TRIGGERED");
+            document.getElementById('visualizer').classList.remove('vibrating');
+        }
+
+    </script>
 </body>
 </html>
