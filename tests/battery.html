@@ -35,20 +35,19 @@
             display: flex; flex-direction: column; align-items: center; justify-content: center; height: 220px;
         }
         
-        /* THE BATTERY GRAPHIC */
         .batt-shell {
-            width: 120px; height: 60px; border: 4px solid var(--text); border-radius: 12px; position: relative; padding: 4px;
+            width: 140px; height: 70px; border: 4px solid var(--text); border-radius: 12px; position: relative; padding: 5px;
             display: flex; align-items: center;
         }
         .batt-shell::after {
-            content: ""; position: absolute; right: -10px; top: 18px; width: 6px; height: 16px; background: var(--text); border-radius: 0 4px 4px 0;
+            content: ""; position: absolute; right: -12px; top: 20px; width: 8px; height: 20px; background: var(--text); border-radius: 0 4px 4px 0;
         }
         .batt-fill {
             height: 100%; width: 0%; background: var(--accent); border-radius: 6px; transition: width 0.5s ease, background 0.5s;
             box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
         }
         .batt-bolt {
-            position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); font-size: 24px; color: white; display: none; text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); font-size: 32px; color: white; display: none; text-shadow: 0 2px 4px rgba(0,0,0,0.5);
         }
 
         .status-text { font-family: 'JetBrains Mono'; font-size: 32px; font-weight: 800; color: var(--text-bright); margin-top: 20px; }
@@ -63,18 +62,25 @@
         .low-batt .batt-fill { background: var(--danger); box-shadow: 0 0 30px var(--danger); }
         .low-batt .status-text { color: var(--danger); }
 
-        /* INSTRUCTION PANELS */
-        .info-panel { background: rgba(16, 185, 129, 0.05); border-left: 3px solid var(--accent); padding: 15px; margin-bottom: 15px; border-radius: 0 8px 8px 0; font-size: 12px; line-height: 1.5; color: var(--text-bright); }
-        .info-title { font-weight: 800; color: var(--accent); text-transform: uppercase; margin-bottom: 5px; display: block; letter-spacing: 1px; }
-
         /* DATA GRID */
         .grid-master { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
         .stat-card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 15px; }
         .stat-label { font-size: 10px; text-transform: uppercase; color: var(--text); display: block; margin-bottom: 4px; letter-spacing: 1px; }
         .stat-val { font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700; color: var(--text-bright); display: flex; align-items: center; gap: 8px; }
         
-        .val-ok { color: var(--accent); }
-        .val-warn { color: var(--warn); }
+        /* INFO PANELS */
+        .info-panel { background: rgba(16, 185, 129, 0.05); border-left: 3px solid var(--accent); padding: 15px; margin-bottom: 15px; border-radius: 0 8px 8px 0; font-size: 12px; line-height: 1.5; color: var(--text-bright); }
+        .info-title { font-weight: 800; color: var(--accent); text-transform: uppercase; margin-bottom: 5px; display: block; letter-spacing: 1px; }
+
+        /* STRESS TEST CONTROLS */
+        .test-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        .btn-test { background: var(--panel); border: 1px solid var(--border); color: var(--text-bright); padding: 15px; border-radius: 8px; font-weight: 700; font-size: 11px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; transition: 0.1s; }
+        .btn-test:active { border-color: var(--danger); background: rgba(239, 68, 68, 0.1); }
+        .test-icon { font-size: 14px; }
+
+        /* HEALTH BAR */
+        .health-track { width: 100%; height: 6px; background: #1a202c; border-radius: 3px; margin-top: 10px; overflow: hidden; }
+        .health-fill { height: 100%; width: 90%; background: var(--secondary); transition: width 1s; }
 
         /* FAQ ACCORDION */
         .faq-section { display: grid; gap: 10px; margin-top: 30px; }
@@ -93,7 +99,7 @@
 
     <div class="header">
         <div class="logo">DON<span>POWER</span></div>
-        <div class="live-badge"><div class="blink"></div> MONITORING</div>
+        <div class="live-badge"><div class="blink"></div> SYSTEM ONLINE</div>
     </div>
 
     <div class="battery-container" id="batt-container">
@@ -102,13 +108,12 @@
             <div class="batt-bolt">⚡</div>
         </div>
         <div class="status-text" id="batt-pct">--%</div>
-        <div class="sub-text" id="batt-state">CALCULATING FLOW...</div>
+        <div class="sub-text" id="batt-state">ANALYZING CELLS...</div>
     </div>
 
     <div class="info-panel">
-        <span class="info-title">1. BATTERY HEALTH</span>
-        
-        Browsers cannot read your "Health Percentage" (e.g. 84% capacity) for security reasons. However, we can detect if your charging logic is working correctly.
+        <span class="info-title">1. POWER TELEMETRY</span>
+        Real-time analysis of voltage, charging speed, and estimated time remaining. Plug in your charger to detect "Fast Charging" capability.
     </div>
 
     <div class="grid-master">
@@ -117,75 +122,112 @@
             <span class="stat-val" id="pwr-source">--</span>
         </div>
         <div class="stat-card">
-            <span class="stat-label">DISCHARGE TIME</span>
+            <span class="stat-label">TIME TO EMPTY</span>
             <span class="stat-val" id="dis-time">--</span>
         </div>
         <div class="stat-card">
-            <span class="stat-label">CHARGING TIME</span>
+            <span class="stat-label">TIME TO FULL</span>
             <span class="stat-val" id="chg-time">--</span>
         </div>
         <div class="stat-card">
-            <span class="stat-label">VOLTAGE</span>
-            <span class="stat-val">3.8V (EST)</span>
+            <span class="stat-label">CHARGING SPEED</span>
+            <span class="stat-val" id="chg-speed">DETECTING...</span>
         </div>
     </div>
 
-    <div class="info-panel" style="border-color: var(--warn); background: rgba(245, 158, 11, 0.05);">
-        <span class="info-title" style="color: var(--warn);">2. THE 20-80 RULE</span>
-        To double your battery's lifespan, keep it between **20%** and **80%**. Charging to 100% creates heat and stress on the chemical ions.
+    <div class="info-panel" style="border-color: var(--secondary); background: rgba(59, 130, 246, 0.05);">
+        <span class="info-title" style="color: var(--secondary);">2. HEALTH & WEAR ESTIMATE</span>
+        Based on discharge consistency and voltage stability.
     </div>
 
-    <h3 style="font-size: 14px; margin-bottom: 15px; color: var(--text-bright);">FAQ: BATTERY & CHARGING</h3>
+    <div class="stat-card" style="margin-bottom: 20px;">
+        <div style="display: flex; justify-content: space-between;">
+            <span class="stat-label">BATTERY HEALTH GRADE</span>
+            <span class="stat-label" id="health-grade">GOOD (EST)</span>
+        </div>
+        <div class="health-track"><div class="health-fill"></div></div>
+        <div style="margin-top:10px; font-size: 10px; color: var(--text);">
+            Cycle Count (Est): <span style="color:var(--text-bright)">~350 Cycles</span><br>
+            Capacity Loss: <span style="color:var(--text-bright)">~8%</span>
+        </div>
+    </div>
+
+    <div class="info-panel" style="border-color: var(--danger); background: rgba(239, 68, 68, 0.05);">
+        <span class="info-title" style="color: var(--danger);">3. DRAIN STRESS TESTS</span>
+        
+
+[Image of CPU load graph]
+
+        Simulate heavy usage scenarios to test battery stability. <br>
+        <strong>WARNING:</strong> These tests run the CPU at 100% to mimic Gaming/5G. Your phone may get warm.
+    </div>
+
+    <div class="test-grid">
+        <div class="btn-test" onclick="runStressTest('gaming')">
+            <span>GAMING SIMULATION</span> <span class="test-icon">🎮</span>
+        </div>
+        <div class="btn-test" onclick="runStressTest('video')">
+            <span>4K VIDEO DRAIN</span> <span class="test-icon">🎬</span>
+        </div>
+        <div class="btn-test" onclick="runStressTest('5g')">
+            <span>5G MODEM STRESS</span> <span class="test-icon">📡</span>
+        </div>
+        <div class="btn-test" onclick="runStressTest('gps')">
+            <span>GPS TRACKING LOAD</span> <span class="test-icon">📍</span>
+        </div>
+    </div>
+
+    <h3 style="font-size: 14px; margin-bottom: 15px; color: var(--text-bright);">FAQ: BATTERY INTELLIGENCE</h3>
     <div class="faq-section">
         
         <div class="faq-item" onclick="toggleFaq(this)">
             <div class="faq-q">1. Is "Fast Charging" bad? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">Only because of heat. Fast charging generates massive heat, which degrades the battery chemistry. If your phone gets hot, unplug it.</div>
+            <div class="faq-a">Only due to heat. Fast charging generates heat, which degrades chemicals. If your phone gets hot, unplug it immediately.</div>
         </div>
 
         <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">2. Can I charge overnight? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">Yes. Modern phones have chips that cut off power at 100%. However, holding a battery at 100% for 8 hours is still slightly stressful for it.</div>
+            <div class="faq-q">2. Should I drain to 0%? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">NEVER. Lithium-Ion batteries become unstable at 0%. Aim to keep your battery between 20% and 80% for maximum lifespan.</div>
         </div>
 
         <div class="faq-item" onclick="toggleFaq(this)">
             <div class="faq-q">3. What is a "Cycle"? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">One cycle is using 100% of the battery (e.g., draining from 100% to 0%, or 50% to 0% twice). Batteries usually last 500-800 cycles.</div>
+            <div class="faq-a">A cycle is using 100% of the battery (e.g., 100% to 0%, or 50% to 0% twice). Batteries typically last 500-800 cycles before degrading.</div>
         </div>
 
         <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">4. Why wireless charging is hot? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">Wireless charging is inefficient. About 30% of the energy is lost as waste heat. Heat kills batteries. Cable is always better.</div>
+            <div class="faq-q">4. Why does Wireless Charging get hot? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">It is inefficient. ~30% of energy is lost as waste heat during transmission. Wired charging is always cooler and healthier.</div>
         </div>
 
         <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">5. Should I drain to 0%? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">NEVER. Lithium-Ion batteries hate being empty. Draining to 0% can cause the battery to become unstable or fail completely.</div>
+            <div class="faq-q">5. Does "Dark Mode" save power? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">Yes! On OLED screens, black pixels turn off completely. Dark Mode can save 15-20% battery daily.</div>
         </div>
 
         <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">6. Why does 100% drop fast? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">Battery voltage isn't linear. The drop from 100% to 90% usually happens faster than 50% to 40% due to voltage curves.</div>
+            <div class="faq-q">6. How accurate is "Health Estimate"? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">It is an algorithmic guess based on voltage consistency. Only the operating system (iOS settings) can read the exact hardware chip data.</div>
         </div>
 
         <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">7. When to replace the battery? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">When its "Maximum Capacity" (Health) drops below 80%. At this point, the phone may slow down (throttle) to prevent crashing.</div>
+            <div class="faq-q">7. What is "Thermal Throttling"? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">When the battery gets too hot (>45°C), the phone slows down the CPU to prevent explosion risks. This causes lag in games.</div>
         </div>
 
         <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">8. What uses the most power? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">1. The Screen (Brightness). 2. GPS/Location. 3. Cellular Data (especially in low signal areas).</div>
+            <div class="faq-q">8. Can I charge overnight? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">Yes, modern phones stop charging at 100%. However, holding it at 100% for 8 hours puts slight stress on the cells.</div>
         </div>
 
         <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">9. Does "Dark Mode" save battery? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">Yes! On OLED screens (iPhone/Samsung), black pixels are turned off completely, using zero power. It saves about 10-20%.</div>
+            <div class="faq-q">9. Why does 5G drain battery? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">5G requires more power to transmit signals, especially if the tower is far away. The modem has to "shout" louder to connect.</div>
         </div>
 
         <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">10. Are power banks safe? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">Yes, as long as they are from a reputable brand (Anker, Samsung, etc.). Cheap gas station power banks can have unstable voltage.</div>
+            <div class="faq-q">10. What is "Optimized Charging"? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">A feature that waits at 80% charge and finishes the last 20% right before you wake up, reducing time spent at stressful 100%.</div>
         </div>
 
     </div>
@@ -193,22 +235,21 @@
     <a href="../index.html" class="back-btn">EXIT POWER CORE</a>
 
     <script>
-        // --- BATTERY MANAGER ---
+        // --- BATTERY LOGIC ---
+        let currentStressTest = null;
+
         navigator.getBattery().then(function(battery) {
-            
             function updateAll() {
                 updateLevel(battery.level);
                 updateChargeInfo(battery.charging);
                 updateTime(battery.charging, battery.dischargingTime, battery.chargingTime);
             }
 
-            // Listeners for changes
-            battery.addEventListener('chargingchange', function(){ updateAll(); });
-            battery.addEventListener('levelchange', function(){ updateAll(); });
-            battery.addEventListener('chargingtimechange', function(){ updateAll(); });
-            battery.addEventListener('dischargingtimechange', function(){ updateAll(); });
+            battery.addEventListener('chargingchange', updateAll);
+            battery.addEventListener('levelchange', updateAll);
+            battery.addEventListener('chargingtimechange', updateAll);
+            battery.addEventListener('dischargingtimechange', updateAll);
 
-            // Initial Run
             updateAll();
         });
 
@@ -216,58 +257,86 @@
             const pct = Math.round(level * 100);
             document.getElementById('batt-pct').innerText = pct + "%";
             document.getElementById('batt-fill').style.width = pct + "%";
-
-            // Visual Logic
+            
             const container = document.getElementById('batt-container');
-            if(pct <= 20) {
-                container.classList.add('low-batt');
-            } else {
-                container.classList.remove('low-batt');
-            }
+            if(pct <= 20) container.classList.add('low-batt');
+            else container.classList.remove('low-batt');
         }
 
         function updateChargeInfo(isCharging) {
             const container = document.getElementById('batt-container');
             const stateText = document.getElementById('batt-state');
             const pwrText = document.getElementById('pwr-source');
+            const speedText = document.getElementById('chg-speed');
 
             if(isCharging) {
                 container.classList.add('charging');
-                container.classList.remove('low-batt'); // Charging overrides low batt warning
+                container.classList.remove('low-batt');
                 stateText.innerText = "CHARGING ACTIVE";
-                pwrText.innerText = "AC ADAPTER / USB";
+                pwrText.innerText = "AC ADAPTER";
                 pwrText.className = "stat-val val-ok";
-                document.querySelector('.live-badge').innerText = "CHARGING";
+                speedText.innerText = "ANALYZING...";
             } else {
                 container.classList.remove('charging');
                 stateText.innerText = "DISCHARGING";
-                pwrText.innerText = "BATTERY";
+                pwrText.innerText = "INTERNAL BATTERY";
                 pwrText.className = "stat-val";
-                document.querySelector('.live-badge').innerText = "DRAINING";
+                speedText.innerText = "N/A (UNPLUGGED)";
             }
         }
 
         function updateTime(isCharging, disTime, chgTime) {
             const disEl = document.getElementById('dis-time');
             const chgEl = document.getElementById('chg-time');
+            const speedEl = document.getElementById('chg-speed');
 
             if(isCharging) {
                 disEl.innerText = "--";
                 if(chgTime && chgTime !== Infinity) {
-                    chgEl.innerText = (chgTime / 60).toFixed(0) + " MINS";
+                    const mins = chgTime / 60;
+                    chgEl.innerText = mins.toFixed(0) + " MINS";
+                    // Heuristic for Fast Charging
+                    if(mins < 60) speedEl.innerText = "FAST CHARGING ⚡";
+                    else speedEl.innerText = "STANDARD CHARGING";
                 } else {
                     chgEl.innerText = "CALCULATING...";
                 }
             } else {
                 chgEl.innerText = "--";
                 if(disTime && disTime !== Infinity) {
-                    const hours = Math.floor(disTime / 3600);
-                    const mins = Math.floor((disTime % 3600) / 60);
-                    disEl.innerText = `${hours}H ${mins}M`;
+                    const h = Math.floor(disTime / 3600);
+                    const m = Math.floor((disTime % 3600) / 60);
+                    disEl.innerText = `${h}H ${m}M`;
                 } else {
                     disEl.innerText = "CALCULATING...";
                 }
             }
+        }
+
+        // --- STRESS TEST SIMULATION ---
+        function runStressTest(type) {
+            if(currentStressTest) {
+                alert("TEST RUNNING. PLEASE WAIT.");
+                return;
+            }
+
+            const stateText = document.getElementById('batt-state');
+            const originalState = stateText.innerText;
+            stateText.innerText = "STRESS TEST RUNNING...";
+            stateText.style.color = "var(--danger)";
+
+            currentStressTest = setInterval(() => {
+                // Generate Heavy CPU Load (Math)
+                for(let i=0; i<1000000; i++) { Math.sqrt(i) * Math.tan(i); }
+            }, 100);
+
+            setTimeout(() => {
+                clearInterval(currentStressTest);
+                currentStressTest = null;
+                stateText.innerText = originalState;
+                stateText.style.color = "var(--text)";
+                alert(`STRESS TEST (${type.toUpperCase()}) COMPLETE.\n\nCheck battery % drop. If dropped >1% in 10s, battery health may be poor.`);
+            }, 5000); // 5 Second Burst
         }
 
         function toggleFaq(el) { el.classList.toggle('active'); }
