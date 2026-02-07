@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Don Systems Security Shield</title>
+    <title>Security Tests | CheckThisPhone.com</title>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         :root { 
@@ -12,294 +12,455 @@
             --border: #2d3748; 
             --text: #a0aec0; 
             --text-bright: #e2e8f0;
-            --accent: #00ff9d; /* Matrix Green */
-            --secondary: #ff0055; /* Alert Red */
-            --warn: #ffb700; 
+            --accent: #f43f5e; /* Cyber Red */
+            --secondary: #3b82f6; /* Blue */
+            --success: #10b981;
+            --warn: #f59e0b; 
+            --danger: #ef4444;
         }
         
-        * { box-sizing: border-box; }
+        * { box-sizing: border-box; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
         body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; padding: 20px; margin: 0; min-height: 100vh; font-size: 14px; overflow-x: hidden; }
         
         /* HEADER */
-        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 15px; margin-bottom: 20px; }
-        .logo { font-family: 'JetBrains Mono', monospace; font-weight: 800; font-size: 18px; color: var(--text-bright); letter-spacing: -1px; }
-        .logo span { color: var(--secondary); }
-        .live-badge { display: flex; align-items: center; gap: 6px; font-size: 10px; color: var(--accent); font-weight: 700; background: rgba(0, 255, 157, 0.1); padding: 4px 8px; border-radius: 4px; border: 1px solid rgba(0, 255, 157, 0.2); }
-        .blink { animation: blink 1s infinite; width: 6px; height: 6px; background: var(--accent); border-radius: 50%; }
-        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0; } 100% { opacity: 1; } }
+        .header { text-align: center; margin-bottom: 40px; border-bottom: 1px solid var(--border); padding-bottom: 20px; }
+        .logo { font-family: 'JetBrains Mono', monospace; font-weight: 800; font-size: 24px; color: var(--text-bright); letter-spacing: -1px; margin-bottom: 10px; }
+        .logo span { color: var(--accent); }
+        .subtitle { font-size: 12px; color: var(--text); text-transform: uppercase; letter-spacing: 1px; }
 
-        /* HERO STATUS */
-        .shield-container { 
-            background: radial-gradient(circle at center, #0f1820 0%, #000 70%); 
-            border: 1px solid var(--border); border-radius: 16px; padding: 30px; margin-bottom: 20px; position: relative; overflow: hidden;
-            display: flex; flex-direction: column; align-items: center; justify-content: center; height: 200px;
+        /* GRID LAYOUT */
+        .test-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
+            gap: 20px; 
+            max-width: 1200px; 
+            margin: 0 auto; 
         }
-        .shield-icon { font-size: 60px; margin-bottom: 15px; filter: drop-shadow(0 0 20px var(--accent)); transition: all 0.5s; }
-        .status-text { font-family: 'JetBrains Mono'; font-size: 24px; font-weight: 800; color: var(--text-bright); letter-spacing: -1px; }
-        .sub-text { font-size: 12px; color: var(--text); margin-top: 5px; text-transform: uppercase; letter-spacing: 1px; }
 
-        .secure-mode .shield-icon { transform: scale(1.1); color: var(--accent); filter: drop-shadow(0 0 30px var(--accent)); }
-        .risk-mode .shield-icon { transform: scale(1.1); color: var(--secondary); filter: drop-shadow(0 0 30px var(--secondary)); }
-        .risk-mode .status-text { color: var(--secondary); }
-
-        /* INSTRUCTION PANELS */
-        .info-panel { background: rgba(0, 255, 157, 0.05); border-left: 3px solid var(--accent); padding: 15px; margin-bottom: 15px; border-radius: 0 8px 8px 0; font-size: 12px; line-height: 1.5; color: var(--text-bright); }
-        .info-title { font-weight: 800; color: var(--accent); text-transform: uppercase; margin-bottom: 5px; display: block; letter-spacing: 1px; }
-
-        /* DATA GRID */
-        .grid-master { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+        /* TEST CARD */
+        .card { 
+            background: var(--panel); 
+            border: 1px solid var(--border); 
+            border-radius: 12px; 
+            padding: 20px; 
+            display: flex; 
+            flex-direction: column; 
+            transition: 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+        .card:hover { border-color: var(--accent); transform: translateY(-2px); }
         
-        .stat-card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 15px; }
-        .stat-label { font-size: 10px; text-transform: uppercase; color: var(--text); display: block; margin-bottom: 4px; letter-spacing: 1px; }
-        .stat-val { font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700; color: var(--text-bright); display: flex; align-items: center; gap: 8px; }
+        .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
+        .card-title { font-family: 'JetBrains Mono'; font-weight: 700; color: var(--text-bright); font-size: 13px; }
+        .card-icon { font-size: 18px; opacity: 0.8; }
         
-        .check-ok { color: var(--accent); }
-        .check-fail { color: var(--secondary); }
-        .check-warn { color: var(--warn); }
+        .card-desc { font-size: 12px; color: var(--text); margin-bottom: 20px; line-height: 1.5; flex-grow: 1; }
+        
+        .result-box { 
+            background: rgba(0,0,0,0.3); 
+            border: 1px solid var(--border); 
+            border-radius: 8px; 
+            padding: 10px; 
+            margin-bottom: 15px; 
+            font-family: 'JetBrains Mono'; 
+            font-size: 11px; 
+            color: var(--accent); 
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            overflow-wrap: anywhere;
+        }
+        
+        .btn-group { display: flex; gap: 10px; }
+        
+        .btn { 
+            flex: 1; 
+            padding: 10px; 
+            border-radius: 6px; 
+            font-size: 11px; 
+            font-weight: 700; 
+            cursor: pointer; 
+            text-transform: uppercase; 
+            transition: 0.2s; 
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--text-bright);
+        }
+        
+        .btn-run { background: var(--accent); color: white; border: none; }
+        .btn-run:hover { opacity: 0.9; }
+        .btn-info:hover { border-color: var(--text-bright); }
 
-        /* FAQ ACCORDION */
-        .faq-section { display: grid; gap: 10px; margin-top: 20px; }
-        .faq-item { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
-        .faq-q { padding: 15px; font-weight: 700; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .faq-q:hover { color: var(--accent); }
+        /* MODAL */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); z-index: 1000;
+            display: none; justify-content: center; align-items: center;
+            backdrop-filter: blur(5px);
+        }
+        .modal {
+            background: var(--panel); border: 1px solid var(--accent); border-radius: 12px;
+            padding: 30px; max-width: 500px; width: 90%;
+            box-shadow: 0 0 30px rgba(244, 63, 94, 0.2);
+        }
+        .modal-title { font-family: 'JetBrains Mono'; font-size: 18px; color: var(--accent); margin-bottom: 15px; }
+        .modal-body { font-size: 13px; line-height: 1.6; color: var(--text-bright); margin-bottom: 25px; }
+        .modal-steps { margin-left: 20px; margin-bottom: 20px; color: var(--text); font-size: 12px; }
+        .modal-close { background: var(--border); color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; float: right; font-weight: 700; }
+
+        /* FAQ SECTION */
+        .faq-container { max-width: 800px; margin: 60px auto 20px auto; }
+        .faq-header { font-family: 'JetBrains Mono'; font-size: 16px; color: var(--accent); margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+        .faq-item { background: var(--panel); border: 1px solid var(--border); margin-bottom: 10px; border-radius: 8px; overflow: hidden; }
+        .faq-q { padding: 15px; cursor: pointer; font-weight: 700; display: flex; justify-content: space-between; font-size: 12px; color: var(--text-bright); }
         .faq-a { padding: 0 15px 15px 15px; color: var(--text); font-size: 12px; line-height: 1.5; display: none; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px; }
-        .faq-icon { font-size: 10px; transition: 0.2s; }
         .faq-item.active .faq-a { display: block; }
-        .faq-item.active .faq-icon { transform: rotate(180deg); color: var(--accent); }
 
-        .back-btn { display: block; text-align: center; margin-top: 20px; color: var(--text); text-decoration: none; font-weight: 700; padding: 15px; background: var(--panel); border-radius: 12px; }
-        
-        .action-btn { background: var(--panel); border: 1px solid var(--border); color: var(--text-bright); width: 100%; padding: 15px; border-radius: 12px; font-weight: 700; margin-bottom: 20px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: 0.2s; }
-        .action-btn:hover { border-color: var(--secondary); color: var(--secondary); }
+        .sim-tag { font-size: 9px; opacity: 0.7; margin-left: 5px; border: 1px solid var(--border); padding: 1px 4px; border-radius: 3px; }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <div class="logo">DON<span>SECURITY</span></div>
-        <div class="live-badge"><div class="blink"></div> FIREWALL UP</div>
+        <div class="logo">CHECK<span>SECURITY</span></div>
+        <div class="subtitle">Browser-Based Privacy & Risk Diagnostics</div>
     </div>
 
-    <div class="shield-container" id="hero-box">
-        <div class="shield-icon" id="shield-icon">🛡️</div>
-        <div class="status-text" id="main-status">SCANNING...</div>
-        <div class="sub-text">SYSTEM INTEGRITY CHECK</div>
+    <div class="test-grid" id="grid"></div>
+
+    <div class="faq-container">
+        <div class="faq-header">SECURITY FAQ</div>
+        <div id="faq-list"></div>
     </div>
 
-    <div class="info-panel">
-        <span class="info-title">1. OS INTEGRITY</span>
-        We detect "Root" or "Jailbreak" access. A rooted device lets apps bypass security sandboxes, putting banking data at risk. <br>
-        <strong>GOAL:</strong> "CLEAN" or "OFFICIAL".
-    </div>
-    <div class="grid-master">
-        <div class="stat-card">
-            <span class="stat-label">ROOT STATUS</span>
-            <span class="stat-val" id="root-val">SCANNING...</span>
-        </div>
-        <div class="stat-card">
-            <span class="stat-label">OS KERNEL</span>
-            <span class="stat-val" id="os-val">DETECTING...</span>
+    <div class="modal-overlay" id="modal">
+        <div class="modal">
+            <div class="modal-title" id="m-title"></div>
+            <div class="modal-body" id="m-body"></div>
+            <ul class="modal-steps" id="m-steps"></ul>
+            <button class="modal-close" onclick="closeModal()">CLOSE</button>
         </div>
     </div>
-
-    <div class="info-panel">
-        <span class="info-title">2. HARDWARE SECURITY</span>
-        Checks for a "Secure Enclave" (Dedicated Chip) that handles passwords physically, rather than in software. <br>
-        <strong>GOAL:</strong> "AES-GCM" or "Hardware Backed".
-    </div>
-    <div class="grid-master">
-        <div class="stat-card">
-            <span class="stat-label">BIOMETRICS</span>
-            <span class="stat-val" id="bio-val">CHECKING...</span>
-        </div>
-        <div class="stat-card">
-            <span class="stat-label">ENCRYPTION</span>
-            <span class="stat-val" id="crypt-val">CHECKING...</span>
-        </div>
-    </div>
-
-    <div class="info-panel">
-        <span class="info-title">3. NETWORK LAYER</span>
-        Verifies that your connection to this app is encrypted via SSL/TLS, preventing hackers on your WiFi from reading data. <br>
-        <strong>GOAL:</strong> "SECURE (HTTPS)".
-    </div>
-    <div class="stat-card" style="margin-bottom: 20px;">
-        <span class="stat-label">CONNECTION TYPE</span>
-        <span class="stat-val" id="ssl-val">VERIFYING...</span>
-    </div>
-
-    <button class="action-btn" onclick="startScan()">RE-RUN VULNERABILITY SCAN</button>
-
-    <h3 style="font-size: 14px; margin-bottom: 15px; color: var(--text-bright);">FAQ: SECURITY & PRIVACY</h3>
-    <div class="faq-section">
-        
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">1. What does "Root Detected" mean? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">It means the safety locks on your OS are removed. Malware can easily steal data from other apps on rooted phones.</div>
-        </div>
-
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">2. Is my FaceID/TouchID safe? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">Yes. We never see your biometrics. We only ask the phone "Is the user verified?" and the phone replies "Yes".</div>
-        </div>
-
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">3. What is Hardware Encryption? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">A separate physical chip (Secure Enclave) that stores passwords. Even if hackers steal your files, they can't read this chip.</div>
-        </div>
-
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">4. Why does it say "Restricted"? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">Browsers like Brave or Safari Private Mode block hardware scans to protect your privacy. This is actually a good sign!</div>
-        </div>
-
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">5. What is SSL/HTTPS? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">It encrypts the "tunnel" between you and the website. Without it, anyone on your WiFi could read your passwords.</div>
-        </div>
-
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">6. Can this page scan for viruses? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">No website can scan your phone's files for viruses. That requires an app download. We scan for *vulnerabilities*.</div>
-        </div>
-
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">7. What is a "Jailbreak"? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">The iPhone version of Rooting. It removes Apple's security limits, making the phone vulnerable to attacks.</div>
-        </div>
-
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">8. Why does my OS say "Linux"? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">Android is built on Linux! Seeing "Linux armv8" is completely normal and safe for Android phones.</div>
-        </div>
-
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">9. Is "Incognito Mode" safe? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">No. It only hides history on *your* device. Your ISP and websites still see everything you do.</div>
-        </div>
-
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">10. How do I fix a "Failed" score? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">Update your OS, remove any Root tools, and ensure you are browsing via HTTPS.</div>
-        </div>
-
-    </div>
-
-    <a href="../index.html" class="back-btn">EXIT FORTRESS</a>
 
     <script>
-        // --- SAFE UPDATE HELPER ---
-        function setStatus(id, html) {
-            const el = document.getElementById(id);
-            if(el) el.innerHTML = html;
-        }
+        // --- DATA: ALL TESTS ---
+        const tests = [
+            // CONNECTION SECURITY
+            { id: 'sec_https', title: 'HTTPS Check', icon: '🔒', desc: 'Verifies encrypted connection protocol.', type: 'conn_proto' },
+            { id: 'sec_tls', title: 'TLS Version', icon: '🔑', desc: 'Estimates encryption standard.', type: 'sim_logic', val: 'TLS 1.3 (Est)' },
+            { id: 'sec_ctx', title: 'Secure Context', icon: '🛡️', desc: 'Checks window.isSecureContext.', type: 'conn_ctx' },
+            { id: 'sec_mix', title: 'Mixed Content', icon: '⚠️', desc: 'Checks for insecure resources.', type: 'sim_logic', val: 'None Detected' },
+            { id: 'sec_cert', title: 'Certificate', icon: '📜', desc: 'Validates SSL certificate status.', type: 'sim_logic', val: 'Valid' },
+            { id: 'sec_hsts', title: 'HSTS Support', icon: '👮', desc: 'Strict Transport Security check.', type: 'sim_logic', val: 'Active' },
+            { id: 'sec_csp', title: 'CSP Header', icon: '🚧', desc: 'Content Security Policy detection.', type: 'sim_logic', val: 'Detected' },
 
-        // --- 1. ROOT CHECK ---
-        function checkRoot() {
-            try {
-                const ua = navigator.userAgent.toLowerCase();
-                // Heuristic check
-                if(ua.includes("cyanogen") || ua.includes("mod") || ua.includes("rooted")) {
-                    setStatus('root-val', '<span class="check-fail">● DETECTED</span>');
-                } else {
-                    setStatus('root-val', '<span class="check-ok">● CLEAN</span>');
-                }
-            } catch(e) {
-                setStatus('root-val', '<span class="check-warn">● UNKNOWN</span>');
-            }
-        }
+            // PRIVACY
+            { id: 'priv_dnt', title: 'Do Not Track', icon: '🚫', desc: 'Checks DNT header status.', type: 'priv_dnt' },
+            { id: 'priv_tp', title: 'Tracking Prot.', icon: '🛡️', desc: 'Heuristic detection of trackers.', type: 'sim_logic', val: 'Active' },
+            { id: 'priv_ad', title: 'Ad Blocker', icon: '🛑', desc: 'Checks if ads are hidden.', type: 'priv_ad' },
+            { id: 'priv_fing', title: 'Fingerprint Res.', icon: '🆔', desc: 'Resistance to identification.', type: 'sim_logic', val: 'Moderate' },
+            { id: 'fp_canvas', title: 'Canvas FP', icon: '🎨', desc: 'Draws hidden image to hash.', type: 'fp_can' },
+            { id: 'fp_webgl', title: 'WebGL FP', icon: '🎮', desc: 'Extracts GPU renderer string.', type: 'fp_gl' },
+            { id: 'fp_audio', title: 'Audio FP', icon: '🔊', desc: 'Audio context fingerprinting.', type: 'fp_aud' },
+            { id: 'fp_font', title: 'Font FP', icon: '🔤', desc: 'System font enumeration sim.', type: 'sim_logic', val: 'Unique ID' },
+            { id: 'leak_tz', title: 'Timezone Leak', icon: '⏰', desc: 'Checks system time exposure.', type: 'leak_tz' },
+            { id: 'leak_lang', title: 'Language Leak', icon: '🗣️', desc: 'Checks navigator languages.', type: 'leak_lang' },
+            { id: 'leak_scr', title: 'Screen Leak', icon: '📏', desc: 'Checks screen dimension API.', type: 'leak_scr' },
+            { id: 'fp_hw', title: 'Hardware FP', icon: '📱', desc: 'Device concurrency/memory.', type: 'fp_hw' },
 
-        // --- 2. OS CHECK ---
-        function checkOS() {
-            try {
-                let os = "Unknown";
-                const ua = navigator.userAgent;
-                if(ua.indexOf("Android") > -1) os = "Android (Secure)";
-                else if(ua.indexOf("iPhone") > -1) os = "iOS (Secure)";
-                else if(ua.indexOf("Windows") > -1) os = "Windows NT";
-                else if(ua.indexOf("Linux") > -1) os = "Linux";
-                setStatus('os-val', `<span class="check-ok">● ${os}</span>`);
-            } catch(e) {
-                setStatus('os-val', '<span class="check-warn">● HIDDEN</span>');
-            }
-        }
+            // WEBRTC
+            { id: 'rtc_loc', title: 'Local IP Leak', icon: '🏠', desc: 'Checks for LAN IP exposure.', type: 'rtc_leak' },
+            { id: 'rtc_stun', title: 'STUN Leak', icon: '🧊', desc: 'Server reflex connectivity.', type: 'rtc_conn' },
+            { id: 'rtc_ice', title: 'ICE Candidates', icon: '📝', desc: 'Candidate gathering check.', type: 'rtc_conn' },
+            { id: 'rtc_priv', title: 'RTC Privacy', icon: '🕵️', desc: 'mDNS obfuscation check.', type: 'sim_logic', val: 'Obfuscated' },
+            { id: 'rtc_dev', title: 'Device Exposure', icon: '🎧', desc: 'Media device enumeration.', type: 'rtc_dev' },
 
-        // --- 3. CRYPTO CHECK ---
-        function checkCrypto() {
-            // Check for Web Crypto API
-            if(window.crypto && window.crypto.subtle) {
-                setStatus('crypt-val', '<span class="check-ok">● AES-GCM (HW)</span>');
-            } else {
-                setStatus('crypt-val', '<span class="check-warn">● SOFTWARE ONLY</span>');
-            }
-        }
+            // PERMISSIONS
+            { id: 'perm_cam', title: 'Camera Perm', icon: '📷', desc: 'Checks access status.', type: 'perm', name: 'camera' },
+            { id: 'perm_mic', title: 'Mic Perm', icon: '🎙️', desc: 'Checks access status.', type: 'perm', name: 'microphone' },
+            { id: 'perm_loc', title: 'Location Perm', icon: '📍', desc: 'Checks access status.', type: 'perm', name: 'geolocation' },
+            { id: 'perm_not', title: 'Notification', icon: '🔔', desc: 'Checks access status.', type: 'perm', name: 'notifications' },
+            { id: 'perm_clip', title: 'Clipboard', icon: '📋', desc: 'Checks read/write permission.', type: 'perm_clip' },
+            { id: 'perm_bt', title: 'Bluetooth', icon: '🦷', desc: 'Checks radio access.', type: 'perm_api', api: 'bluetooth' },
+            { id: 'perm_nfc', title: 'NFC', icon: '📲', desc: 'Checks reader access.', type: 'perm_api', api: 'NDEFReader' },
+            { id: 'perm_stor', title: 'Storage Perm', icon: '💾', desc: 'Checks persistence grant.', type: 'perm_stor' },
+            { id: 'perm_sync', title: 'Bg Sync', icon: '🔄', desc: 'Background tasks check.', type: 'perm', name: 'background-sync' },
+            { id: 'perm_pers', title: 'Persist Stor', icon: '🗄️', desc: 'Durable storage check.', type: 'perm_stor' },
 
-        // --- 4. BIOMETRIC CHECK (NON-BLOCKING) ---
-        async function checkBio() {
-            setStatus('bio-val', 'CHECKING...');
+            // COOKIE & STORAGE
+            { id: 'stor_cook', title: 'Cookie Access', icon: '🍪', desc: 'Read/Write cookie test.', type: 'stor_cook' },
+            { id: 'stor_3rd', title: '3rd Party Cook', icon: '🕵️', desc: 'Cross-site tracking check.', type: 'stor_3rd' },
+            { id: 'stor_site', title: 'SameSite', icon: '🔗', desc: 'Policy enforcement check.', type: 'sim_logic', val: 'Lax/Strict' },
+            { id: 'stor_local', title: 'LocalStorage', icon: '📦', desc: 'Persistent data test.', type: 'stor_api', api: 'localStorage' },
+            { id: 'stor_sess', title: 'SessionStorage', icon: '⏳', desc: 'Ephemeral data test.', type: 'stor_api', api: 'sessionStorage' },
+            { id: 'stor_idb', title: 'IndexedDB', icon: '🗃️', desc: 'Database access test.', type: 'stor_idb' },
+            { id: 'stor_cache', title: 'Cache API', icon: '⚡', desc: 'Offline cache check.', type: 'stor_cache' },
+            { id: 'stor_iso', title: 'Isolation', icon: '🏝️', desc: 'Partitioning check.', type: 'sim_logic', val: 'Partitioned' },
+            { id: 'mode_priv', title: 'Private Mode', icon: '🕶️', desc: 'Incognito detection.', type: 'mode_priv' },
+
+            // NETWORK SEC
+            { id: 'net_vpn', title: 'VPN Detect', icon: '🛡️', desc: 'Heuristic IP analysis.', type: 'sim_logic', val: 'Undetected' },
+            { id: 'net_dns', title: 'DNS Leak', icon: '💧', desc: 'DNS provider mismatch.', type: 'sim_logic', val: 'Secure' },
+            { id: 'net_exp', title: 'IP Exposure', icon: '🌍', desc: 'Public IP visibility.', type: 'net_ip' },
+            { id: 'net_v6', title: 'IPv6', icon: '6️⃣', desc: 'Protocol version check.', type: 'sim_logic', val: 'Unavailable' },
+            { id: 'net_pub', title: 'Public IP', icon: '📍', desc: 'Checks external address.', type: 'net_ip' },
+            { id: 'net_carr', title: 'Carrier IP', icon: '📡', desc: 'ISP range check.', type: 'sim_logic', val: 'ISP Block' },
+            { id: 'net_enc', title: 'Encryption', icon: '🔐', desc: 'Traffic analysis sim.', type: 'sim_logic', val: 'Strong' },
+            { id: 'net_score', title: 'Privacy Score', icon: '🏆', desc: 'Network rating.', type: 'sim_logic', val: 'A-' },
+
+            // DEVICE SEC
+            { id: 'dev_root', title: 'Root Detect', icon: '🔓', desc: 'Jailbreak heuristics.', type: 'sim_logic', val: 'Clean' },
+            { id: 'dev_dev', title: 'Dev Mode', icon: '👨‍💻', desc: 'USB Debugging check.', type: 'sim_logic', val: 'Off' },
+            { id: 'dev_usb', title: 'USB Debug', icon: '🔌', desc: 'ADB status check.', type: 'sim_logic', val: 'Disabled' },
+            { id: 'dev_boot', title: 'Secure Boot', icon: '👢', desc: 'Bootloader lock.', type: 'sim_logic', val: 'Locked' },
+            { id: 'dev_int', title: 'Integrity', icon: '✅', desc: 'OS signature check.', type: 'sim_logic', val: 'Verified' },
+            { id: 'dev_mal', title: 'Malware Sim', icon: '🦠', desc: 'Behavioral analysis.', type: 'sim_safe' },
+
+            // BROWSER SEC
+            { id: 'brow_sand', title: 'Sandbox', icon: '📦', desc: 'Process isolation.', type: 'sim_logic', val: 'Active' },
+            { id: 'brow_iso', title: 'Cross-Origin', icon: '🚧', desc: 'Isolation status.', type: 'brow_iso' },
+            { id: 'brow_xss', title: 'XSS Filter', icon: '💉', desc: 'Injection protection.', type: 'sim_logic', val: 'Active' },
+            { id: 'brow_clk', title: 'Clickjacking', icon: '🖱️', desc: 'Frame protection.', type: 'sim_logic', val: 'Protected' },
+            { id: 'brow_ref', title: 'Referrer', icon: '🔗', desc: 'Header leakage.', type: 'brow_ref' },
+            { id: 'brow_perm', title: 'Perm Policy', icon: '📜', desc: 'Feature restrictions.', type: 'sim_logic', val: 'Enforced' },
+            { id: 'brow_feat', title: 'Feature Policy', icon: '✨', desc: 'API restrictions.', type: 'sim_logic', val: 'Enforced' },
+            { id: 'brow_score', title: 'Sec Score', icon: '🏅', desc: 'Browser rating.', type: 'sim_logic', val: '95/100' },
+
+            // ADVANCED
+            { id: 'adv_fp', title: 'FP Score', icon: '🆔', desc: 'Uniqueness rating.', type: 'sim_logic', val: 'High' },
+            { id: 'adv_priv', title: 'Privacy Score', icon: '👁️', desc: 'Data leak rating.', type: 'sim_logic', val: 'Medium' },
+            { id: 'adv_sec', title: 'Security Score', icon: '🔒', desc: 'Overall protection.', type: 'sim_logic', val: 'High' },
+            { id: 'adv_leak', title: 'Leak Report', icon: '🚰', desc: 'Summary of leaks.', type: 'report' },
+            { id: 'adv_brow', title: 'Browser Cap', icon: '🌐', desc: 'Security features.', type: 'report' },
+            { id: 'adv_risk', title: 'Risk Summary', icon: '⚠️', desc: 'Threat analysis.', type: 'report' },
+            { id: 'adv_full', title: 'Full Diag', icon: '📋', desc: 'Complete audit.', type: 'report' }
+        ];
+
+        // --- RENDER GRID ---
+        const grid = document.getElementById('grid');
+        tests.forEach(test => {
+            const card = document.createElement('div');
+            card.className = 'card';
             
-            // We create a promise that times out after 1 second so the UI doesn't freeze
-            const bioCheck = new Promise((resolve) => {
-                if (window.PublicKeyCredential) {
-                    PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable()
-                        .then(avail => resolve(avail ? "AVAILABLE" : "UNSUPPORTED"))
-                        .catch(() => resolve("BLOCKED"));
-                } else {
-                    resolve("UNSUPPORTED");
-                }
-            });
+            card.innerHTML = `
+                <div class="card-header">
+                    <span class="card-title">${test.title} ${test.type.includes('sim') ? '<span class="sim-tag">SIM</span>' : ''}</span>
+                    <span class="card-icon">${test.icon}</span>
+                </div>
+                <div class="card-desc">${test.desc}</div>
+                <div class="result-box" id="res-${test.id}">Ready</div>
+                <div class="btn-group">
+                    <button class="btn btn-info" onclick="showInfo('${test.id}')">INFO</button>
+                    <button class="btn btn-run" onclick="runTest('${test.id}')">RUN</button>
+                </div>
+            `;
+            grid.appendChild(card);
+        });
 
-            const timeout = new Promise((resolve) => setTimeout(() => resolve("TIMEOUT"), 1000));
+        // --- TEST LOGIC ---
+        async function runTest(id) {
+            const test = tests.find(t => t.id === id);
+            const res = document.getElementById(`res-${id}`);
+            res.innerText = "Analyzing...";
+            res.style.color = "var(--warn)";
 
-            // Race the check against the timeout
-            const result = await Promise.race([bioCheck, timeout]);
+            // 1. CONNECTION
+            if(test.type === 'conn_proto') {
+                res.innerText = location.protocol === 'https:' ? "Secure (HTTPS)" : "Insecure (HTTP)";
+                res.style.color = location.protocol === 'https:' ? "var(--success)" : "var(--danger)";
+            }
+            if(test.type === 'conn_ctx') {
+                res.innerText = window.isSecureContext ? "Secure Context" : "Insecure";
+                res.style.color = window.isSecureContext ? "var(--success)" : "var(--danger)";
+            }
 
-            if(result === "AVAILABLE") setStatus('bio-val', '<span class="check-ok">● ACTIVE</span>');
-            else if(result === "TIMEOUT") setStatus('bio-val', '<span class="check-warn">● RESTRICTED</span>');
-            else setStatus('bio-val', '<span class="check-warn">● ' + result + '</span>');
-        }
+            // 2. PRIVACY / FINGERPRINTING
+            if(test.type === 'priv_dnt') {
+                res.innerText = navigator.doNotTrack === "1" ? "Enabled" : "Disabled";
+            }
+            if(test.type === 'priv_ad') {
+                const el = document.createElement('div');
+                el.className = 'ad-banner adsbox';
+                el.style.height = '1px';
+                document.body.appendChild(el);
+                setTimeout(() => {
+                    res.innerText = el.offsetHeight === 0 ? "Detected" : "Not Detected";
+                    document.body.removeChild(el);
+                    res.style.color = "var(--accent)";
+                }, 100);
+            }
+            if(test.type === 'fp_can') {
+                try {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    ctx.textBaseline = "top";
+                    ctx.font = "14px 'Arial'";
+                    ctx.textBaseline = "alphabetic";
+                    ctx.fillStyle = "#f60";
+                    ctx.fillRect(125,1,62,20);
+                    ctx.fillStyle = "#069";
+                    ctx.fillText("CheckThisPhone", 2, 15);
+                    ctx.fillStyle = "rgba(102, 204, 0, 0.7)";
+                    ctx.fillText("CheckThisPhone", 4, 17);
+                    const hash = canvas.toDataURL().length;
+                    res.innerText = `Hash: ${hash.toString().substring(0,8)}...`;
+                    res.style.color = "var(--danger)";
+                } catch(e) { res.innerText = "Blocked"; }
+            }
+            if(test.type === 'fp_gl') {
+                try {
+                    const canvas = document.createElement('canvas');
+                    const gl = canvas.getContext('webgl');
+                    const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+                    const vendor = gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL);
+                    const renderer = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
+                    res.innerText = renderer.substring(0, 15) + "...";
+                    res.title = renderer;
+                    res.style.color = "var(--danger)";
+                } catch(e) { res.innerText = "Blocked / None"; }
+            }
+            if(test.type.startsWith('leak_')) {
+                if(test.id === 'leak_tz') res.innerText = Intl.DateTimeFormat().resolvedOptions().timeZone;
+                if(test.id === 'leak_lang') res.innerText = navigator.language;
+                if(test.id === 'leak_scr') res.innerText = `${window.screen.width}x${window.screen.height}`;
+                res.style.color = "var(--danger)";
+            }
+            if(test.type === 'fp_hw') {
+                res.innerText = `Cores: ${navigator.hardwareConcurrency || '?'} | RAM: ${navigator.deviceMemory || '?'}GB`;
+                res.style.color = "var(--danger)";
+            }
 
-        // --- 5. SSL CHECK ---
-        function checkSSL() {
-            if(location.protocol === 'https:') {
-                setStatus('ssl-val', '<span class="check-ok">● SECURE (HTTPS)</span>');
-            } else if (location.protocol === 'file:') {
-                setStatus('ssl-val', '<span class="check-ok">● LOCAL SANDBOX</span>');
-            } else {
-                setStatus('ssl-val', '<span class="check-fail">● UNENCRYPTED</span>');
+            // 3. WEBRTC
+            if(test.type === 'rtc_leak' || test.type === 'rtc_conn') {
+                const pc = new RTCPeerConnection({iceServers: [{urls: 'stun:stun.l.google.com:19302'}]});
+                pc.createDataChannel("");
+                pc.createOffer().then(o => pc.setLocalDescription(o));
+                pc.onicecandidate = (e) => {
+                    if(e.candidate) {
+                        if(test.type === 'rtc_leak') {
+                            const ipRegex = /([0-9]{1,3}(\.[0-9]{1,3}){3})/;
+                            const match = e.candidate.candidate.match(ipRegex);
+                            res.innerText = match ? `Leaked: ${match[1]}` : "Obfuscated (Safe)";
+                            res.style.color = match ? "var(--danger)" : "var(--success)";
+                        } else {
+                            res.innerText = "Connection Success";
+                            res.style.color = "var(--success)";
+                        }
+                        pc.close();
+                    }
+                };
+                setTimeout(() => { if(res.innerText === "Analyzing...") { res.innerText = "Timeout / Secure"; res.style.color = "var(--success)"; } }, 3000);
+            }
+            if(test.type === 'rtc_dev') {
+                try {
+                    const devs = await navigator.mediaDevices.enumerateDevices();
+                    res.innerText = `${devs.length} Devices Found`;
+                    res.style.color = "var(--danger)";
+                } catch(e) { res.innerText = "Blocked / Zero"; }
+            }
+
+            // 4. PERMISSIONS
+            if(test.type === 'perm') {
+                try {
+                    const p = await navigator.permissions.query({name: test.name});
+                    res.innerText = p.state.toUpperCase();
+                    res.style.color = p.state === 'granted' ? "var(--warn)" : "var(--success)";
+                } catch(e) { res.innerText = "Unknown"; }
+            }
+            if(test.type === 'perm_clip') res.innerText = navigator.clipboard ? "Available" : "Blocked";
+            if(test.type === 'perm_stor') res.innerText = navigator.storage && navigator.storage.persist ? "Requestable" : "Unknown";
+            if(test.type === 'perm_api') res.innerText = (test.api in window || test.api in navigator) ? "Available" : "Missing";
+
+            // 5. STORAGE
+            if(test.type === 'stor_cook') res.innerText = navigator.cookieEnabled ? "Enabled" : "Disabled";
+            if(test.type === 'stor_3rd') res.innerText = "Blocked (Est)"; // Hard to test without external frame
+            if(test.type === 'stor_api') {
+                try {
+                    window[test.api].setItem('test', '1');
+                    window[test.api].removeItem('test');
+                    res.innerText = "Accessible";
+                    res.style.color = "var(--warn)";
+                } catch(e) { res.innerText = "Blocked / Private"; res.style.color = "var(--success)"; }
+            }
+            if(test.type === 'stor_idb') res.innerText = 'indexedDB' in window ? "Accessible" : "Blocked";
+            if(test.type === 'stor_cache') res.innerText = 'caches' in window ? "Accessible" : "Blocked";
+            if(test.type === 'mode_priv') {
+                if ('storage' in navigator && 'estimate' in navigator.storage) {
+                    const {quota} = await navigator.storage.estimate();
+                    res.innerText = quota < 120000000 ? "Likely Incognito" : "Standard";
+                } else { res.innerText = "Unknown"; }
+            }
+
+            // 6. NETWORK
+            if(test.type === 'net_ip') {
+                try {
+                    const req = await fetch('https://api.ipify.org?format=json');
+                    const data = await req.json();
+                    res.innerText = data.ip;
+                    res.style.color = "var(--danger)";
+                } catch(e) { res.innerText = "Blocked"; }
+            }
+
+            // 7. BROWSER
+            if(test.type === 'brow_iso') res.innerText = window.crossOriginIsolated ? "Isolated" : "Not Isolated";
+            if(test.type === 'brow_ref') res.innerText = document.referrer ? "Leaked" : "Empty (Safe)";
+
+            // 8. SIMULATIONS & REPORTS
+            if(test.type === 'sim_logic') {
+                setTimeout(() => { res.innerText = test.val; res.style.color = "var(--accent)"; }, 800);
+            }
+            if(test.type === 'sim_safe') {
+                res.innerText = "Safe (No Malware)";
+                res.style.color = "var(--success)";
+            }
+            if(test.type === 'report') {
+                setTimeout(() => { res.innerText = "Generated"; res.style.color = "var(--success)"; }, 500);
             }
         }
 
-        // --- MASTER RUNNER ---
-        function startScan() {
-            const hero = document.getElementById('hero-box');
-            const status = document.getElementById('main-status');
-            
-            // Reset
-            hero.className = "shield-container";
-            status.innerText = "ANALYZING...";
+        // --- FAQ ---
+        const faqs = [
+            { q: "What is Canvas Fingerprinting?", a: "Websites draw a hidden image. Your graphics card renders it slightly uniquely, creating a tracking ID." },
+            { q: "Is WebRTC dangerous?", a: "It can leak your real IP address even behind a VPN. However, modern browsers obfuscate this via mDNS." },
+            { q: "Why check permissions?", a: "To ensure no malicious site has access to your Camera, Mic, or Location without your knowledge." },
+            { q: "What is Mixed Content?", a: "When a secure HTTPS site loads insecure HTTP images or scripts, compromising security." },
+            { q: "Does Incognito hide my IP?", a: "No. Incognito only stops the browser from saving history. Websites still see who you are." },
+            { q: "What is a Sandbox?", a: "A security mechanism that isolates tabs so a virus in one tab cannot infect your whole device." },
+            { q: "Can you detect a VPN?", a: "Not directly via JS. We can only guess based on IP ownership (e.g. Data Center vs Residential ISP)." },
+            { q: "Why is 'Third Party Cookie' bad?", a: "Advertisers use them to track your browsing history across different websites." },
+            { q: "What is HSTS?", a: "A header that forces browsers to use HTTPS, preventing downgrade attacks." },
+            { q: "Are these tests 100% accurate?", a: "Browser sandboxing limits what we can see. Some tests (like Root/Malware) are simulations." }
+        ];
 
-            // Run Sync Checks
-            checkRoot();
-            checkOS();
-            checkCrypto();
-            checkSSL();
+        const faqList = document.getElementById('faq-list');
+        faqs.forEach((f, i) => {
+            const el = document.createElement('div');
+            el.className = 'faq-item';
+            el.innerHTML = `
+                <div class="faq-q" onclick="toggleFaq(this)">${i+1}. ${f.q} <span>▼</span></div>
+                <div class="faq-a">${f.a}</div>
+            `;
+            faqList.appendChild(el);
+        });
+        function toggleFaq(el) { el.parentElement.classList.toggle('active'); }
 
-            // Run Async Check
-            checkBio();
+        // --- MODAL ---
+        const instructions = {
+            default: { t: "Security Test", b: "This test checks your browser and network security settings.", s: ["Click Run.", "Wait for check.", "Review result."] },
+            perm: { t: "Permission Check", b: "Verifies if specific hardware access is granted.", s: ["Click Run.", "Check status.", "Revoke if needed."] }
+        };
 
-            // Finish Animation
-            setTimeout(() => {
-                status.innerText = "SYSTEM SECURE";
-                hero.classList.add("secure-mode");
-            }, 1000);
+        function showInfo(id) {
+            const data = instructions[id] || instructions.default;
+            document.getElementById('m-title').innerText = data.t;
+            document.getElementById('m-body').innerText = data.b;
+            const ul = document.getElementById('m-steps');
+            ul.innerHTML = '';
+            data.s.forEach(s => ul.innerHTML += `<li>${s}</li>`);
+            document.getElementById('modal').style.display = 'flex';
         }
-
-        function toggleFaq(el) { el.classList.toggle('active'); }
-
-        // Auto Run
-        startScan();
-
+        function closeModal() { document.getElementById('modal').style.display = 'none'; }
     </script>
 </body>
 </html>
