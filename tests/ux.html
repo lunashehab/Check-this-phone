@@ -18,7 +18,7 @@
             --danger: #ff0055; 
         }
         
-        * { box-sizing: border-box; touch-action: manipulation; }
+        * { box-sizing: border-box; touch-action: manipulation; -webkit-tap-highlight-color: transparent; user-select: none; }
         body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; padding: 20px; margin: 0; min-height: 100vh; font-size: 14px; overflow-x: hidden; }
         
         /* HEADER */
@@ -29,53 +29,53 @@
         .blink { animation: blink 1s infinite; width: 6px; height: 6px; background: var(--secondary); border-radius: 50%; }
         @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0; } 100% { opacity: 1; } }
 
+        /* INSTRUCTION PANELS */
+        .info-panel { background: rgba(59, 130, 246, 0.05); border-left: 3px solid var(--secondary); padding: 15px; margin-bottom: 15px; border-radius: 0 8px 8px 0; font-size: 12px; line-height: 1.5; color: var(--text-bright); }
+        .info-title { font-weight: 800; color: var(--secondary); text-transform: uppercase; margin-bottom: 5px; display: block; letter-spacing: 1px; }
+
         /* REFLEX HERO */
         .reflex-box { 
-            background: #1a1a2e; border: 2px dashed var(--border); border-radius: 16px; height: 200px; margin-bottom: 20px; 
+            background: #1a1a2e; border: 2px dashed var(--border); border-radius: 16px; height: 180px; margin-bottom: 20px; 
             display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; transition: 0.1s; position: relative; overflow: hidden;
         }
+        .reflex-box:active { transform: scale(0.98); }
         .reflex-box.ready { background: var(--danger); border-color: var(--danger); }
         .reflex-box.go { background: var(--success); border-color: var(--success); }
         
         .reflex-title { font-size: 24px; font-weight: 800; color: white; pointer-events: none; }
         .reflex-sub { font-size: 12px; color: rgba(255,255,255,0.7); pointer-events: none; margin-top: 5px; }
 
-        /* DATA GRID */
-        .grid-master { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
-        
-        .stat-card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 15px; }
-        .stat-label { font-size: 10px; text-transform: uppercase; color: var(--text); display: block; margin-bottom: 4px; letter-spacing: 1px; }
-        .stat-val { font-family: 'JetBrains Mono', monospace; font-size: 18px; font-weight: 700; color: var(--text-bright); }
-        .unit { font-size: 12px; color: var(--text); font-weight: 400; }
-
-        /* SCROLL JANK TEST */
+        /* SCROLL TEST */
         .scroll-container { 
-            height: 150px; overflow-y: scroll; background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 10px; margin-bottom: 20px; position: relative;
+            height: 200px; overflow-y: scroll; background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 10px; margin-bottom: 20px; position: relative;
+            transform: translateZ(0); -webkit-overflow-scrolling: touch;
         }
         .scroll-item { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); color: var(--text); font-size: 12px; display: flex; justify-content: space-between; }
-        .fps-overlay { position: absolute; top: 10px; right: 20px; background: #000; padding: 4px 8px; border-radius: 6px; font-family: 'JetBrains Mono'; font-size: 12px; color: var(--accent); border: 1px solid var(--accent); pointer-events: none; }
+        .fps-overlay { position: absolute; top: 10px; right: 20px; background: #000; padding: 4px 8px; border-radius: 6px; font-family: 'JetBrains Mono'; font-size: 12px; color: var(--accent); border: 1px solid var(--accent); pointer-events: none; z-index: 10; }
 
-        /* TARGET PRACTICE */
+        /* AIM TRAINER */
         .target-zone { 
-            height: 200px; background: #000; border: 1px solid var(--border); border-radius: 12px; position: relative; margin-bottom: 20px; overflow: hidden; cursor: crosshair;
+            height: 250px; background: #000; border: 1px solid var(--border); border-radius: 12px; position: relative; margin-bottom: 20px; overflow: hidden; cursor: crosshair;
         }
         .target { 
-            position: absolute; width: 40px; height: 40px; background: var(--secondary); border-radius: 50%; 
+            position: absolute; width: 60px; height: 60px; background: var(--secondary); border-radius: 50%; 
             display: flex; justify-content: center; align-items: center; box-shadow: 0 0 15px var(--secondary);
-            transition: transform 0.1s;
+            transition: transform 0.05s; z-index: 2;
         }
-        .target::after { content: ""; width: 10px; height: 10px; background: white; border-radius: 50%; }
-        .target:active { transform: scale(0.9); background: white; }
+        .target::after { content: ""; width: 20px; height: 20px; background: white; border-radius: 50%; pointer-events: none; }
+        .target:active { transform: scale(0.8); background: white; }
 
-        /* TERMINAL */
-        .terminal { background: #000; border: 1px solid var(--border); border-radius: 8px; padding: 10px; height: 120px; overflow: hidden; font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--accent); position: relative; }
-        .log-line { margin-bottom: 2px; opacity: 0.8; }
-        .terminal::after { content: ""; position: absolute; bottom: 0; left: 0; width: 100%; height: 20px; background: linear-gradient(to top, #000, transparent); }
+        /* FAQ ACCORDION */
+        .faq-section { display: grid; gap: 10px; margin-top: 30px; }
+        .faq-item { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+        .faq-q { padding: 15px; font-weight: 700; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .faq-q:hover { color: var(--accent); }
+        .faq-a { padding: 0 15px 15px 15px; color: var(--text); font-size: 12px; line-height: 1.5; display: none; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px; }
+        .faq-icon { font-size: 10px; transition: 0.2s; }
+        .faq-item.active .faq-a { display: block; }
+        .faq-item.active .faq-icon { transform: rotate(180deg); color: var(--accent); }
 
         .back-btn { display: block; text-align: center; margin-top: 20px; color: var(--text); text-decoration: none; font-weight: 700; padding: 15px; background: var(--panel); border-radius: 12px; }
-        
-        .action-btn { background: var(--panel); border: 1px solid var(--border); color: var(--text-bright); width: 100%; padding: 15px; border-radius: 12px; font-weight: 700; margin-bottom: 10px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: 0.2s; }
-        .action-btn:hover { border-color: var(--accent); color: var(--accent); }
     </style>
 </head>
 <body>
@@ -85,78 +85,125 @@
         <div class="live-badge"><div class="blink"></div> INPUT READY</div>
     </div>
 
-    <div class="reflex-box" id="reflex-btn" onclick="handleReflex()">
+    <div class="info-panel">
+        <span class="info-title">1. REFLEX & LATENCY</span>
+        Measures the delay between your brain, your finger, and the screen. <br>
+        <strong>GODLIKE:</strong> &lt; 200ms <br>
+        <strong>AVERAGE:</strong> 250ms - 350ms <br>
+        <strong>LAGGY:</strong> &gt; 400ms (Could be screen latency)
+    </div>
+
+    <div class="reflex-box" id="reflex-btn" ontouchstart="handleReflex(event)" onclick="handleReflex(event)">
         <div class="reflex-title">TAP TO START</div>
-        <div class="reflex-sub">Reflex Speed Test</div>
+        <div class="reflex-sub">Wait for GREEN, then tap!</div>
     </div>
 
-    <div class="grid-master">
-        <div class="stat-card">
-            <span class="stat-label">REACTION TIME</span>
-            <span class="stat-val" id="score-reflex">--<span class="unit">ms</span></span>
-        </div>
-        <div class="stat-card">
-            <span class="stat-label">INPUT LATENCY</span>
-            <span class="stat-val" id="score-lag">--<span class="unit">ms</span></span>
-        </div>
+    <div class="info-panel">
+        <span class="info-title">2. SCROLL FLUIDITY</span>
+        Swipe up and down quickly. We measure the Frame Rate (FPS). <br>
+        <strong>120 FPS:</strong> ProMotion / Ultra Smooth <br>
+        <strong>60 FPS:</strong> Standard Standard <br>
+        <strong>&lt;30 FPS:</strong> Major Stutter / Lag
     </div>
 
-    <h3 style="font-size: 12px; color: var(--text); margin-bottom: 10px;">SCROLL SMOOTHNESS TEST</h3>
     <div class="scroll-container" id="scroll-box" onscroll="measureScroll()">
         <div class="fps-overlay" id="scroll-fps">0 FPS</div>
         </div>
 
-    <h3 style="font-size: 12px; color: var(--text); margin-bottom: 10px;">ACCURACY CALIBRATION</h3>
-    <div class="target-zone" id="aim-box">
-        <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); color: var(--text); font-size: 10px; pointer-events: none;">TAP DOTS TO TEST</div>
+    <div class="info-panel">
+        <span class="info-title">3. DIGITIZER ACCURACY</span>
+        Tests for "Ghost Touches" and calibration issues. Tap the blue dots. <br>
+        <strong>GOAL:</strong> Hit 10 targets with 100% accuracy.
     </div>
 
-    <div class="grid-master">
-        <div class="stat-card">
-            <span class="stat-label">ACCURACY</span>
-            <span class="stat-val" id="score-acc">100<span class="unit">%</span></span>
-        </div>
-        <div class="stat-card">
-            <span class="stat-label">HITS</span>
-            <span class="stat-val" id="score-hits">0</span>
-        </div>
+    <div class="target-zone" id="aim-box" ontouchstart="handleMiss(event)" onclick="handleMiss(event)">
+        <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); color: var(--text); font-size: 10px; pointer-events: none;">TAP TARGETS</div>
+    </div>
+    <div style="display:flex; justify-content:space-between; margin-bottom: 20px; font-family:'JetBrains Mono'; font-size:12px; padding: 0 10px;">
+        <span style="color:var(--text)">SCORE: <span id="score-hits" style="color:var(--text-bright)">0</span></span>
+        <span style="color:var(--text)">ACCURACY: <span id="score-acc" style="color:var(--success)">100%</span></span>
     </div>
 
-    <div class="terminal" id="console-output">
-        <div class="log-line">> UX MODULE INIT...</div>
-        <div class="log-line">> WAITING FOR INPUT...</div>
+    <h3 style="font-size: 14px; margin-bottom: 15px; color: var(--text-bright);">FAQ: USER EXPERIENCE</h3>
+    <div class="faq-section">
+        
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">1. Why is my reflex time over 300ms? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">This is normal human reaction time! Pro gamers train to get ~180ms. If it's over 500ms, your phone might have high "Input Latency."</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">2. What is "Input Latency"? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">It's the delay between your finger touching the glass and the software registering the click. Gaming phones aim for &lt;20ms.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">3. Why does scrolling feel "choppy"? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">This is called "Jank." It happens when the processor can't render the list fast enough. 60 FPS is the minimum for smooth motion.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">4. What is "Ghost Touch"? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">If the Aim Trainer registers a "Miss" when you didn't touch the screen, your digitizer might be damaged or dirty.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">5. Does a screen protector affect this? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">Yes. Thick glass protectors can reduce touch sensitivity, causing missed taps in the Aim Trainer.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">6. What is 120Hz vs 60Hz? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">Hz is how many times the screen updates per second. 120Hz feels 2x smoother than 60Hz but uses more battery.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">7. Why use "TouchStart" vs "Click"? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">Standard "Click" events wait 300ms to see if you are double-tapping. "TouchStart" is instant, which we use here for accuracy.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">8. Can I improve my score? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">Yes! Turn on "Game Mode" or "High Sensitivity" in your phone settings to prioritize touch response.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">9. Why did I miss the target? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">It could be user error (fat finger) or a "Dead Zone" in the screen where touch isn't registered.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">10. Is 0ms latency possible? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">No. Physics dictates some delay for the signal to travel from the glass to the CPU, but modern phones get very close!</div>
+        </div>
+
     </div>
 
     <a href="../index.html" class="back-btn">EXIT UX LAB</a>
 
     <script>
-        // --- LOGGING ---
-        function log(msg) {
-            const term = document.getElementById('console-output');
-            const line = document.createElement('div');
-            line.className = 'log-line';
-            line.innerHTML = `<span style="color:#64748b">[UX]</span> ${msg}`;
-            term.appendChild(line);
-            if(term.children.length > 6) term.removeChild(term.children[0]);
-            term.scrollTop = term.scrollHeight;
-        }
-
-        // --- 1. REFLEX TEST ---
-        let reflexState = 'idle'; // idle, wait, go
+        // --- 1. REFLEX TEST LOGIC ---
+        let reflexState = 'idle'; 
         let startTime = 0;
         let timeoutId;
         const box = document.getElementById('reflex-btn');
         const title = document.querySelector('.reflex-title');
         const sub = document.querySelector('.reflex-sub');
+        let lastTouch = 0;
 
-        function handleReflex() {
+        function handleReflex(e) {
+            e.preventDefault(); // Stop zoom/scroll on tap
+            const now = Date.now();
+            if(now - lastTouch < 500) return; // Debounce
+            lastTouch = now;
+
             if (reflexState === 'idle') {
                 reflexState = 'wait';
                 box.className = 'reflex-box ready';
                 title.innerText = "WAIT FOR GREEN...";
                 sub.innerText = "Don't tap yet!";
                 
-                const delay = 2000 + Math.random() * 3000; // 2-5s random
+                const delay = 2000 + Math.random() * 3000;
                 timeoutId = setTimeout(() => {
                     reflexState = 'go';
                     box.className = 'reflex-box go';
@@ -170,38 +217,26 @@
                 box.className = 'reflex-box';
                 title.innerText = "TOO EARLY!";
                 sub.innerText = "Tap to try again";
-                log("> FALSE START DETECTED");
             } 
             else if (reflexState === 'go') {
                 const endTime = performance.now();
                 const score = Math.round(endTime - startTime);
-                
                 reflexState = 'idle';
                 box.className = 'reflex-box';
                 title.innerText = score + " ms";
-                sub.innerText = getRank(score);
                 
-                document.getElementById('score-reflex').innerHTML = score + '<span class="unit">ms</span>';
-                log(`> REACTION TIME: ${score}ms`);
+                let rank = "AVERAGE";
+                if(score < 200) rank = "GODLIKE 🏆";
+                else if(score > 400) rank = "SLOW 💤";
                 
-                // Input Latency Estimate (Heuristic)
-                // We assume ~15ms of that is system processing
-                document.getElementById('score-lag').innerHTML = "~15<span class="unit">ms</span>";
+                sub.innerText = rank;
             }
         }
 
-        function getRank(ms) {
-            if(ms < 180) return "GODLIKE 🏆";
-            if(ms < 250) return "PRO GAMER 🎮";
-            if(ms < 350) return "AVERAGE HUMAN 👤";
-            return "SLEEPY... 💤";
-        }
-
-        // --- 2. SCROLL JANK ---
+        // --- 2. SCROLL LOGIC ---
         const scrollBox = document.getElementById('scroll-box');
-        // Fill scroll box
-        for(let i=0; i<50; i++) {
-            scrollBox.innerHTML += `<div class="scroll-item"><span>System Process ID: 0x${Math.floor(Math.random()*9999)}</span><span>Running</span></div>`;
+        for(let i=0; i<100; i++) {
+            scrollBox.innerHTML += `<div class="scroll-item"><span>Process ID: 0x${Math.floor(Math.random()*9999)}</span><span>Running</span></div>`;
         }
 
         let lastScrollTime = 0;
@@ -209,73 +244,69 @@
             const now = performance.now();
             const delta = now - lastScrollTime;
             lastScrollTime = now;
-            
-            // FPS = 1000 / frame time
             let fps = Math.round(1000 / delta);
-            if(fps > 120) fps = 60; // Cap visual glitch
+            if(fps > 120) fps = 120;
             
-            document.getElementById('scroll-fps').innerText = fps + " FPS";
-            
-            if(fps < 30) {
-                document.getElementById('scroll-fps').style.color = "var(--danger)";
-                document.getElementById('scroll-fps').style.borderColor = "var(--danger)";
-            } else {
-                document.getElementById('scroll-fps').style.color = "var(--accent)";
-                document.getElementById('scroll-fps').style.borderColor = "var(--accent)";
-            }
+            const el = document.getElementById('scroll-fps');
+            el.innerText = fps + " FPS";
+            el.style.color = fps < 30 ? "var(--danger)" : "var(--accent)";
+            el.style.borderColor = fps < 30 ? "var(--danger)" : "var(--accent)";
         }
 
-        // --- 3. TARGET PRACTICE ---
+        // --- 3. AIM LOGIC ---
         const aimBox = document.getElementById('aim-box');
         let hits = 0;
         let total = 0;
 
         function spawnTarget() {
-            // Remove old
             const old = document.querySelector('.target');
             if(old) old.remove();
 
             const t = document.createElement('div');
             t.className = 'target';
             
-            // Random Pos (keep inside box)
-            const x = Math.random() * (aimBox.offsetWidth - 50);
-            const y = Math.random() * (aimBox.offsetHeight - 50);
+            // Random Pos (Safe area)
+            const x = 30 + Math.random() * (aimBox.offsetWidth - 90);
+            const y = 30 + Math.random() * (aimBox.offsetHeight - 90);
             
             t.style.left = x + "px";
             t.style.top = y + "px";
             
-            t.onclick = (e) => {
-                e.stopPropagation(); // Don't trigger miss
-                hitTarget();
-            };
+            t.ontouchstart = (e) => { e.stopPropagation(); hitTarget(); };
+            t.onmousedown = (e) => { e.stopPropagation(); hitTarget(); };
             
             aimBox.appendChild(t);
         }
 
-        aimBox.onclick = () => {
-            // Clicked box but missed target
-            log("> MISS!");
-            total++;
-            updateAcc();
-        };
+        function handleMiss(e) {
+            if(e.target === aimBox) {
+                total++;
+                updateAcc();
+            }
+        }
 
         function hitTarget() {
             hits++;
             total++;
             updateAcc();
             document.getElementById('score-hits').innerText = hits;
-            log("> DIRECT HIT");
             spawnTarget();
         }
 
         function updateAcc() {
+            if(total === 0) return;
             const acc = Math.round((hits / total) * 100);
-            document.getElementById('score-acc').innerHTML = acc + '<span class="unit">%</span>';
+            const el = document.getElementById('score-acc');
+            el.innerText = acc + "%";
+            el.style.color = acc < 80 ? "var(--danger)" : "var(--success)";
         }
-
-        // Start Aim Game
+        
         spawnTarget();
+
+        // --- FAQ TOGGLE ---
+        function toggleFaq(el) {
+            el.classList.toggle('active');
+        }
 
     </script>
 </body>
