@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Don Systems Audio Studio</title>
+    <title>Don Systems Audio Lab</title>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         :root { 
@@ -12,333 +12,309 @@
             --border: #2d3748; 
             --text: #a0aec0; 
             --text-bright: #e2e8f0;
-            --accent: #f000ff; /* Neon Purple */
+            --accent: #3b82f6; /* Electric Blue */
+            --secondary: #ec4899; /* Neon Pink */
             --success: #00ff9d; 
+            --danger: #ff0055; 
             --warn: #ffb700; 
         }
         
-        * { box-sizing: border-box; }
+        * { box-sizing: border-box; touch-action: manipulation; -webkit-tap-highlight-color: transparent; user-select: none; }
         body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; padding: 20px; margin: 0; min-height: 100vh; font-size: 14px; overflow-x: hidden; }
         
         /* HEADER */
         .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 15px; margin-bottom: 20px; }
         .logo { font-family: 'JetBrains Mono', monospace; font-weight: 800; font-size: 18px; color: var(--text-bright); letter-spacing: -1px; }
         .logo span { color: var(--accent); }
-        .live-badge { display: flex; align-items: center; gap: 6px; font-size: 10px; color: var(--success); font-weight: 700; background: rgba(0, 255, 157, 0.1); padding: 4px 8px; border-radius: 4px; border: 1px solid rgba(0, 255, 157, 0.2); }
-        .blink { animation: blink 1s infinite; width: 6px; height: 6px; background: var(--success); border-radius: 50%; }
+        .live-badge { display: flex; align-items: center; gap: 6px; font-size: 10px; color: var(--accent); font-weight: 700; background: rgba(59, 130, 246, 0.1); padding: 4px 8px; border-radius: 4px; border: 1px solid rgba(59, 130, 246, 0.2); }
+        .blink { animation: blink 1s infinite; width: 6px; height: 6px; background: var(--accent); border-radius: 50%; }
         @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0; } 100% { opacity: 1; } }
 
-        /* VISUALIZER HERO */
-        .scope-container { 
-            background: #000; border: 1px solid var(--border); border-radius: 16px; height: 200px; position: relative; overflow: hidden; margin-bottom: 20px;
-            box-shadow: inset 0 0 50px rgba(0,0,0,0.8);
+        /* VISUALIZER */
+        .viz-container { 
+            background: #000; border: 2px solid var(--border); border-radius: 16px; height: 180px; margin-bottom: 20px; 
+            position: relative; overflow: hidden; display: flex; justify-content: center; align-items: flex-end;
         }
-        canvas { width: 100%; height: 100%; display: block; }
-        .hz-display { position: absolute; top: 15px; left: 20px; font-family: 'JetBrains Mono', monospace; font-size: 24px; color: var(--accent); font-weight: 800; text-shadow: 0 0 10px var(--accent); }
-        .db-display { position: absolute; top: 15px; right: 20px; font-family: 'JetBrains Mono', monospace; font-size: 14px; color: var(--text); }
+        canvas { width: 100%; height: 100%; }
+        .mic-status { position: absolute; top: 10px; right: 10px; font-size: 10px; color: var(--accent); border: 1px solid var(--accent); padding: 4px 8px; border-radius: 4px; background: rgba(0,0,0,0.5); }
 
-        /* CONTROLS */
-        .control-panel { display: flex; flex-direction: column; gap: 15px; margin-bottom: 20px; }
+        /* INSTRUCTION PANELS */
+        .info-panel { background: rgba(59, 130, 246, 0.05); border-left: 3px solid var(--accent); padding: 15px; margin-bottom: 15px; border-radius: 0 8px 8px 0; font-size: 12px; line-height: 1.5; color: var(--text-bright); }
+        .info-title { font-weight: 800; color: var(--accent); text-transform: uppercase; margin-bottom: 5px; display: block; letter-spacing: 1px; }
+
+        /* CONTROLS GRID */
+        .control-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+        .btn-tone { background: var(--panel); border: 1px solid var(--border); color: var(--text-bright); padding: 15px 5px; border-radius: 8px; font-weight: 700; font-size: 11px; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; transition: 0.1s; text-align: center; }
+        .btn-tone:active { background: var(--accent); color: white; border-color: var(--accent); transform: scale(0.98); }
+        .hz-label { font-size: 9px; opacity: 0.7; }
         
-        /* SLIDER */
-        .slider-box { background: var(--panel); padding: 20px; border-radius: 12px; border: 1px solid var(--border); }
-        .range-label { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 12px; font-weight: 700; color: var(--text-bright); }
-        input[type=range] { width: 100%; -webkit-appearance: none; background: transparent; }
-        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 20px; width: 20px; border-radius: 50%; background: var(--accent); cursor: pointer; margin-top: -8px; box-shadow: 0 0 10px var(--accent); }
-        input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 4px; cursor: pointer; background: var(--border); border-radius: 2px; }
+        .btn-stop { grid-column: span 3; background: var(--danger); color: white; border: none; padding: 15px; margin-top: 10px; }
 
-        /* BUTTON GRID */
-        .btn-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-        .btn-audio { background: var(--panel); border: 1px solid var(--border); color: var(--text-bright); padding: 15px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 11px; text-align: center; transition: 0.2s; display: flex; flex-direction: column; align-items: center; gap: 5px; }
-        .btn-audio:active { transform: scale(0.95); background: var(--border); }
-        .btn-audio.active { border-color: var(--success); color: var(--success); background: rgba(0, 255, 157, 0.05); }
-        .btn-icon { font-size: 18px; margin-bottom: 2px; }
-
-        /* MIC MODE */
-        .mic-active { border-color: var(--warn) !important; color: var(--warn) !important; box-shadow: 0 0 15px rgba(255, 183, 0, 0.2); }
-
-        /* TERMINAL */
-        .terminal { background: #000; border: 1px solid var(--border); border-radius: 8px; padding: 10px; height: 100px; overflow: hidden; font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--success); position: relative; }
-        .log-line { margin-bottom: 2px; opacity: 0.8; }
-        .terminal::after { content: ""; position: absolute; bottom: 0; left: 0; width: 100%; height: 20px; background: linear-gradient(to top, #000, transparent); }
+        /* FAQ ACCORDION */
+        .faq-section { display: grid; gap: 10px; margin-top: 30px; }
+        .faq-item { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+        .faq-q { padding: 15px; font-weight: 700; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .faq-q:hover { color: var(--accent); }
+        .faq-a { padding: 0 15px 15px 15px; color: var(--text); font-size: 12px; line-height: 1.5; display: none; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px; }
+        .faq-icon { font-size: 10px; transition: 0.2s; }
+        .faq-item.active .faq-a { display: block; }
+        .faq-item.active .faq-icon { transform: rotate(180deg); color: var(--accent); }
 
         .back-btn { display: block; text-align: center; margin-top: 20px; color: var(--text); text-decoration: none; font-weight: 700; padding: 15px; background: var(--panel); border-radius: 12px; }
-        
-        /* WARNING OVERLAY */
-        #start-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 999; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px; }
-        .start-btn { background: var(--accent); color: white; border: none; padding: 20px 40px; border-radius: 50px; font-size: 16px; font-weight: 800; cursor: pointer; margin-top: 20px; box-shadow: 0 0 30px var(--accent); animation: pulseBtn 2s infinite; }
-        @keyframes pulseBtn { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+        .action-btn { background: var(--panel); border: 1px solid var(--border); color: var(--text-bright); width: 100%; padding: 15px; border-radius: 12px; font-weight: 700; margin-bottom: 20px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: 0.2s; }
+        .action-btn:hover { border-color: var(--accent); color: var(--accent); }
     </style>
 </head>
 <body>
 
-    <div id="start-overlay">
-        <h1 style="color:white; margin-bottom: 10px;">AUDIO SYSTEM INITIALIZATION</h1>
-        <p style="color:var(--text);">WARNING: Loud sounds may occur.<br>Set volume to 50%.</p>
-        <button class="start-btn" onclick="initAudioContext()">ENGAGE AUDIO ENGINE</button>
-    </div>
-
     <div class="header">
-        <div class="logo">DON<span>SYSTEMS</span></div>
-        <div class="live-badge"><div class="blink"></div> DAC ONLINE</div>
+        <div class="logo">DON<span>AUDIO</span></div>
+        <div class="live-badge"><div class="blink"></div> OUTPUT READY</div>
     </div>
 
-    <div class="scope-container">
-        <div class="hz-display" id="hz-val">OFF</div>
-        <div class="db-display" id="db-val">-∞ dB</div>
-        <canvas id="scopeCanvas"></canvas>
+    <div class="viz-container">
+        <canvas id="vizCanvas"></canvas>
+        <div class="mic-status" id="mic-status">MIC OFF</div>
     </div>
 
-    <div class="control-panel">
+    <button class="action-btn" onclick="initMic()">ACTIVATE MICROPHONE ANALYZER</button>
+
+    <div class="info-panel">
+        <span class="info-title">1. FREQUENCY RESPONSE</span>
+        Test your speakers' range.
         
-        <div class="slider-box">
-            <div class="range-label">
-                <span>FREQUENCY SWEEP</span>
-                <span>20Hz - 20kHz</span>
-            </div>
-            <input type="range" id="freq-slider" min="20" max="20000" value="440" step="10" oninput="updateFreq(this.value)">
-        </div>
 
-        <div class="btn-grid">
-            <button class="btn-audio" onclick="toggleTone('sine')" id="btn-sine">
-                <span class="btn-icon">〰️</span> PURE SINE
-            </button>
-            <button class="btn-audio" onclick="toggleTone('square')" id="btn-square">
-                <span class="btn-icon">🟧</span> SQUARE
-            </button>
-            <button class="btn-audio" onclick="toggleTone('sawtooth')" id="btn-saw">
-                <span class="btn-icon">📐</span> SAWTOOTH
-            </button>
-            
-            <button class="btn-audio" onclick="setPan(-1)">
-                <span class="btn-icon">⬅️</span> LEFT ONLY
-            </button>
-            <button class="btn-audio" onclick="setPan(0)">
-                <span class="btn-icon">↔️</span> STEREO
-            </button>
-            <button class="btn-audio" onclick="setPan(1)">
-                <span class="btn-icon">➡️</span> RIGHT ONLY
-            </button>
+[Image of sound frequency spectrum chart]
 
-            <button class="btn-audio" onclick="startSweep()">
-                <span class="btn-icon">🌊</span> AUTO SWEEP
-            </button>
-            <button class="btn-audio" onclick="toggleMic()" id="btn-mic">
-                <span class="btn-icon">🎤</span> TEST MIC
-            </button>
-            <button class="btn-audio" onclick="stopAll()">
-                <span class="btn-icon">🛑</span> STOP ALL
-            </button>
-        </div>
+        <strong>Bass (60Hz):</strong> Requires a subwoofer or good headphones. <br>
+        <strong>Mids (1kHz):</strong> Human voice range. <br>
+        <strong>High (15kHz):</strong> "Mosquito Tone." Many adults over 30 cannot hear this due to age-related hearing loss.
     </div>
 
-    <div class="terminal" id="console-output">
-        <div class="log-line">> AUDIO CONTEXT... STANDBY</div>
-        <div class="log-line">> WAITING FOR USER INPUT...</div>
+    <div class="control-grid">
+        <button class="btn-tone" onclick="playTone(60, 'sine')">
+            <span>SUB BASS</span> <span class="hz-label">60 Hz</span>
+        </button>
+        <button class="btn-tone" onclick="playTone(200, 'sine')">
+            <span>BASS</span> <span class="hz-label">200 Hz</span>
+        </button>
+        <button class="btn-tone" onclick="playTone(500, 'sine')">
+            <span>LOW MID</span> <span class="hz-label">500 Hz</span>
+        </button>
+        <button class="btn-tone" onclick="playTone(1000, 'sine')">
+            <span>VOCAL</span> <span class="hz-label">1 kHz</span>
+        </button>
+        <button class="btn-tone" onclick="playTone(4000, 'sine')">
+            <span>PRESENCE</span> <span class="hz-label">4 kHz</span>
+        </button>
+        <button class="btn-tone" onclick="playTone(15000, 'sine')">
+            <span>AIR / AGE</span> <span class="hz-label">15 kHz</span>
+        </button>
+
+        <button class="btn-tone btn-stop" onclick="stopTone()">SILENCE (STOP ALL)</button>
     </div>
 
-    <a href="../index.html" class="back-btn">EXIT STUDIO</a>
+    <div class="info-panel">
+        <span class="info-title">2. STEREO SEPARATION</span>
+        Verifies that your Left and Right speakers are wired correctly. You should hear sound *only* from one side.
+    </div>
+
+    <div class="control-grid">
+        <button class="btn-tone" onclick="testStereo(-1)">
+            <span>LEFT</span> <span>⬅️</span>
+        </button>
+        <button class="btn-tone" onclick="testStereo(0)">
+            <span>CENTER</span> <span>⏺️</span>
+        </button>
+        <button class="btn-tone" onclick="testStereo(1)">
+            <span>RIGHT</span> <span>➡️</span>
+        </button>
+    </div>
+
+    <h3 style="font-size: 14px; margin-bottom: 15px; color: var(--text-bright);">FAQ: AUDIO & ACOUSTICS</h3>
+    <div class="faq-section">
+        
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">1. Why can't I hear 15kHz? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">This is called "Presbycusis." As we age, the tiny hair cells in our ears that detect high frequencies die off. Most people over 25 lose sensitivity above 16kHz.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">2. What is "Active Noise Cancellation"? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">ANC microphones listen to outside noise and generate an "Anti-Wave" (inverted phase) to cancel it out before it hits your ear.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">3. What is "Hz" (Hertz)? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">It measures vibrations per second. 60Hz means the speaker cone moves in and out 60 times a second (Deep Bass).</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">4. Why is phone audio usually bad? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">Physics. To make deep bass, you need to move a lot of air. Phone speakers are too small to push enough air for true bass frequencies.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">5. What is "Sample Rate" (44.1kHz)? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">Digital audio is like a movie (frames per second). 44,100 samples per second is the standard for CD quality audio.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">6. How does the Visualizer work? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">It uses an FFT (Fast Fourier Transform) algorithm to break down complex sound waves into individual frequency bars.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">7. What is "Clipping"? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">When the volume is too loud for the speaker to handle, the sound wave gets "chopped" off at the top, creating harsh distortion.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">8. Mono vs. Stereo? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">Mono is one channel (same sound everywhere). Stereo is two channels (Left/Right), creating a sense of space and direction.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">9. Why do I hear static? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">Static is usually caused by "Interference" from other electronics or a bad connection in your headphone jack/port.</div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">10. Is louder always better? <span class="faq-icon">▼</span></div>
+            <div class="faq-a">No. High quality audio is about "Dynamic Range" (the difference between quiet and loud), not just maximum volume.</div>
+        </div>
+
+    </div>
+
+    <a href="../index.html" class="back-btn">EXIT AUDIO LAB</a>
 
     <script>
-        // --- LOGGING ---
-        function log(msg) {
-            const term = document.getElementById('console-output');
-            const line = document.createElement('div');
-            line.className = 'log-line';
-            line.innerHTML = `<span style="color:#64748b">[SYS]</span> ${msg}`;
-            term.appendChild(line);
-            if(term.children.length > 6) term.removeChild(term.children[0]);
-            term.scrollTop = term.scrollHeight;
-        }
-
         // --- AUDIO ENGINE ---
         let audioCtx;
         let oscillator;
         let gainNode;
-        let pannerNode;
+        let panNode;
         let analyser;
-        let micStream;
-        let isPlaying = false;
-        let sweepInterval;
+        let microphone;
 
-        function initAudioContext() {
-            document.getElementById('start-overlay').style.display = 'none';
-            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            
-            // Master Chain
-            gainNode = audioCtx.createGain();
-            pannerNode = audioCtx.createStereoPanner();
-            analyser = audioCtx.createAnalyser();
-            
-            gainNode.connect(pannerNode);
-            pannerNode.connect(analyser);
-            analyser.connect(audioCtx.destination);
-            
-            analyser.fftSize = 2048;
-            gainNode.gain.value = 0.5; // Safety volume
-            
-            log("> AUDIO ENGINE STARTED (48kHz)");
-            drawScope();
+        function initAudio() {
+            if (!audioCtx) {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                audioCtx = new AudioContext();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
         }
 
-        // --- OSCILLATOR LOGIC ---
-        function toggleTone(type) {
-            if(!audioCtx) initAudioContext();
-            
-            // Stop existing if playing
-            if(isPlaying) {
-                oscillator.stop();
-                document.querySelectorAll('.btn-audio').forEach(b => b.classList.remove('active'));
-                if(type === currentType) { isPlaying = false; currentType = null; updateDisplay("OFF"); return; }
-            }
+        // --- 1. FREQUENCY GENERATOR ---
+        function playTone(freq, type) {
+            initAudio();
+            stopTone(); // Kill previous
 
-            // Create new Osc
             oscillator = audioCtx.createOscillator();
+            gainNode = audioCtx.createGain();
+            panNode = audioCtx.createStereoPanner();
+
             oscillator.type = type;
-            oscillator.frequency.value = document.getElementById('freq-slider').value;
+            oscillator.frequency.value = freq;
             
+            // Volume control (protect ears for high freq)
+            let vol = 0.5;
+            if(freq > 10000) vol = 0.1; // Quieter for high pitch
+            gainNode.gain.value = vol;
+            
+            // Reset Pan
+            panNode.pan.value = 0;
+
             oscillator.connect(gainNode);
+            gainNode.connect(panNode);
+            panNode.connect(audioCtx.destination);
+
             oscillator.start();
-            
-            isPlaying = true;
-            currentType = type;
-            
-            // UI Updates
-            if(type === 'sine') document.getElementById('btn-sine').classList.add('active');
-            if(type === 'square') document.getElementById('btn-square').classList.add('active');
-            if(type === 'sawtooth') document.getElementById('btn-saw').classList.add('active');
-            
-            updateDisplay(Math.round(oscillator.frequency.value) + " Hz");
-            log(`> GENERATING WAVE: ${type.toUpperCase()}`);
         }
 
-        let currentType = null;
-
-        function updateFreq(val) {
-            if(isPlaying && oscillator) {
-                oscillator.frequency.value = val;
-                updateDisplay(val + " Hz");
+        function stopTone() {
+            if (oscillator) {
+                oscillator.stop();
+                oscillator.disconnect();
             }
         }
 
-        function setPan(val) {
-            if(pannerNode) {
-                pannerNode.pan.value = val;
-                let status = "STEREO CENTER";
-                if(val === -1) status = "LEFT CHANNEL ONLY";
-                if(val === 1) status = "RIGHT CHANNEL ONLY";
-                log(`> PANNING: ${status}`);
-            }
+        // --- 2. STEREO TEST ---
+        function testStereo(panVal) {
+            initAudio();
+            stopTone();
+
+            oscillator = audioCtx.createOscillator();
+            gainNode = audioCtx.createGain();
+            panNode = audioCtx.createStereoPanner();
+
+            oscillator.type = 'sine';
+            oscillator.frequency.value = 440; // Standard A note
+            gainNode.gain.value = 0.5;
+            panNode.pan.value = panVal; // -1 Left, 0 Center, 1 Right
+
+            oscillator.connect(gainNode);
+            gainNode.connect(panNode);
+            panNode.connect(audioCtx.destination);
+
+            oscillator.start();
+            setTimeout(() => { stopTone(); }, 1000); // 1 sec beep
         }
 
-        // --- AUTO SWEEP ---
-        function startSweep() {
-            if(!isPlaying) toggleTone('sine');
-            log("> INITIATING FREQUENCY SWEEP...");
-            let freq = 20;
-            const slider = document.getElementById('freq-slider');
-            
-            clearInterval(sweepInterval);
-            sweepInterval = setInterval(() => {
-                freq *= 1.05; // Exponential sweep
-                if(freq > 20000) {
-                    clearInterval(sweepInterval);
-                    log("> SWEEP COMPLETE");
-                    return;
-                }
-                slider.value = freq;
-                updateFreq(freq);
-            }, 50);
-        }
+        // --- 3. MIC VISUALIZER ---
+        async function initMic() {
+            initAudio();
+            const canvas = document.getElementById('vizCanvas');
+            const ctx = canvas.getContext('2d');
+            const status = document.getElementById('mic-status');
 
-        function stopAll() {
-            if(oscillator) oscillator.stop();
-            if(micStream) {
-                micStream.getTracks().forEach(track => track.stop());
-                document.getElementById('btn-mic').classList.remove('mic-active');
-            }
-            isPlaying = false;
-            clearInterval(sweepInterval);
-            updateDisplay("OFF");
-            log("> ALL OUTPUTS SILENCED");
-            document.querySelectorAll('.btn-audio').forEach(b => b.classList.remove('active'));
-        }
-
-        function updateDisplay(text) {
-            document.getElementById('hz-val').innerText = text;
-        }
-
-        // --- MICROPHONE TEST ---
-        async function toggleMic() {
-            if(document.getElementById('btn-mic').classList.contains('mic-active')) {
-                stopAll();
-                return;
-            }
-            
-            stopAll(); // Stop tones first
-            
             try {
-                log("> REQUESTING MIC ACCESS...");
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                micStream = stream;
-                
-                const source = audioCtx.createMediaStreamSource(stream);
-                source.connect(analyser);
-                // NOTE: We do NOT connect mic to destination (speakers) to prevent feedback loop screeching
-                
-                document.getElementById('btn-mic').classList.add('mic-active');
-                updateDisplay("MIC ON");
-                log("> MICROPHONE INPUT ACTIVE");
-            } catch (err) {
-                log("> ERROR: MIC ACCESS DENIED");
-                alert("Microphone access denied. Check browser settings.");
+                status.innerText = "MIC ACTIVE";
+                status.style.color = "var(--success)";
+                status.style.borderColor = "var(--success)";
+
+                microphone = audioCtx.createMediaStreamSource(stream);
+                analyser = audioCtx.createAnalyser();
+                analyser.fftSize = 256;
+                microphone.connect(analyser);
+
+                const bufferLength = analyser.frequencyBinCount;
+                const dataArray = new Uint8Array(bufferLength);
+
+                function draw() {
+                    requestAnimationFrame(draw);
+                    analyser.getByteFrequencyData(dataArray);
+
+                    ctx.fillStyle = '#000';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                    const barWidth = (canvas.width / bufferLength) * 2.5;
+                    let barHeight;
+                    let x = 0;
+
+                    for(let i = 0; i < bufferLength; i++) {
+                        barHeight = dataArray[i] / 1.5; // Scale down
+                        
+                        // Cyber gradient
+                        ctx.fillStyle = `rgb(${barHeight + 50}, 50, 200)`;
+                        ctx.fillRect(x, canvas.height - barHeight, barWidth, barHeight);
+
+                        x += barWidth + 1;
+                    }
+                }
+                draw();
+
+            } catch(e) {
+                status.innerText = "DENIED";
+                status.style.color = "var(--danger)";
+                alert("Microphone access denied. Check your browser settings.");
             }
         }
 
-        // --- CANVAS VISUALIZER ---
-        const canvas = document.getElementById('scopeCanvas');
-        const ctx = canvas.getContext('2d');
-
-        function drawScope() {
-            requestAnimationFrame(drawScope);
-            
-            const bufferLength = analyser.frequencyBinCount;
-            const dataArray = new Uint8Array(bufferLength);
-            analyser.getByteTimeDomainData(dataArray);
-
-            // Clear
-            ctx.fillStyle = '#000';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            // Draw Line
-            ctx.lineWidth = 2;
-            ctx.strokeStyle = '#f000ff';
-            ctx.beginPath();
-
-            const sliceWidth = canvas.width * 1.0 / bufferLength;
-            let x = 0;
-
-            for(let i = 0; i < bufferLength; i++) {
-                const v = dataArray[i] / 128.0;
-                const y = v * canvas.height / 2;
-
-                if(i === 0) ctx.moveTo(x, y);
-                else ctx.lineTo(x, y);
-
-                x += sliceWidth;
-            }
-
-            ctx.lineTo(canvas.width, canvas.height / 2);
-            ctx.stroke();
-        }
-
-        // Handle Resize
-        function resize() {
-            canvas.width = document.querySelector('.scope-container').offsetWidth;
-            canvas.height = document.querySelector('.scope-container').offsetHeight;
-        }
-        window.addEventListener('resize', resize);
-        resize();
+        function toggleFaq(el) { el.classList.toggle('active'); }
 
     </script>
 </body>
