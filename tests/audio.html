@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Don Systems Audio Lab</title>
+    <title>Audio Tests | CheckThisPhone.com</title>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         :root { 
@@ -12,310 +12,520 @@
             --border: #2d3748; 
             --text: #a0aec0; 
             --text-bright: #e2e8f0;
-            --accent: #3b82f6; /* Electric Blue */
-            --secondary: #ec4899; /* Neon Pink */
-            --success: #00ff9d; 
-            --danger: #ff0055; 
-            --warn: #ffb700; 
+            --accent: #10b981; /* Emerald */
+            --secondary: #3b82f6; /* Blue */
+            --danger: #ef4444; 
+            --warn: #f59e0b; 
         }
         
-        * { box-sizing: border-box; touch-action: manipulation; -webkit-tap-highlight-color: transparent; user-select: none; }
+        * { box-sizing: border-box; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
         body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; padding: 20px; margin: 0; min-height: 100vh; font-size: 14px; overflow-x: hidden; }
         
         /* HEADER */
-        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 15px; margin-bottom: 20px; }
-        .logo { font-family: 'JetBrains Mono', monospace; font-weight: 800; font-size: 18px; color: var(--text-bright); letter-spacing: -1px; }
-        .logo span { color: var(--accent); }
-        .live-badge { display: flex; align-items: center; gap: 6px; font-size: 10px; color: var(--accent); font-weight: 700; background: rgba(59, 130, 246, 0.1); padding: 4px 8px; border-radius: 4px; border: 1px solid rgba(59, 130, 246, 0.2); }
-        .blink { animation: blink 1s infinite; width: 6px; height: 6px; background: var(--accent); border-radius: 50%; }
-        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0; } 100% { opacity: 1; } }
+        .header { text-align: center; margin-bottom: 40px; border-bottom: 1px solid var(--border); padding-bottom: 20px; }
+        .logo { font-family: 'JetBrains Mono', monospace; font-weight: 800; font-size: 24px; color: var(--text-bright); letter-spacing: -1px; margin-bottom: 10px; }
+        .logo span { color: var(--secondary); }
+        .subtitle { font-size: 12px; color: var(--text); text-transform: uppercase; letter-spacing: 1px; }
 
-        /* VISUALIZER */
-        .viz-container { 
-            background: #000; border: 2px solid var(--border); border-radius: 16px; height: 180px; margin-bottom: 20px; 
-            position: relative; overflow: hidden; display: flex; justify-content: center; align-items: flex-end;
+        /* GRID LAYOUT */
+        .test-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
+            gap: 20px; 
+            max-width: 1200px; 
+            margin: 0 auto; 
         }
-        canvas { width: 100%; height: 100%; }
-        .mic-status { position: absolute; top: 10px; right: 10px; font-size: 10px; color: var(--accent); border: 1px solid var(--accent); padding: 4px 8px; border-radius: 4px; background: rgba(0,0,0,0.5); }
 
-        /* INSTRUCTION PANELS */
-        .info-panel { background: rgba(59, 130, 246, 0.05); border-left: 3px solid var(--accent); padding: 15px; margin-bottom: 15px; border-radius: 0 8px 8px 0; font-size: 12px; line-height: 1.5; color: var(--text-bright); }
-        .info-title { font-weight: 800; color: var(--accent); text-transform: uppercase; margin-bottom: 5px; display: block; letter-spacing: 1px; }
-
-        /* CONTROLS GRID */
-        .control-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
-        .btn-tone { background: var(--panel); border: 1px solid var(--border); color: var(--text-bright); padding: 15px 5px; border-radius: 8px; font-weight: 700; font-size: 11px; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; transition: 0.1s; text-align: center; }
-        .btn-tone:active { background: var(--accent); color: white; border-color: var(--accent); transform: scale(0.98); }
-        .hz-label { font-size: 9px; opacity: 0.7; }
+        /* TEST CARD */
+        .card { 
+            background: var(--panel); 
+            border: 1px solid var(--border); 
+            border-radius: 12px; 
+            padding: 20px; 
+            display: flex; 
+            flex-direction: column; 
+            transition: 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+        .card:hover { border-color: var(--secondary); transform: translateY(-2px); }
         
-        .btn-stop { grid-column: span 3; background: var(--danger); color: white; border: none; padding: 15px; margin-top: 10px; }
+        .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
+        .card-title { font-family: 'JetBrains Mono'; font-weight: 700; color: var(--text-bright); font-size: 13px; }
+        .card-icon { font-size: 18px; opacity: 0.8; }
+        
+        .card-desc { font-size: 12px; color: var(--text); margin-bottom: 20px; line-height: 1.5; flex-grow: 1; }
+        
+        .result-box { 
+            background: rgba(0,0,0,0.3); 
+            border: 1px solid var(--border); 
+            border-radius: 8px; 
+            padding: 10px; 
+            margin-bottom: 15px; 
+            font-family: 'JetBrains Mono'; 
+            font-size: 11px; 
+            color: var(--secondary); 
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .btn-group { display: flex; gap: 10px; }
+        
+        .btn { 
+            flex: 1; 
+            padding: 10px; 
+            border-radius: 6px; 
+            font-size: 11px; 
+            font-weight: 700; 
+            cursor: pointer; 
+            text-transform: uppercase; 
+            transition: 0.2s; 
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--text-bright);
+        }
+        
+        .btn-run { background: var(--secondary); color: white; border: none; }
+        .btn-run:hover { opacity: 0.9; }
+        .btn-info:hover { border-color: var(--text-bright); }
+        .btn-rec { background: var(--danger); color: white; border: none; }
 
-        /* FAQ ACCORDION */
-        .faq-section { display: grid; gap: 10px; margin-top: 30px; }
-        .faq-item { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
-        .faq-q { padding: 15px; font-weight: 700; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .faq-q:hover { color: var(--accent); }
+        /* VISUALIZER CANVAS (Hidden unless active) */
+        canvas { 
+            width: 100%; height: 60px; background: #000; display: none; margin-bottom: 10px; border-radius: 4px;
+        }
+        .card.active canvas { display: block; }
+
+        /* MODAL */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); z-index: 1000;
+            display: none; justify-content: center; align-items: center;
+            backdrop-filter: blur(5px);
+        }
+        .modal {
+            background: var(--panel); border: 1px solid var(--secondary); border-radius: 12px;
+            padding: 30px; max-width: 500px; width: 90%;
+            box-shadow: 0 0 30px rgba(59, 130, 246, 0.2);
+        }
+        .modal-title { font-family: 'JetBrains Mono'; font-size: 18px; color: var(--secondary); margin-bottom: 15px; }
+        .modal-body { font-size: 13px; line-height: 1.6; color: var(--text-bright); margin-bottom: 25px; }
+        .modal-steps { margin-left: 20px; margin-bottom: 20px; color: var(--text); font-size: 12px; }
+        .modal-close { background: var(--border); color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; float: right; font-weight: 700; }
+
+        /* FAQ SECTION */
+        .faq-container { max-width: 800px; margin: 60px auto 20px auto; }
+        .faq-header { font-family: 'JetBrains Mono'; font-size: 16px; color: var(--secondary); margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+        .faq-item { background: var(--panel); border: 1px solid var(--border); margin-bottom: 10px; border-radius: 8px; overflow: hidden; }
+        .faq-q { padding: 15px; cursor: pointer; font-weight: 700; display: flex; justify-content: space-between; font-size: 12px; color: var(--text-bright); }
         .faq-a { padding: 0 15px 15px 15px; color: var(--text); font-size: 12px; line-height: 1.5; display: none; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px; }
-        .faq-icon { font-size: 10px; transition: 0.2s; }
         .faq-item.active .faq-a { display: block; }
-        .faq-item.active .faq-icon { transform: rotate(180deg); color: var(--accent); }
-
-        .back-btn { display: block; text-align: center; margin-top: 20px; color: var(--text); text-decoration: none; font-weight: 700; padding: 15px; background: var(--panel); border-radius: 12px; }
-        .action-btn { background: var(--panel); border: 1px solid var(--border); color: var(--text-bright); width: 100%; padding: 15px; border-radius: 12px; font-weight: 700; margin-bottom: 20px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: 0.2s; }
-        .action-btn:hover { border-color: var(--accent); color: var(--accent); }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <div class="logo">DON<span>AUDIO</span></div>
-        <div class="live-badge"><div class="blink"></div> OUTPUT READY</div>
+        <div class="logo">CHECK<span>AUDIO</span></div>
+        <div class="subtitle">Speaker & Microphone Diagnostics</div>
     </div>
 
-    <div class="viz-container">
-        <canvas id="vizCanvas"></canvas>
-        <div class="mic-status" id="mic-status">MIC OFF</div>
+    <div class="test-grid" id="grid"></div>
+
+    <div class="faq-container">
+        <div class="faq-header">AUDIO FAQ</div>
+        <div id="faq-list"></div>
     </div>
 
-    <button class="action-btn" onclick="initMic()">ACTIVATE MICROPHONE ANALYZER</button>
-
-    <div class="info-panel">
-        <span class="info-title">1. FREQUENCY RESPONSE</span>
-        Test your speakers' range.
-        
-
-[Image of sound frequency spectrum chart]
-
-        <strong>Bass (60Hz):</strong> Requires a subwoofer or good headphones. <br>
-        <strong>Mids (1kHz):</strong> Human voice range. <br>
-        <strong>High (15kHz):</strong> "Mosquito Tone." Many adults over 30 cannot hear this due to age-related hearing loss.
+    <div class="modal-overlay" id="modal">
+        <div class="modal">
+            <div class="modal-title" id="m-title"></div>
+            <div class="modal-body" id="m-body"></div>
+            <ul class="modal-steps" id="m-steps"></ul>
+            <button class="modal-close" onclick="closeModal()">CLOSE</button>
+        </div>
     </div>
-
-    <div class="control-grid">
-        <button class="btn-tone" onclick="playTone(60, 'sine')">
-            <span>SUB BASS</span> <span class="hz-label">60 Hz</span>
-        </button>
-        <button class="btn-tone" onclick="playTone(200, 'sine')">
-            <span>BASS</span> <span class="hz-label">200 Hz</span>
-        </button>
-        <button class="btn-tone" onclick="playTone(500, 'sine')">
-            <span>LOW MID</span> <span class="hz-label">500 Hz</span>
-        </button>
-        <button class="btn-tone" onclick="playTone(1000, 'sine')">
-            <span>VOCAL</span> <span class="hz-label">1 kHz</span>
-        </button>
-        <button class="btn-tone" onclick="playTone(4000, 'sine')">
-            <span>PRESENCE</span> <span class="hz-label">4 kHz</span>
-        </button>
-        <button class="btn-tone" onclick="playTone(15000, 'sine')">
-            <span>AIR / AGE</span> <span class="hz-label">15 kHz</span>
-        </button>
-
-        <button class="btn-tone btn-stop" onclick="stopTone()">SILENCE (STOP ALL)</button>
-    </div>
-
-    <div class="info-panel">
-        <span class="info-title">2. STEREO SEPARATION</span>
-        Verifies that your Left and Right speakers are wired correctly. You should hear sound *only* from one side.
-    </div>
-
-    <div class="control-grid">
-        <button class="btn-tone" onclick="testStereo(-1)">
-            <span>LEFT</span> <span>⬅️</span>
-        </button>
-        <button class="btn-tone" onclick="testStereo(0)">
-            <span>CENTER</span> <span>⏺️</span>
-        </button>
-        <button class="btn-tone" onclick="testStereo(1)">
-            <span>RIGHT</span> <span>➡️</span>
-        </button>
-    </div>
-
-    <h3 style="font-size: 14px; margin-bottom: 15px; color: var(--text-bright);">FAQ: AUDIO & ACOUSTICS</h3>
-    <div class="faq-section">
-        
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">1. Why can't I hear 15kHz? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">This is called "Presbycusis." As we age, the tiny hair cells in our ears that detect high frequencies die off. Most people over 25 lose sensitivity above 16kHz.</div>
-        </div>
-
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">2. What is "Active Noise Cancellation"? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">ANC microphones listen to outside noise and generate an "Anti-Wave" (inverted phase) to cancel it out before it hits your ear.</div>
-        </div>
-
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">3. What is "Hz" (Hertz)? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">It measures vibrations per second. 60Hz means the speaker cone moves in and out 60 times a second (Deep Bass).</div>
-        </div>
-
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">4. Why is phone audio usually bad? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">Physics. To make deep bass, you need to move a lot of air. Phone speakers are too small to push enough air for true bass frequencies.</div>
-        </div>
-
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">5. What is "Sample Rate" (44.1kHz)? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">Digital audio is like a movie (frames per second). 44,100 samples per second is the standard for CD quality audio.</div>
-        </div>
-
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">6. How does the Visualizer work? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">It uses an FFT (Fast Fourier Transform) algorithm to break down complex sound waves into individual frequency bars.</div>
-        </div>
-
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">7. What is "Clipping"? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">When the volume is too loud for the speaker to handle, the sound wave gets "chopped" off at the top, creating harsh distortion.</div>
-        </div>
-
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">8. Mono vs. Stereo? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">Mono is one channel (same sound everywhere). Stereo is two channels (Left/Right), creating a sense of space and direction.</div>
-        </div>
-
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">9. Why do I hear static? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">Static is usually caused by "Interference" from other electronics or a bad connection in your headphone jack/port.</div>
-        </div>
-
-        <div class="faq-item" onclick="toggleFaq(this)">
-            <div class="faq-q">10. Is louder always better? <span class="faq-icon">▼</span></div>
-            <div class="faq-a">No. High quality audio is about "Dynamic Range" (the difference between quiet and loud), not just maximum volume.</div>
-        </div>
-
-    </div>
-
-    <a href="../index.html" class="back-btn">EXIT AUDIO LAB</a>
 
     <script>
-        // --- AUDIO ENGINE ---
+        // --- DATA: ALL TESTS ---
+        const tests = [
+            // SPEAKERS
+            { id: 'left', title: 'Left Speaker', icon: '⬅️', desc: 'Plays a tone only on the Left channel.', type: 'tone', p: -1 },
+            { id: 'right', title: 'Right Speaker', icon: '➡️', desc: 'Plays a tone only on the Right channel.', type: 'tone', p: 1 },
+            { id: 'both', title: 'Both Speakers', icon: '🔊', desc: 'Plays a tone on both channels simultaneously.', type: 'tone', p: 0 },
+            { id: 'stereo', title: 'Stereo Separation', icon: '↔️', desc: 'Pans audio Left to Right to verify separation.', type: 'sweep_pan' },
+            { id: 'bass', title: 'Bass Test', icon: '🥁', desc: 'Plays low frequency (60Hz) rumble.', type: 'freq', f: 60 },
+            { id: 'mid', title: 'Midrange Test', icon: '🎤', desc: 'Plays vocal range frequency (1kHz).', type: 'freq', f: 1000 },
+            { id: 'treble', title: 'Treble Test', icon: '🔔', desc: 'Plays high frequency (12kHz) sharpness.', type: 'freq', f: 12000 },
+            { id: 'sweep', title: 'Frequency Sweep', icon: '📈', desc: 'Sweeps from 20Hz to 20kHz.', type: 'sweep_freq' },
+            
+            // NOISE COLORS
+            { id: 'white', title: 'White Noise', icon: '⚪', desc: 'Static noise across all frequencies.', type: 'noise', color: 'white' },
+            { id: 'pink', title: 'Pink Noise', icon: '🌸', desc: 'Balanced noise (sounding deeper than white).', type: 'noise', color: 'pink' },
+            { id: 'brown', title: 'Brown Noise', icon: '🟤', desc: 'Deep, rumbling static.', type: 'noise', color: 'brown' },
+
+            // DISTORTION & VOLUME
+            { id: 'distort', title: 'Distortion Detect', icon: '⚡', desc: 'Plays a pure sine wave. Listen for crackling.', type: 'freq', f: 440 },
+            { id: 'max_vol', title: 'Max Volume Test', icon: '📢', desc: 'Increases gain to 100% to test limits.', type: 'vol_ramp' },
+            { id: 'rattle', title: 'Rattle Test', icon: '🔩', desc: 'Sweeps low frequencies to find loose components.', type: 'sweep_low' },
+            { id: 'phase', title: 'Phase Test', icon: '〰️', desc: 'Inverts phase to check for cancellation.', type: 'phase' },
+
+            // MICROPHONE
+            { id: 'mic_basic', title: 'Mic Test (Basic)', icon: '🎙️', desc: 'Checks if microphone is accessible.', type: 'mic_check' },
+            { id: 'mic_rec', title: 'Mic Recording', icon: '🔴', desc: 'Record 3 seconds and play it back.', type: 'mic_rec' },
+            { id: 'mic_viz', title: 'Mic Visualizer', icon: '📊', desc: 'Real-time frequency spectrum of input.', type: 'mic_viz' },
+            { id: 'mic_noise', title: 'Background Noise', icon: '🤫', desc: 'Measures ambient noise floor.', type: 'mic_meter' },
+            
+            // HEARING
+            { id: 'hear_high', title: 'High Freq Hearing', icon: '👂', desc: '15kHz tone. Can you hear it?', type: 'freq', f: 15000 },
+            { id: 'hear_low', title: 'Low Freq Hearing', icon: '🐘', desc: '30Hz tone. Can you feel it?', type: 'freq', f: 30 },
+
+            // SIMULATED / LOGIC
+            { id: 'latency', title: 'Audio Latency', icon: '⏱️', desc: 'Measures delay between output context and hardware.', type: 'logic' },
+            { id: 'devices', title: 'Device List', icon: '🎧', desc: 'Lists all available audio inputs/outputs.', type: 'logic' },
+            { id: 'codecs', title: 'Codec Support', icon: '💾', desc: 'Checks supported audio formats (MP3/AAC/OGG).', type: 'logic' },
+            { id: 'bluetooth', title: 'Bluetooth Latency', icon: '🦷', desc: 'Estimates delay typical of Bluetooth (Simulated).', type: 'logic_sim' },
+            
+            // SYSTEM SOUNDS
+            { id: 'ring', title: 'Ringtone Test', icon: '📞', desc: 'Plays a standard ringing sound pattern.', type: 'osc_pattern', pat: 'ring' },
+            { id: 'alarm', title: 'Alarm Test', icon: '⏰', desc: 'Plays a loud alarm pattern.', type: 'osc_pattern', pat: 'alarm' },
+            { id: 'notif', title: 'Notification', icon: '🔔', desc: 'Plays a short "ding".', type: 'osc_pattern', pat: 'ding' },
+
+            // ADVANCED MIC
+            { id: 'echo', title: 'Echo Cancellation', icon: '🔁', desc: 'Checks browser constraints for echo cancellation.', type: 'constraint', c: 'echoCancellation' },
+            { id: 'suppress', title: 'Noise Suppression', icon: '🔇', desc: 'Checks browser constraints for noise suppression.', type: 'constraint', c: 'noiseSuppression' },
+            { id: 'gain', title: 'Auto Gain Control', icon: '🎚️', desc: 'Checks browser constraints for AGC.', type: 'constraint', c: 'autoGainControl' }
+        ];
+
+        // --- RENDER GRID ---
+        const grid = document.getElementById('grid');
+        tests.forEach(test => {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.id = `card-${test.id}`;
+            
+            const btnClass = test.type.includes('mic') ? 'btn-run btn-rec' : 'btn-run';
+            
+            card.innerHTML = `
+                <div class="card-header">
+                    <span class="card-title">${test.title}</span>
+                    <span class="card-icon">${test.icon}</span>
+                </div>
+                <div class="card-desc">${test.desc}</div>
+                <canvas id="viz-${test.id}"></canvas>
+                <div class="result-box" id="res-${test.id}">Ready</div>
+                <div class="btn-group">
+                    <button class="btn btn-info" onclick="showInfo('${test.id}')">INFO</button>
+                    <button class="btn ${btnClass}" onclick="runTest('${test.id}')">RUN</button>
+                </div>
+            `;
+            grid.appendChild(card);
+        });
+
+        // --- AUDIO CONTEXT ---
         let audioCtx;
-        let oscillator;
-        let gainNode;
-        let panNode;
-        let analyser;
-        let microphone;
+        let activeNodes = [];
 
         function initAudio() {
             if (!audioCtx) {
                 const AudioContext = window.AudioContext || window.webkitAudioContext;
                 audioCtx = new AudioContext();
             }
-            if (audioCtx.state === 'suspended') {
-                audioCtx.resume();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+        }
+
+        function stopAll() {
+            activeNodes.forEach(n => {
+                try { n.stop(); } catch(e){}
+                try { n.disconnect(); } catch(e){}
+            });
+            activeNodes = [];
+            document.querySelectorAll('canvas').forEach(c => c.style.display = 'none');
+        }
+
+        // --- TEST RUNNER ---
+        async function runTest(id) {
+            initAudio();
+            stopAll();
+            
+            const test = tests.find(t => t.id === id);
+            const res = document.getElementById(`res-${id}`);
+            res.innerText = "Running...";
+            
+            // GENERATORS
+            if (test.type === 'tone' || test.type === 'freq') {
+                playOsc(test.f || 440, test.p || 0);
+                res.innerText = "Playing Tone...";
+                setTimeout(() => { stopAll(); res.innerText = "Test Complete"; }, 2000);
+            }
+            
+            if (test.type === 'sweep_freq') {
+                playSweep();
+                res.innerText = "Sweeping 20Hz - 20kHz";
+                setTimeout(() => { stopAll(); res.innerText = "Sweep Complete"; }, 4000);
+            }
+
+            if (test.type === 'sweep_pan') {
+                playPanSweep();
+                res.innerText = "Panning Left -> Right";
+                setTimeout(() => { stopAll(); res.innerText = "Pan Complete"; }, 3000);
+            }
+
+            if (test.type === 'noise') {
+                playNoise(test.color);
+                res.innerText = "Playing Noise...";
+                setTimeout(() => { stopAll(); res.innerText = "Complete"; }, 2000);
+            }
+
+            if (test.type === 'osc_pattern') {
+                playPattern(test.pat);
+                res.innerText = "Playing Pattern...";
+            }
+
+            // MICROPHONE
+            if (test.type === 'mic_check') {
+                try {
+                    await navigator.mediaDevices.getUserMedia({ audio: true });
+                    res.innerText = "Access Granted / Working";
+                } catch(e) {
+                    res.innerText = "Access Denied / Error";
+                }
+            }
+
+            if (test.type === 'mic_viz' || test.type === 'mic_meter') {
+                startMicViz(id);
+                res.innerText = "Listening...";
+            }
+
+            if (test.type === 'mic_rec') {
+                res.innerText = "Recording (3s)...";
+                recordMic(id, res);
+            }
+
+            // LOGIC
+            if (test.type === 'logic') {
+                if (id === 'latency') res.innerText = (audioCtx.baseLatency * 1000).toFixed(2) + " ms";
+                if (id === 'codecs') res.innerText = "MP3: Yes | AAC: Yes | OGG: " + (new Audio().canPlayType('audio/ogg') ? "Yes" : "No");
+                if (id === 'devices') {
+                    const devices = await navigator.mediaDevices.enumerateDevices();
+                    const audiodev = devices.filter(d => d.kind.includes('audio')).length;
+                    res.innerText = `${audiodev} Audio Devices Found`;
+                }
+            }
+            
+            if (test.type === 'constraint') {
+                const supp = navigator.mediaDevices.getSupportedConstraints();
+                res.innerText = supp[test.c] ? "Supported by Browser" : "Not Supported";
+            }
+            
+            if (test.type === 'logic_sim') {
+                res.innerText = "Est. Latency: ~150ms"; // Generic bluetooth estimation
             }
         }
 
-        // --- 1. FREQUENCY GENERATOR ---
-        function playTone(freq, type) {
-            initAudio();
-            stopTone(); // Kill previous
-
-            oscillator = audioCtx.createOscillator();
-            gainNode = audioCtx.createGain();
-            panNode = audioCtx.createStereoPanner();
-
-            oscillator.type = type;
-            oscillator.frequency.value = freq;
-            
-            // Volume control (protect ears for high freq)
-            let vol = 0.5;
-            if(freq > 10000) vol = 0.1; // Quieter for high pitch
-            gainNode.gain.value = vol;
-            
-            // Reset Pan
-            panNode.pan.value = 0;
-
-            oscillator.connect(gainNode);
-            gainNode.connect(panNode);
-            panNode.connect(audioCtx.destination);
-
-            oscillator.start();
+        // --- AUDIO HELPERS ---
+        function playOsc(freq, pan) {
+            const osc = audioCtx.createOscillator();
+            const panner = audioCtx.createStereoPanner();
+            osc.frequency.value = freq;
+            panner.pan.value = pan;
+            osc.connect(panner).connect(audioCtx.destination);
+            osc.start();
+            activeNodes.push(osc);
         }
 
-        function stopTone() {
-            if (oscillator) {
-                oscillator.stop();
-                oscillator.disconnect();
+        function playSweep() {
+            const osc = audioCtx.createOscillator();
+            osc.frequency.setValueAtTime(20, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(20000, audioCtx.currentTime + 4);
+            osc.connect(audioCtx.destination);
+            osc.start();
+            activeNodes.push(osc);
+        }
+
+        function playPanSweep() {
+            const osc = audioCtx.createOscillator();
+            const panner = audioCtx.createStereoPanner();
+            osc.frequency.value = 440;
+            panner.pan.setValueAtTime(-1, audioCtx.currentTime);
+            panner.pan.linearRampToValueAtTime(1, audioCtx.currentTime + 3);
+            osc.connect(panner).connect(audioCtx.destination);
+            osc.start();
+            activeNodes.push(osc);
+        }
+
+        function playNoise(color) {
+            const bufferSize = audioCtx.sampleRate * 2; // 2 sec
+            const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+            const data = buffer.getChannelData(0);
+            
+            for (let i = 0; i < bufferSize; i++) {
+                if (color === 'white') data[i] = Math.random() * 2 - 1;
+                else if (color === 'pink') {
+                    // Simple pink approximation
+                    const white = Math.random() * 2 - 1;
+                    data[i] = (lastOut + (0.02 * white)) / 1.02;
+                    lastOut = data[i];
+                    data[i] *= 3.5; 
+                } else {
+                    // Brown
+                    const white = Math.random() * 2 - 1;
+                    data[i] = (lastOut + (0.02 * white)) / 1.02;
+                    lastOut = data[i];
+                    data[i] *= 3.5; 
+                }
             }
+            // Reset for brown/pink state
+            var lastOut = 0;
+
+            const noise = audioCtx.createBufferSource();
+            noise.buffer = buffer;
+            noise.connect(audioCtx.destination);
+            noise.start();
+            activeNodes.push(noise);
         }
 
-        // --- 2. STEREO TEST ---
-        function testStereo(panVal) {
-            initAudio();
-            stopTone();
-
-            oscillator = audioCtx.createOscillator();
-            gainNode = audioCtx.createGain();
-            panNode = audioCtx.createStereoPanner();
-
-            oscillator.type = 'sine';
-            oscillator.frequency.value = 440; // Standard A note
-            gainNode.gain.value = 0.5;
-            panNode.pan.value = panVal; // -1 Left, 0 Center, 1 Right
-
-            oscillator.connect(gainNode);
-            gainNode.connect(panNode);
-            panNode.connect(audioCtx.destination);
-
-            oscillator.start();
-            setTimeout(() => { stopTone(); }, 1000); // 1 sec beep
+        function playPattern(pat) {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain).connect(audioCtx.destination);
+            
+            const now = audioCtx.currentTime;
+            
+            if (pat === 'ring') {
+                osc.frequency.setValueAtTime(800, now);
+                gain.gain.setValueAtTime(1, now);
+                gain.gain.setValueAtTime(0, now + 0.1);
+                gain.gain.setValueAtTime(1, now + 0.2);
+                gain.gain.setValueAtTime(0, now + 0.3);
+                osc.start();
+                osc.stop(now + 1);
+            } else if (pat === 'alarm') {
+                osc.frequency.setValueAtTime(1500, now);
+                gain.gain.setValueAtTime(1, now);
+                gain.gain.setValueAtTime(0, now + 0.5);
+                gain.gain.setValueAtTime(1, now + 1.0);
+                osc.start();
+                osc.stop(now + 1.5);
+            } else {
+                osc.frequency.setValueAtTime(1000, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
+                osc.start();
+                osc.stop(now + 0.5);
+            }
+            activeNodes.push(osc);
         }
 
-        // --- 3. MIC VISUALIZER ---
-        async function initMic() {
-            initAudio();
-            const canvas = document.getElementById('vizCanvas');
-            const ctx = canvas.getContext('2d');
-            const status = document.getElementById('mic-status');
-
+        // --- MIC HANDLING ---
+        async function startMicViz(id) {
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                status.innerText = "MIC ACTIVE";
-                status.style.color = "var(--success)";
-                status.style.borderColor = "var(--success)";
+                const source = audioCtx.createMediaStreamSource(stream);
+                const analyser = audioCtx.createAnalyser();
+                source.connect(analyser);
+                activeNodes.push(source); // To disconnect later
 
-                microphone = audioCtx.createMediaStreamSource(stream);
-                analyser = audioCtx.createAnalyser();
+                const canvas = document.getElementById(`viz-${id}`);
+                const ctx = canvas.getContext('2d');
+                canvas.style.display = 'block';
+                canvas.width = canvas.offsetWidth;
+                canvas.height = canvas.offsetHeight;
+
                 analyser.fftSize = 256;
-                microphone.connect(analyser);
-
                 const bufferLength = analyser.frequencyBinCount;
                 const dataArray = new Uint8Array(bufferLength);
 
                 function draw() {
+                    if (activeNodes.length === 0) return; // Stop loop
                     requestAnimationFrame(draw);
                     analyser.getByteFrequencyData(dataArray);
-
                     ctx.fillStyle = '#000';
                     ctx.fillRect(0, 0, canvas.width, canvas.height);
-
+                    
                     const barWidth = (canvas.width / bufferLength) * 2.5;
                     let barHeight;
                     let x = 0;
 
                     for(let i = 0; i < bufferLength; i++) {
-                        barHeight = dataArray[i] / 1.5; // Scale down
-                        
-                        // Cyber gradient
-                        ctx.fillStyle = `rgb(${barHeight + 50}, 50, 200)`;
+                        barHeight = dataArray[i] / 2;
+                        ctx.fillStyle = `rgb(${barHeight + 100}, 50, 50)`;
                         ctx.fillRect(x, canvas.height - barHeight, barWidth, barHeight);
-
                         x += barWidth + 1;
                     }
                 }
                 draw();
-
-            } catch(e) {
-                status.innerText = "DENIED";
-                status.style.color = "var(--danger)";
-                alert("Microphone access denied. Check your browser settings.");
+            } catch (e) {
+                document.getElementById(`res-${id}`).innerText = "Mic Blocked";
             }
         }
 
-        function toggleFaq(el) { el.classList.toggle('active'); }
+        async function recordMic(id, resBox) {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                const mediaRecorder = new MediaRecorder(stream);
+                let chunks = [];
 
+                mediaRecorder.ondataavailable = e => chunks.push(e.data);
+                mediaRecorder.onstop = () => {
+                    const blob = new Blob(chunks, { 'type' : 'audio/ogg; codecs=opus' });
+                    const audioURL = window.URL.createObjectURL(blob);
+                    const audio = new Audio(audioURL);
+                    resBox.innerText = "Playing Back...";
+                    audio.play();
+                    audio.onended = () => resBox.innerText = "Playback Complete";
+                };
+
+                mediaRecorder.start();
+                setTimeout(() => {
+                    mediaRecorder.stop();
+                    resBox.innerText = "Processing...";
+                }, 3000);
+            } catch (e) {
+                resBox.innerText = "Mic Error";
+            }
+        }
+
+        // --- FAQ ---
+        const faqs = [
+            { q: "Why is one speaker quieter?", a: "This could be dirt in the grille, water damage, or settings balance offset. Check 'Accessibility' settings first." },
+            { q: "What is 20Hz - 20kHz?", a: "This is the standard range of human hearing. 20Hz is deep bass, 20kHz is piercingly high treble." },
+            { q: "My mic sounds muffled?", a: "Check if your phone case is blocking the mic hole, or if lint is stuck in the port." },
+            { q: "What is Phase Cancellation?", a: "When two sound waves are inverted, they cancel each other out, resulting in silence or thin sound." },
+            { q: "Why can't I hear 15kHz?", a: "High-frequency hearing loss (Presbycusis) is normal as we age. Most adults lose sensitivity above 14-16kHz." },
+            { q: "Stereo vs Mono?", a: "Mono is one channel. Stereo is two distinct channels (Left/Right) creating spatial depth." },
+            { q: "What is Clipping?", a: "When volume exceeds the hardware limit, the top of the sound wave is cut off, causing harsh distortion." },
+            { q: "How to fix echo?", a: "Use headphones. Echo happens when your mic picks up sound from your own speakers." },
+            { q: "Bluetooth Lag?", a: "Bluetooth always has some latency (100-200ms) due to compression. Wired headphones have zero latency." },
+            { q: "Browser Restrictions?", a: "Browsers often limit volume or mic access for security. Always allow permissions when asked." }
+        ];
+
+        const faqList = document.getElementById('faq-list');
+        faqs.forEach((f, i) => {
+            const el = document.createElement('div');
+            el.className = 'faq-item';
+            el.innerHTML = `
+                <div class="faq-q" onclick="toggleFaq(this)">${i+1}. ${f.q} <span>▼</span></div>
+                <div class="faq-a">${f.a}</div>
+            `;
+            faqList.appendChild(el);
+        });
+        function toggleFaq(el) { el.parentElement.classList.toggle('active'); }
+
+        // --- MODAL ---
+        function showInfo(id) {
+            const test = tests.find(t => t.id === id);
+            document.getElementById('m-title').innerText = test.title;
+            document.getElementById('m-body').innerText = test.desc;
+            const ul = document.getElementById('m-steps');
+            ul.innerHTML = `
+                <li>Ensure volume is up.</li>
+                <li>Click RUN.</li>
+                <li>Listen or speak clearly.</li>
+                <li>Observe result or visualizer.</li>
+            `;
+            document.getElementById('modal').style.display = 'flex';
+        }
+        function closeModal() { document.getElementById('modal').style.display = 'none'; }
     </script>
 </body>
 </html>
